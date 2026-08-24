@@ -22,7 +22,8 @@ export default function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const text = `*New Enquiry from Website*%0A%0A*Name:* ${formData.name}%0A*Email:* ${formData.email}%0A*Phone:* ${formData.phone}%0A*Company:* ${formData.company}%0A*Service Required:* ${formData.service}%0A*Message:* ${formData.message}`;
-    const whatsappUrl = `https://wa.me/916291111428?text=${text}`;
+    const encodedText = encodeURIComponent(text);
+    const whatsappUrl = `https://wa.me/916291111428?text=${encodedText}`;
     window.open(whatsappUrl, "_blank");
   };
 
@@ -76,7 +77,8 @@ export default function ContactPage() {
                       required
                       type="text" 
                       id="name" 
-                      name="name" 
+                      name="name"
+                      maxLength={100}
                       value={formData.name}
                       onChange={handleChange}
                       className="w-full bg-background border border-border rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold transition-all" 
@@ -88,7 +90,8 @@ export default function ContactPage() {
                       required
                       type="email" 
                       id="email" 
-                      name="email" 
+                      name="email"
+                      maxLength={254}
                       value={formData.email}
                       onChange={handleChange}
                       className="w-full bg-background border border-border rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold transition-all" 
@@ -99,7 +102,8 @@ export default function ContactPage() {
                     <input 
                       type="tel" 
                       id="phone" 
-                      name="phone" 
+                      name="phone"
+                      maxLength={30}
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full bg-background border border-border rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold transition-all" 
@@ -110,7 +114,8 @@ export default function ContactPage() {
                     <input 
                       type="text" 
                       id="company" 
-                      name="company" 
+                      name="company"
+                      maxLength={150}
                       value={formData.company}
                       onChange={handleChange}
                       className="w-full bg-background border border-border rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold transition-all" 
@@ -145,6 +150,7 @@ export default function ContactPage() {
                     id="message" 
                     name="message" 
                     rows={4}
+                    maxLength={2000}
                     value={formData.message}
                     onChange={handleChange}
                     className="w-full bg-background border border-border rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold transition-all resize-none" 

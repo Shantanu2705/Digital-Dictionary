@@ -92,6 +92,7 @@ export function ServiceEnquiryModal({ serviceTitle }: ServiceEnquiryModalProps) 
                 id="name"
                 type="text"
                 required
+                maxLength={100}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold outline-none transition-all text-sm text-charcoal"
@@ -106,6 +107,7 @@ export function ServiceEnquiryModal({ serviceTitle }: ServiceEnquiryModalProps) 
               <textarea
                 id="message"
                 rows={3}
+                maxLength={2000}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold outline-none transition-all text-sm resize-none text-charcoal"
