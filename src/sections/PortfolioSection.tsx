@@ -10,12 +10,12 @@ const PROJECTS = [
   { id: 1, title: "Himalayan Vintage Holidays", category: "Travel", size: "large", image: "project4.jpeg" },
   { id: 2, title: "Mahakal Bus Services", category: "Travel", size: "small", image: "project3.jpeg" },
   { id: 3, title: "Whistling Wind Resort", category: "Hospitality", size: "small", image: "project6.jpeg" },
-  { id: 4, title: "Quick Trip Now", category: "Travel", size: "large", image: "WhatsApp Image 2026-08-22 at 21.01.07.jpeg" },
+  { id: 4, title: "Quick Trip Now", category: "Travel", size: "large", image: "QuickTripNow.png" },
   { id: 5, title: "Etripzo", category: "Travel", size: "small", image: "project8.jpeg" },
   { id: 6, title: "Take a Trip Make Memories", category: "Travel", size: "small", image: "project7.jpeg" },
-  { id: 7, title: "Siliguri Institute of Nursing", category: "Brand Identity", size: "large", image: "WhatsApp Image 2026-08-22 at 21.02.01.jpeg" },
+  { id: 7, title: "Siliguri Institute of Nursing", category: "Brand Identity", size: "large", image: "project5.jpeg" },
   { id: 8, title: "IBL 3X3 LEAGUE", category: "Sports", size: "small", image: "project2.jpeg" },
-  { id: 9, title: "Gajagamini Forest Resort", category: "Travel", size: "small", image: "project5.jpeg" },
+  { id: 9, title: "Gajagamini Forest Resort", category: "Travel", size: "small", image: "project1.jpeg" },
 ];
 
 const containerVariants = {
