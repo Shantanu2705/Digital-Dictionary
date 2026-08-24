@@ -1,0 +1,127 @@
+"use client";
+
+import { useState } from "react";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { ArrowUpRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+import Image from "next/image";
+
+const CATEGORIES = [
+  "All", 
+  "Hospitality", 
+  "Travel", 
+  "Brand Identity", 
+  "Retail",
+  "Healthcare",
+  "Sports",
+  "Automotive"
+];
+
+const PROJECTS = [
+  { id: 1, title: "Shivaay International", category: "Hospitality", size: "small", image: "WhatsApp Image 2026-08-22 at 21.01.07.jpeg" },
+  { id: 2, title: "BAGDOGRA CAB SERVICE", category: "Travel", size: "small", image: "WhatsApp Image 2026-08-22 at 21.02.01.jpeg" },
+  { id: 3, title: "Sneha Tour & Travels", category: "Travel", size: "small", image: "WhatsApp Image 2026-08-22 at 21.02.23.jpeg" },
+  { id: 4, title: "ROYal SIKKIM", category: "Travel", size: "large", image: "WhatsApp Image 2026-08-22 at 21.03.03.jpeg" },
+  { id: 5, title: "Premium Beauty Spa", category: "Brand Identity", size: "small", image: "WhatsApp Image 2026-08-22 at 21.04.17.jpeg" },
+  { id: 6, title: "CT India Cosmetica", category: "Retail", size: "small", image: "WhatsApp Image 2026-08-22 at 21.05.25.jpeg" },
+  { id: 7, title: "SIKKIM CABS", category: "Travel", size: "small", image: "WhatsApp Image 2026-08-22 at 21.06.46.jpeg" },
+  { id: 8, title: "Ozzy Tours & Travels", category: "Travel", size: "large", image: "WhatsApp Image 2026-08-22 at 21.08.42.jpeg" },
+  { id: 9, title: "SURE CURE", category: "Healthcare", size: "small", image: "WhatsApp Image 2026-08-22 at 21.11.06.jpeg" },
+  { id: 10, title: "Polymummy Healthcare", category: "Healthcare", size: "small", image: "WhatsApp Image 2026-08-22 at 21.32.55.jpeg" },
+  { id: 11, title: "KSO STAR", category: "Brand Identity", size: "small", image: "WhatsApp Image 2026-08-22 at 21.33.37.jpeg" },
+  { id: 12, title: "IBL 3X3 LEAGUE", category: "Sports", size: "large", image: "WhatsApp Image 2026-08-22 at 21.36.32.jpeg" },
+  { id: 13, title: "ashma", category: "Brand Identity", size: "small", image: "WhatsApp Image 2026-08-22 at 21.37.24.jpeg" },
+  { id: 14, title: "BAGDOGRA BIKE RENTAL", category: "Automotive", size: "small", image: "WhatsApp Image 2026-08-22 at 21.40.33.jpeg" },
+  { id: 15, title: "SADDIYATRA", category: "Travel", size: "small", image: "WhatsApp Image 2026-08-22 at 21.51.35.jpeg" },
+  { id: 16, title: "BETHEL RESIDENCY", category: "Hospitality", size: "large", image: "WhatsApp Image 2026-08-22 at 21.53.39.jpeg" },
+];
+
+export default function PortfolioPage() {
+  const [activeCategory, setActiveCategory] = useState("All");
+
+  const filteredProjects = activeCategory === "All" 
+    ? PROJECTS 
+    : PROJECTS.filter(p => p.category === activeCategory);
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between bg-background">
+      <Navbar />
+      
+      <section className="w-full pt-40 pb-24">
+        <div className="container mx-auto px-6 md:px-12">
+          <div>
+            <h1 className="text-[12px] uppercase tracking-widest text-luxury-gold mb-4 font-medium">Our Portfolio</h1>
+            <h2 className="text-4xl md:text-5xl font-medium text-charcoal tracking-tighter">
+              Recent work we&apos;re <br />
+              <span className="font-serif italic text-luxury-gold">proud of:</span>
+            </h2>
+          </div>
+          <p className="text-xl text-gray-600 max-w-2xl font-light mb-12">
+              A collection of digital experiences we&apos;ve built for forward-thinking brands and organizations.
+          </p>
+
+          {/* Filters */}
+          <div className="flex flex-wrap gap-4 mb-12">
+            {CATEGORIES.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={cn(
+                  "px-6 py-2 rounded-full text-sm font-medium transition-all duration-300",
+                  activeCategory === category 
+                    ? "bg-charcoal text-white" 
+                    : "bg-card border border-border text-gray-600 hover:border-luxury-gold hover:text-charcoal"
+                )}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+
+          {/* Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProjects.map((project) => (
+              <div
+                key={project.id}
+                className={cn(
+                  "group relative block overflow-hidden rounded-3xl bg-white border border-border/50",
+                  project.size === "large" ? "md:col-span-2 h-[400px]" : "h-[300px]"
+                )}
+              >
+                {/* Project Image */}
+                <div className="absolute inset-0 bg-white flex items-center justify-center overflow-hidden transition-transform duration-700 group-hover:scale-105">
+                  <div className="relative w-full h-full p-8 md:p-12">
+                    <Image
+                      src={`/clients/${project.image}`}
+                      alt={project.title}
+                      fill
+                      className="object-contain p-4"
+                    />
+                  </div>
+                </div>
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                <div className="absolute inset-0 p-4 flex flex-col justify-end translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-10">
+                  <p className="text-luxury-gold text-[10px] font-bold tracking-widest uppercase mb-1">
+                    {project.category}
+                  </p>
+                  <h4 className="text-sm md:text-base font-medium text-white leading-snug mb-3">
+                    {project.title}
+                  </h4>
+                  <div className="w-8 h-8 md:w-10 md:h-10 shrink-0 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white border border-white/20 hover:bg-luxury-gold transition-colors">
+                    <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      <Footer />
+    </main>
+  );
+}
