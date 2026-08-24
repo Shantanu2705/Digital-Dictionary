@@ -168,7 +168,7 @@ export function Navbar() {
               alt="Digital Dictionary"
               width={180}
               height={50}
-              className="object-contain"
+              className="object-contain mix-blend-multiply"
               priority
             />
           </Link>
