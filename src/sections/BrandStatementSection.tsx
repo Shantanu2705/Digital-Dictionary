@@ -11,10 +11,10 @@ export function BrandStatementSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="max-w-5xl mx-auto"
+          className="max-w-5xl mx-auto w-full"
         >
           <div>
-            <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif font-medium leading-[1.1] text-charcoal tracking-tighter">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-serif font-medium leading-[1.1] text-charcoal tracking-tighter">
               Digital presence is no longer just about being online.{" "}
               <span className="text-luxury-gold">
                 It&apos;s about being impossible to ignore.

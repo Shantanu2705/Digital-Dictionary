@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export function HeroSection() {
   return (
-    <section className="relative w-full h-screen min-h-[800px] flex items-center justify-center overflow-hidden bg-background pt-20">
+    <section className="relative w-full h-screen min-h-[800px] flex items-center justify-center overflow-hidden bg-background pt-32 md:pt-20">
       {/* Static Background Decorative Elements */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-30">
         <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] rounded-full bg-luxury-gold/10 blur-[120px]" />
@@ -26,13 +26,13 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="max-w-[1100px] mx-auto"
+          className="max-w-[1100px] mx-auto w-full"
         >
           <div className="inline-block mb-6 px-4 py-1.5 rounded-full border border-luxury-gold/30 bg-card backdrop-blur-sm shadow-sm">
             <span className="text-luxury-gold text-sm tracking-widest uppercase font-bold">Premium Digital Agency</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl lg:text-[100px] leading-[1.05] tracking-tighter font-serif font-medium text-charcoal mb-8">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[100px] leading-[1.1] md:leading-[1.05] tracking-tighter font-serif font-medium text-charcoal mb-8">
             WE BUILD <span className="italic text-luxury-gold relative">DIGITAL</span><br />
             EXPERIENCES THAT<br />
             MOVE BUSINESS <span className="relative">

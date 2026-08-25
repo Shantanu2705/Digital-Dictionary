@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronDown, 
   Menu, 
@@ -144,6 +145,8 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [activeServiceIdx, setActiveServiceIdx] = useState(0);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -159,8 +162,8 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           isScrolled
-            ? "bg-background/80 backdrop-blur-2xl border-b border-border py-4 shadow-sm"
-            : "bg-transparent py-6"
+            ? "bg-background/80 backdrop-blur-2xl border-b border-border py-3 shadow-sm"
+            : "bg-transparent py-4 md:py-6"
         )}
       >
         <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
@@ -170,7 +173,7 @@ export function Navbar() {
               alt="Digital Dictionary"
               width={180}
               height={50}
-              className="object-contain"
+              className="object-contain w-32 h-auto md:w-44"
               priority
             />
           </Link>
@@ -309,58 +312,124 @@ export function Navbar() {
       </header>
 
       {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-background pt-24 px-6 pb-6 flex flex-col overflow-y-auto">
-           <div className="flex flex-col space-y-6 mt-12">
-            {NAV_LINKS.map((link) => (
-              <div key={link.name}>
-                <Link
-                  href={link.href}
-                  className="text-4xl font-serif text-charcoal hover:text-luxury-gold transition-colors"
-                  onClick={() => !link.hasMegaMenu && setMobileMenuOpen(false)}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-3xl pt-28 px-6 pb-6 flex flex-col overflow-y-auto"
+          >
+             <div className="flex flex-col space-y-8">
+              {NAV_LINKS.map((link, idx) => (
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  key={link.name}
                 >
-                  {link.name}
-                </Link>
-                {link.hasMegaMenu && (
-                  <div className="mt-6 ml-4 space-y-6">
-                    {MEGA_MENU_SERVICES.map((service) => (
-                      <div key={service.title}>
-                        <h4 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wider flex items-center gap-2">
-                           <service.icon className="w-4 h-4 text-luxury-gold" />
-                           {service.title}
-                        </h4>
-                        <ul className="space-y-3 pl-6">
-                          {service.subItems.map((item) => (
-                            <li key={item.name}>
-                              <Link
-                                href={item.href}
-                                className="text-lg text-gray-600 hover:text-charcoal"
-                                onClick={() => setMobileMenuOpen(false)}
+                  {link.hasMegaMenu ? (
+                    <button
+                      className={cn(
+                        "text-4xl font-serif text-charcoal hover:text-luxury-gold transition-colors flex items-center justify-between w-full text-left",
+                        mobileServicesOpen && "text-luxury-gold"
+                      )}
+                      onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                    >
+                      {link.name}
+                      <ChevronDown className={cn("w-6 h-6 transition-transform", mobileServicesOpen && "rotate-180")} />
+                    </button>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "text-4xl font-serif hover:text-luxury-gold transition-colors block w-full",
+                        pathname === link.href ? "text-luxury-gold" : "text-charcoal"
+                      )}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  )}
+                  
+                  {/* Expandable Services Accordion */}
+                  {link.hasMegaMenu && (
+                    <AnimatePresence>
+                      {mobileServicesOpen && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-6 ml-4 space-y-4 overflow-hidden"
+                        >
+                          {MEGA_MENU_SERVICES.map((service) => (
+                            <div key={service.title} className="bg-card/50 rounded-2xl overflow-hidden border border-border/50 shadow-sm">
+                              <button 
+                                className="w-full flex items-center justify-between p-4"
+                                onClick={() => setExpandedMobileCategory(expandedMobileCategory === service.title ? null : service.title)}
                               >
-                                {item.name}
-                              </Link>
-                            </li>
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-luxury-gold/10 flex items-center justify-center">
+                                    <service.icon className="w-4 h-4 text-luxury-gold" />
+                                  </div>
+                                  <span className="text-[13px] font-bold text-charcoal tracking-wide uppercase">{service.title}</span>
+                                </div>
+                                <ChevronDown className={cn("w-4 h-4 text-gray-500 transition-transform", expandedMobileCategory === service.title && "rotate-180")} />
+                              </button>
+                              
+                              <AnimatePresence>
+                                {expandedMobileCategory === service.title && (
+                                  <motion.div 
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="overflow-hidden bg-white/50"
+                                  >
+                                    <ul className="pb-4 px-4 space-y-1">
+                                      {service.subItems.map((item) => (
+                                        <li key={item.name}>
+                                          <Link
+                                            href={item.href}
+                                            className="flex items-center gap-3 py-2.5 text-sm text-gray-600 hover:text-luxury-gold font-medium"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                          >
+                                            <div className="w-1.5 h-1.5 rounded-full bg-luxury-gold/40" />
+                                            {item.name}
+                                          </Link>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
                           ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-auto pt-12">
-            <Link
-              href="/contact"
-              className="w-full block text-center bg-charcoal text-white px-8 py-4 rounded-full text-lg font-bold"
-              onClick={() => setMobileMenuOpen(false)}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+  
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mt-auto pt-12"
             >
-              Quick Consultation &rarr;
-            </Link>
-          </div>
-        </div>
-      )}
+              <Link
+                href="/contact"
+                className="w-full block text-center bg-charcoal text-white px-8 py-4 rounded-full text-lg font-bold shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] hover:shadow-[0_10px_40px_-10px_rgba(212,175,55,0.4)] hover:bg-luxury-gold transition-all duration-300"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Quick Consultation &rarr;
+              </Link>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

@@ -75,7 +75,7 @@ export function ServicesSection() {
         >
           <div>
             <h2 className="text-[12px] uppercase tracking-widest text-luxury-gold mb-4 font-medium">What We Do</h2>
-            <h3 className="text-4xl md:text-5xl font-serif text-charcoal tracking-tighter">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-serif text-charcoal tracking-tighter">
               Bespoke Digital <span className="italic text-luxury-gold">Solutions</span>
             </h3>
           </div>

@@ -23,15 +23,38 @@ export default function ScrollAnimation() {
       let offsetX = 0;
       let offsetY = 0;
 
-      if (imgRatio > canvasRatio) {
-        drawWidth = canvas.height * imgRatio;
-        offsetX = (canvas.width - drawWidth) / 2;
+      const isMobile = canvasRatio < 0.8;
+      
+      if (isMobile) {
+        // Object-contain for mobile to show the full logo
+        if (imgRatio > canvasRatio) {
+          drawWidth = canvas.width;
+          drawHeight = canvas.width / imgRatio;
+          offsetX = 0;
+          offsetY = (canvas.height - drawHeight) / 2;
+        } else {
+          drawHeight = canvas.height;
+          drawWidth = canvas.height * imgRatio;
+          offsetY = 0;
+          offsetX = (canvas.width - drawWidth) / 2;
+        }
       } else {
-        drawHeight = canvas.width / imgRatio;
-        offsetY = (canvas.height - drawHeight) / 2;
+        // Object-cover for desktop
+        if (imgRatio > canvasRatio) {
+          drawWidth = canvas.height * imgRatio;
+          offsetX = (canvas.width - drawWidth) / 2;
+        } else {
+          drawHeight = canvas.width / imgRatio;
+          offsetY = (canvas.height - drawHeight) / 2;
+        }
       }
 
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      // Sample edge color to seamlessly fill letterbox areas
+      context.drawImage(img, 0, 0, 1, 1, 0, 0, 1, 1);
+      const pixel = context.getImageData(0, 0, 1, 1).data;
+      context.fillStyle = `rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+
       context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
     };
 
