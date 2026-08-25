@@ -18,7 +18,26 @@ const CLIENT_LOGOS = [
   "WhatsApp Image 2026-08-22 at 21.51.35.jpeg",
   "WhatsApp Image 2026-08-22 at 21.53.39.jpeg",
   "WhatsApp Image 2026-08-22 at 22.07.42.jpeg",
-  "WhatsApp Image 2026-08-22 at 22.12.51.jpeg"
+  "WhatsApp Image 2026-08-22 at 22.12.51.jpeg",
+  "WhatsApp Image 2026-08-24 at 23.22.34.jpeg",
+  "project4.jpeg",
+  "project3.jpeg",
+  "project6.jpeg",
+  "QuickTripNow.png",
+  "project8.jpeg",
+  "project7.jpeg",
+  "Siliguri.jpeg",
+  "project5.jpeg",
+  "Screenshot 2026-08-25 120051.png",
+  "Screenshot 2026-08-25 120143.png",
+  "Screenshot 2026-08-25 120216.png",
+  "Screenshot 2026-08-25 120308.png",
+  "Screenshot 2026-08-25 120339.png",
+  "Screenshot 2026-08-25 120413.png",
+  "Screenshot 2026-08-25 120452.png",
+  "Screenshot 2026-08-25 120519.png",
+  "Yes Doctor.png",
+  "project1.jpeg"
 ];
 
 export function ClientsSection() {

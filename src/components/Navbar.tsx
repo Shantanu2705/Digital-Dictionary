@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -138,6 +139,7 @@ const MEGA_MENU_SERVICES = [
 
 
 export function Navbar() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
@@ -185,14 +187,29 @@ export function Navbar() {
                 <Link
                   href={link.href}
                   className={cn(
-                    "text-sm font-medium transition-colors flex items-center gap-1 pb-6 -mb-6",
-                    link.name === "Digital Solutions" ? "text-luxury-gold" : "text-charcoal hover:text-luxury-gold"
+                    "text-sm font-medium transition-all flex items-center pb-6 -mb-6 group",
+                    link.name === "Digital Solutions" ? "" : "text-charcoal hover:text-luxury-gold"
                   )}
                 >
-                  {link.name}
-                  {link.hasMegaMenu && (
-                    <ChevronDown className={cn("w-4 h-4 transition-transform", megaMenuOpen && "rotate-180")} />
-                  )}
+                  <span className={cn(
+                    "relative flex items-center gap-1 transition-all py-1",
+                    link.name === "Digital Solutions" 
+                      ? "text-luxury-gold bg-charcoal px-4 py-1.5 rounded-full shadow-lg border border-luxury-gold/30 hover:border-luxury-gold hover:shadow-[0_0_15px_rgba(212,175,55,0.4)]" 
+                      : (pathname === link.href ? "text-luxury-gold" : "")
+                  )}>
+                    {link.name}
+                    {link.hasMegaMenu && (
+                      <ChevronDown className={cn("w-4 h-4 transition-transform", megaMenuOpen && "rotate-180")} />
+                    )}
+                    {link.name !== "Digital Solutions" && (
+                      <span 
+                        className={cn(
+                          "absolute bottom-0 left-0 w-full h-[2px] bg-luxury-gold rounded-full transition-all duration-300",
+                          pathname === link.href ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                        )} 
+                      />
+                    )}
+                  </span>
                 </Link>
 
                 {/* Mega Menu Dropdown */}

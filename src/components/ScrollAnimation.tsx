@@ -92,7 +92,7 @@ export default function ScrollAnimation() {
     <div className="fixed inset-0 w-full h-full pointer-events-none" style={{ zIndex: -10 }}>
       <canvas ref={canvasRef} className="w-full h-full object-cover" />
       {/* Light overlay to ensure the dark text is readable over the animation */}
-      <div className="absolute inset-0 bg-white/70" />
+      <div className="absolute inset-0 bg-white/50" />
     </div>
   );
 }

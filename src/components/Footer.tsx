@@ -10,22 +10,22 @@ const CONTACT_DEPTS = [
   {
     title: "GET IN TOUCH",
     phone: "+91 62911 11428",
-    email: "infodigitaldictionary@gmail.com"
+    email: "admin07digitaldictionary@gmail.com"
   },
   {
     title: "TECHNICAL SUPPORT",
     phone: "+91 62978 68104",
-    email: "infodigitaldictionary@gmail.com"
+    email: "admin07digitaldictionary@gmail.com"
   },
   {
     title: "ACCOUNTS RELATED ISSUE",
     phone: "+91 62911 11428",
-    email: "infodigitaldictionary@gmail.com"
+    email: "admin07digitaldictionary@gmail.com"
   },
   {
     title: "JOB & HIRING",
     phone: "+91 62911 11428",
-    email: "info@digitaldictionary.com"
+    email: "supportdigitaldictionary@gmail.com"
   }
 ];
 
@@ -51,7 +51,7 @@ export function Footer() {
           </Link>
           
           <div className="flex items-center gap-4 mb-6">
-            <a href="https://facebook.com/" className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-[#1877F2] hover:opacity-90 transition-opacity" aria-label="Facebook">
+            <a href="https://www.facebook.com/profile.php?id=61577401455688" className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-[#1877F2] hover:opacity-90 transition-opacity" aria-label="Facebook">
               <FaFacebookF className="w-5 h-5" />
             </a>
             <a href="https://twitter.com/" className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-black hover:opacity-90 transition-opacity border border-white/20" aria-label="X (Twitter)">
@@ -85,16 +85,16 @@ export function Footer() {
 
           <div className="flex items-center gap-2 justify-center">
             <span className="text-luxury-gold">📍</span>
-            <p>Neelkamal Shopping Plaza, D.L.Roy Sarani, Ward 6,<br />Siliguri, West Bengal 734001</p>
+            <p>Kawakhali Bazar, Kawakhali Road,<br />Siliguri, West Bengal, India, Pin: 734012</p>
           </div>
 
           <div className="flex flex-col items-center lg:items-end gap-1">
             <div className="flex items-center gap-2">
               <span className="text-luxury-gold">✉</span>
-              <SmartContactLink type="email" value="infodigitaldictionary@gmail.com" className="hover:text-luxury-gold" />
+              <SmartContactLink type="email" value="admin07digitaldictionary@gmail.com" className="hover:text-luxury-gold" />
               <span>/</span>
             </div>
-            <SmartContactLink type="email" value="info@digitaldictionary.com" className="hover:text-luxury-gold ml-6" />
+            <SmartContactLink type="email" value="supportdigitaldictionary@gmail.com" className="hover:text-luxury-gold ml-6" />
           </div>
         </div>
 

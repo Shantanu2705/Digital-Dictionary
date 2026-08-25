@@ -32,7 +32,7 @@ export function FloatingNav() {
            <FaWhatsapp className="w-5 h-5" />
         </a>
         <a 
-          href="https://facebook.com" 
+          href="https://www.facebook.com/profile.php?id=61577401455688" 
           className="w-10 h-10 rounded-full flex items-center justify-center text-white bg-[#1877F2] hover:opacity-90 transition-opacity shadow-lg"
           target="_blank"
           rel="noopener noreferrer"

@@ -49,8 +49,8 @@ export default function ContactPage() {
               <div>
                 <h3 className="text-sm uppercase tracking-widest text-luxury-gold font-medium mb-4">Contact</h3>
                 <div className="space-y-4 text-charcoal text-lg">
-                  <SmartContactLink type="email" value="info@digitaldictionary.com" className="block hover:text-luxury-gold transition-colors" />
-                  <SmartContactLink type="email" value="infodigitaldictionary@gmail.com" className="block hover:text-luxury-gold transition-colors" />
+                  <SmartContactLink type="email" value="supportdigitaldictionary@gmail.com" className="block hover:text-luxury-gold transition-colors" />
+                  <SmartContactLink type="email" value="admin07digitaldictionary@gmail.com" className="block hover:text-luxury-gold transition-colors" />
                   <SmartContactLink type="phone" value="+91 62911 11428" className="block hover:text-luxury-gold transition-colors mt-4" />
                   <SmartContactLink type="phone" value="+91 62978 68104" className="block hover:text-luxury-gold transition-colors" />
                 </div>
@@ -59,10 +59,10 @@ export default function ContactPage() {
               <div>
                 <h3 className="text-sm uppercase tracking-widest text-luxury-gold font-medium mb-4">Location</h3>
                 <p className="text-gray-600 text-lg leading-relaxed font-light">
-                  Neelkamal Shopping Plaza,<br />
-                  D.L. Roy Sarani, Ward 6,<br />
-                  Siliguri, West Bengal 734001,<br />
-                  India
+                  Kawakhali Bazar,<br />
+                  Kawakhali Road,<br />
+                  Siliguri, West Bengal, India,<br />
+                  Pin: 734012
                 </p>
               </div>
             </div>

@@ -44,6 +44,19 @@ const PROJECTS = [
   { id: 22, title: "Take a Trip Make Memories", category: "Travel", size: "small", image: "project7.jpeg" },
   { id: 23, title: "Siliguri Institute of Nursing", category: "Brand Identity", size: "large", image: "Siliguri.jpeg" },
   { id: 24, title: "Gajagamini Forest Resort", category: "Travel", size: "small", image: "project5.jpeg" },
+  { id: 25, title: "HOTEL TSA", category: "Hospitality", size: "small", image: "Screenshot 2026-08-25 120051.png" },
+  { id: 26, title: "99 BIKE RIDERS", category: "Automotive", size: "small", image: "Screenshot 2026-08-25 120143.png" },
+  { id: 27, title: "NORTH EAST HIMALAYAN TRAVELS", category: "Travel", size: "small", image: "Screenshot 2026-08-25 120216.png" },
+  { id: 28, title: "Wonder Marble", category: "Retail", size: "small", image: "Screenshot 2026-08-25 120308.png" },
+  { id: 29, title: "CAFE AFFAIR", category: "Hospitality", size: "small", image: "Screenshot 2026-08-25 120339.png" },
+  { id: 30, title: "ARAV SIKKIM TRAVELS", category: "Travel", size: "small", image: "Screenshot 2026-08-25 120413.png" },
+  { id: 31, title: "MOONLIGHT INSTITUTE OF MANAGEMENT", category: "Brand Identity", size: "small", image: "Screenshot 2026-08-25 120452.png" },
+  { id: 32, title: "Siliguri CAR Booking", category: "Travel", size: "small", image: "Screenshot 2026-08-25 120519.png" },
+  { id: 33, title: "CRESTOVA HOLIDAYS", category: "Travel", size: "small", image: "WhatsApp Image 2026-08-22 at 22.07.42.jpeg" },
+  { id: 34, title: "TNW", category: "Brand Identity", size: "small", image: "WhatsApp Image 2026-08-22 at 22.12.51.jpeg" },
+  { id: 35, title: "SWASTIK TRIPLINE", category: "Travel", size: "small", image: "WhatsApp Image 2026-08-24 at 23.22.34.jpeg" },
+  { id: 36, title: "Yes Doctor", category: "Healthcare", size: "small", image: "Yes Doctor.png" },
+  { id: 37, title: "Brand Identity", category: "Brand Identity", size: "small", image: "project1.jpeg" },
 ];
 
 export default function PortfolioPage() {
@@ -89,15 +102,21 @@ export default function PortfolioPage() {
           </div>
 
           {/* Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <div
-                key={project.id}
-                className={cn(
-                  "group relative block overflow-hidden rounded-3xl bg-white border border-border/50",
-                  project.size === "large" ? "md:col-span-2 h-[400px]" : "h-[300px]"
-                )}
-              >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-[280px] grid-flow-row-dense">
+            {filteredProjects.map((project, index) => {
+              const pattern = index % 8;
+              let spanClass = "md:col-span-1 md:row-span-1";
+              if (pattern === 0 || pattern === 6) spanClass = "md:col-span-2 md:row-span-2";
+              else if (pattern === 3 || pattern === 7) spanClass = "md:col-span-2 md:row-span-1";
+
+              return (
+                <div
+                  key={project.id}
+                  className={cn(
+                    "group relative block overflow-hidden rounded-3xl bg-white border border-border/50 hover:border-luxury-gold/50 shadow-sm hover:shadow-[0_0_30px_rgba(212,175,55,0.15)] transition-all duration-500",
+                    spanClass
+                  )}
+                >
                 {/* Project Image */}
                 <div className="absolute inset-0 bg-white flex items-center justify-center overflow-hidden transition-transform duration-700 group-hover:scale-105">
                   <div className="relative w-full h-full p-8 md:p-12">
@@ -124,7 +143,8 @@ export default function PortfolioPage() {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
