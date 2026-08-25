@@ -65,7 +65,7 @@ const itemVariants = {
 
 export function ServicesSection() {
   return (
-    <section className="py-32 bg-background relative" id="services">
+    <section className="py-20 md:py-24 bg-background relative" id="services">
       <div className="container mx-auto px-6 md:px-12">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -88,7 +88,7 @@ export function ServicesSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, amount: 0.2 }}
           className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6"
         >
           {SERVICES.map((service) => (
@@ -96,7 +96,7 @@ export function ServicesSection() {
               variants={itemVariants}
               key={service.id}
               className={cn(
-                "group relative border border-border rounded-3xl p-8 bg-card hover:bg-card/50 transition-colors overflow-hidden flex flex-col justify-between min-h-[320px]",
+                "group relative border border-border rounded-3xl p-6 md:p-8 bg-card hover:bg-card/50 transition-colors overflow-hidden flex flex-col justify-between h-full",
                 service.span
               )}
             >

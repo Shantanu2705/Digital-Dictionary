@@ -37,7 +37,7 @@ const itemVariants = {
 
 export function WhyUsSection() {
   return (
-    <section className="py-32 bg-background relative overflow-hidden">
+    <section className="py-20 md:py-24 bg-background relative overflow-hidden">
       {/* Subtle Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] bg-luxury-gold/5 blur-[120px] rounded-full pointer-events-none" />
       
@@ -47,7 +47,7 @@ export function WhyUsSection() {
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6 }}
             className="w-full md:w-1/2"
           >
@@ -66,7 +66,7 @@ export function WhyUsSection() {
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, amount: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 gap-6"
             >
               {PILLARS.map((pillar) => (

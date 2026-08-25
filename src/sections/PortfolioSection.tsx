@@ -33,7 +33,7 @@ const itemVariants = {
 
 export function PortfolioSection() {
   return (
-    <section className="py-32 bg-background relative">
+    <section className="py-20 md:py-24 bg-background relative">
       <div className="container mx-auto px-6 md:px-12">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -60,7 +60,7 @@ export function PortfolioSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, amount: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         >
           {PROJECTS.map((project) => (

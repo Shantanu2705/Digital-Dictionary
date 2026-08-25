@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 export function CtaSection() {
   return (
-    <section className="relative overflow-hidden rounded-[40px] mx-4 md:mx-12 my-24 bg-card/50 backdrop-blur-xl border border-border/50 py-32">
+    <section className="relative overflow-hidden rounded-[40px] mx-4 md:mx-12 my-24 bg-card/50 backdrop-blur-xl border border-border/50 py-20 md:py-24">
       {/* Decorative Elements */}
       <div className="absolute inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
         <div className="absolute -top-1/2 -right-1/4 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-luxury-gold to-transparent blur-[120px]" />
@@ -17,7 +17,7 @@ export function CtaSection() {
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.8 }}
           className="max-w-4xl"
         >

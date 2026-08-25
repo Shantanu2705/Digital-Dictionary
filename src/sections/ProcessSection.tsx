@@ -14,7 +14,7 @@ const PROCESS = [
 
 export function ProcessSection() {
   return (
-    <section className="py-32 bg-background relative">
+    <section className="py-20 md:py-24 bg-background relative">
       <div className="container mx-auto px-6 md:px-12">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -39,7 +39,7 @@ export function ProcessSection() {
                 <motion.div 
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
+                  viewport={{ once: true, amount: 0.1 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   key={step.id} 
                   className="relative flex flex-col md:flex-row items-center justify-between w-full group"
