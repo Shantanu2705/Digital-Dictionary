@@ -37,7 +37,8 @@ const CLIENT_LOGOS = [
   "Screenshot 2026-08-25 120452.png",
   "Screenshot 2026-08-25 120519.png",
   "Yes Doctor.png",
-  "project1.jpeg"
+  "project1.jpeg",
+  "project2.jpeg"
 ];
 
 export function ClientsSection() {
