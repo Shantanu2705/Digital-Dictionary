@@ -75,6 +75,8 @@ export function ClientsSection() {
                     fill
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-contain"
+                    unoptimized
+                    loading="eager"
                   />
                 </div>
               </div>
