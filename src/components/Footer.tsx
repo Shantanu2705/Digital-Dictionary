@@ -116,6 +116,28 @@ export function Footer() {
             </div>
           ))}
         </div>
+
+        {/* Certifications & Copyright */}
+        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-sm text-gray-500 order-2 md:order-1 text-center md:text-left">
+            &copy; {new Date().getFullYear()} Digital Dictionary. All rights reserved.
+          </p>
+          
+          <div className="flex items-center gap-4 order-1 md:order-2">
+            <div className="flex flex-col items-center justify-center">
+              <span className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-bold">Registered With</span>
+              <div className="bg-white p-3 rounded-xl shadow-sm border border-border/50 hover:border-luxury-gold/50 hover:shadow-md transition-all duration-300">
+                <Image 
+                  src="/msme-logo.png" 
+                  alt="MSME Udyam Registration - UDYAM-06-0068347" 
+                  width={150} 
+                  height={60} 
+                  className="object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );
