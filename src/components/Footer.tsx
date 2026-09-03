@@ -133,6 +133,8 @@ export function Footer() {
                   width={150} 
                   height={60} 
                   className="object-contain"
+                  unoptimized
+                  priority
                 />
               </div>
             </div>
