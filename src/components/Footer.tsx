@@ -4,6 +4,7 @@ import { Star } from "lucide-react";
 import { ParticleBackground } from "./ParticleBackground";
 import { SmartContactLink } from "./SmartContactLink";
 import { FaFacebookF, FaInstagram, FaXTwitter, FaLinkedinIn, FaWhatsapp } from "react-icons/fa6";
+import msmeLogo from "../../public/msme-logo.png";
 
 
 const CONTACT_DEPTS = [
@@ -128,7 +129,7 @@ export function Footer() {
               <span className="text-[10px] uppercase tracking-widest text-gray-400 mb-2 font-bold">Registered With</span>
               <div className="bg-white p-3 rounded-xl shadow-sm border border-border/50 hover:border-luxury-gold/50 hover:shadow-md transition-all duration-300">
                 <Image 
-                  src="/msme-logo.png" 
+                  src={msmeLogo} 
                   alt="MSME Udyam Registration - UDYAM-06-0068347" 
                   width={150} 
                   height={60} 
