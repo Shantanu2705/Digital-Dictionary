@@ -3,20 +3,20 @@ import { CLIENT_LOGOS } from "./ClientsSection";
 
 export function AllBrandLogosSection() {
   return (
-    <section className="py-16 bg-transparent relative z-10 -mt-12 mb-24">
-      <div className="container mx-auto px-6 md:px-12">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+    <section className="py-20 relative z-20">
+      <div className="container mx-auto px-4 w-full">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-x-4 gap-y-6 md:gap-x-6 md:gap-y-8 place-items-center">
           {CLIENT_LOGOS.map((filename, index) => (
             <div 
               key={index}
-              className="w-full aspect-[16/9] bg-white border border-luxury-gold/30 flex items-center justify-center p-4 hover:-translate-y-2 transition-transform shadow-[0_4px_20px_rgba(212,175,55,0.15)] hover:shadow-[0_10px_30px_rgba(212,175,55,0.3)] duration-300 rounded-[1.5rem]"
+              className="group relative w-[120px] h-[60px] sm:w-[150px] sm:h-[75px] md:w-[180px] md:h-[90px] lg:w-[200px] lg:h-[100px] bg-white flex items-center justify-center p-3 sm:p-5 shadow-[0_4px_15px_rgba(255,255,255,0.1)] hover:shadow-[0_8px_25px_rgba(255,255,255,0.3)] hover:-translate-y-1 transition-all duration-300 rounded-[3rem]"
             >
-              <div className="relative w-full h-full flex items-center justify-center">
+              <div className="relative w-full h-full flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
                 <Image
-                  src={`/clients/${filename}`}
+                  src={`/clients/${encodeURIComponent(filename)}`}
                   alt={`Brand Logo ${index + 1}`}
                   fill
-                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  sizes="(max-width: 768px) 33vw, 16vw"
                   className="object-contain mix-blend-multiply"
                   loading="lazy"
                 />
