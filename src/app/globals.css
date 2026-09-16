@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-primary-gold: #C9A227;
+  --color-luxury-gold: #D4AF37;
+  --color-bright-gold: #F2D675;
+  --color-deep-gold: #8C6A16;
+  --color-charcoal: #1A1A1A; /* Charcoal */
+  --color-soft-charcoal: #333333; /* Soft Charcoal */
+  --color-off-white: #F7F5EF;
+  
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+}
+
+:root {
+  --background: transparent; /* Changed from #FFFDF7 to show video background */
+  --foreground: #1A1A1A; /* Charcoal */
+  --card: #FDF9EC; /* Light golden cream for cards */
+  --border: #E8DCC0; /* Soft golden border */
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar for a premium feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-luxury-gold);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-deep-gold);
+}
+
+/* Selection Color */
+::selection {
+  background-color: var(--color-luxury-gold);
+  color: #fff;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 90s linear infinite;
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(150%); }
+}
+

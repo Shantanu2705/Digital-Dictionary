@@ -1,0 +1,435 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ChevronDown, 
+  Menu, 
+  X, 
+  Megaphone, 
+  Monitor, 
+  Palette, 
+  Code, 
+  Smartphone, 
+  PenTool, 
+  Server, 
+  Camera, 
+  Video,
+  ChevronRight
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { PremiumButton } from "./PremiumButton";
+
+const NAV_LINKS = [
+  { name: "Home", href: "/" },
+  { name: "About", href: "/about" },
+  {
+    name: "Digital Solutions",
+    href: "#",
+    hasMegaMenu: true,
+  },
+  { name: "Portfolio", href: "/portfolio" },
+  { name: "Blog", href: "/blog" },
+  { name: "Contact", href: "/contact" },
+];
+
+const MEGA_MENU_SERVICES = [
+  {
+    title: "Digital Marketing",
+    icon: Megaphone,
+    href: "/digital-marketing",
+    subItems: [
+      { name: "SEO", href: "/seo" },
+      { name: "Google Ads", href: "/google-ads" },
+      { name: "Meta Ads", href: "/meta-ads" },
+      { name: "Social Media Marketing", href: "/social-media-marketing" },
+      { name: "Content Marketing", href: "/content-marketing" },
+    ],
+  },
+  {
+    title: "Web Development",
+    icon: Monitor,
+    href: "/web-development",
+    subItems: [
+      { name: "Corporate Websites", href: "/corporate-websites" },
+      { name: "E-Commerce Stores", href: "/ecommerce-stores" },
+      { name: "Web Portals", href: "/web-portals" },
+      { name: "Landing Pages", href: "/landing-pages" },
+    ],
+  },
+  {
+    title: "Website Designing",
+    icon: Palette,
+    href: "/website-designing",
+    subItems: [
+      { name: "UI/UX Design", href: "/ui-ux-design" },
+      { name: "Wireframing", href: "/wireframing" },
+      { name: "Prototyping", href: "/prototyping" },
+      { name: "Website Revamp", href: "/website-revamp" },
+    ],
+  },
+  {
+    title: "Software Development",
+    icon: Code,
+    href: "/software-development",
+    subItems: [
+      { name: "Custom Software", href: "/custom-software" },
+      { name: "SaaS Development", href: "/saas-development" },
+      { name: "CRM Systems", href: "/crm-systems" },
+      { name: "ERP Solutions", href: "/erp-solutions" },
+    ],
+  },
+  {
+    title: "App Development",
+    icon: Smartphone,
+    href: "/app-development",
+    subItems: [
+      { name: "iOS Development", href: "/ios-development" },
+      { name: "Android Development", href: "/android-development" },
+      { name: "Cross-Platform Apps", href: "/cross-platform-apps" },
+      { name: "App Maintenance", href: "/app-maintenance" },
+    ],
+  },
+  {
+    title: "Graphics Designing",
+    icon: PenTool,
+    href: "/graphics-designing",
+    subItems: [
+      { name: "Logo Design", href: "/logo-design" },
+      { name: "Brand Identity", href: "/brand-identity" },
+      { name: "Marketing Collaterals", href: "/marketing-collaterals" },
+      { name: "Social Media Posts", href: "/social-media-posts" },
+    ],
+  },
+  {
+    title: "Domain Hosting",
+    icon: Server,
+    href: "/domain-hosting",
+    subItems: [
+      { name: "Shared Hosting", href: "/shared-hosting" },
+      { name: "VPS Hosting", href: "/vps-hosting" },
+      { name: "Dedicated Servers", href: "/dedicated-servers" },
+      { name: "Domain Registration", href: "/domain-registration" },
+    ],
+  },
+  {
+    title: "Product Photography",
+    icon: Camera,
+    href: "/product-photography",
+    subItems: [
+      { name: "E-commerce Photography", href: "/ecommerce-photography" },
+      { name: "Lifestyle Photography", href: "/lifestyle-photography" },
+      { name: "Studio Shoots", href: "/studio-shoots" },
+      { name: "Image Editing", href: "/image-editing" },
+    ],
+  },
+  {
+    title: "Commercial Ads",
+    icon: Video,
+    href: "/commercial-ads",
+    subItems: [
+      { name: "Video Production", href: "/video-production" },
+      { name: "Ad Campaigns", href: "/ad-campaigns" },
+      { name: "Scriptwriting", href: "/scriptwriting" },
+      { name: "Post Production", href: "/post-production" },
+    ],
+  },
+];
+
+
+export function Navbar() {
+  const pathname = usePathname();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [activeServiceIdx, setActiveServiceIdx] = useState(0);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <>
+      <header
+        className={cn(
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+          isScrolled
+            ? "bg-white/80 backdrop-blur-2xl border-b border-luxury-gold/20 py-2 shadow-[0_4px_30px_rgba(212,175,55,0.1)]"
+            : "bg-transparent py-4 md:py-6"
+        )}
+      >
+        <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
+          <Link href="/" className="relative z-50 flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Digital Dictionary"
+              width={180}
+              height={50}
+              className="object-contain w-32 h-auto md:w-44"
+              priority
+            />
+          </Link>
+
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center space-x-8">
+            {NAV_LINKS.map((link) => (
+              <div
+                key={link.name}
+                className="relative group"
+                onMouseEnter={() => link.hasMegaMenu && setMegaMenuOpen(true)}
+                onMouseLeave={() => link.hasMegaMenu && setMegaMenuOpen(false)}
+              >
+                <Link
+                  href={link.href}
+                  className={cn(
+                    "text-sm font-medium transition-all flex items-center pb-6 -mb-6 group",
+                    link.name === "Digital Solutions" ? "" : "text-charcoal hover:text-charcoal"
+                  )}
+                >
+                  <span className={cn(
+                    "relative flex items-center gap-1 transition-all py-1",
+                    link.name === "Digital Solutions" 
+                      ? "text-off-white bg-charcoal px-4 py-1.5 rounded-full shadow-lg border border-luxury-gold/30 hover:border-luxury-gold hover:shadow-[0_0_15px_rgba(212,175,55,0.4)]" 
+                      : (pathname === link.href ? "font-bold text-charcoal" : "")
+                  )}>
+                    {link.name}
+                    {link.hasMegaMenu && (
+                      <ChevronDown className={cn("w-4 h-4 transition-transform", megaMenuOpen && "rotate-180")} />
+                    )}
+                    {link.name !== "Digital Solutions" && (
+                      <span 
+                        className={cn(
+                          "absolute bottom-0 left-0 w-full h-[2px] bg-charcoal rounded-full transition-all duration-300",
+                          pathname === link.href ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                        )} 
+                      />
+                    )}
+                  </span>
+                </Link>
+
+                {/* Mega Menu Dropdown */}
+                {link.hasMegaMenu && megaMenuOpen && (
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[750px] bg-white/95 backdrop-blur-2xl rounded-3xl border border-luxury-gold/30 flex overflow-hidden z-50 shadow-[0_10px_40px_rgba(212,175,55,0.15)]">
+                    
+                    {/* Left Pane - Services List */}
+                    <div className="w-[45%] bg-luxury-gold/5 p-6 border-r border-luxury-gold/20">
+                      <h4 className="text-[11px] font-bold tracking-widest text-charcoal uppercase mb-4 ml-4">
+                        SERVICES
+                      </h4>
+                      <div className="flex flex-col h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        {MEGA_MENU_SERVICES.map((service, idx) => {
+                          const isActive = activeServiceIdx === idx;
+                          return (
+                            <Link
+                              href={service.href}
+                              key={service.title}
+                              onMouseEnter={() => setActiveServiceIdx(idx)}
+                              className={cn(
+                                "flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 mb-1",
+                                isActive 
+                                  ? "bg-gradient-to-r from-luxury-gold to-bright-gold text-off-white shadow-md shadow-luxury-gold/20" 
+                                  : "text-soft-charcoal hover:text-charcoal hover:bg-white/50"
+                              )}
+                            >
+                              <div className="flex items-center gap-3">
+                                <service.icon className={cn("w-4 h-4", isActive ? "text-off-white" : "text-charcoal")} />
+                                <span className={cn("text-sm font-medium", isActive ? "text-off-white" : "text-gray-700")}>
+                                  {service.title}
+                                </span>
+                              </div>
+                              {isActive && <ChevronRight className="w-4 h-4 text-off-white" />}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Right Pane - Sub Items */}
+                    <div className="w-[55%] bg-white p-10">
+                      {MEGA_MENU_SERVICES[activeServiceIdx] && (
+                        <div>
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="text-charcoal">
+                              {(() => {
+                                const Icon = MEGA_MENU_SERVICES[activeServiceIdx].icon;
+                                return <Icon className="w-6 h-6" />;
+                              })()}
+                            </div>
+                            <h3 className="text-xl font-bold text-charcoal">
+                              {MEGA_MENU_SERVICES[activeServiceIdx].title}
+                            </h3>
+                          </div>
+                          
+                          <div className="w-full h-[1px] bg-border mb-8" />
+                          
+                          <ul className="space-y-6">
+                            {MEGA_MENU_SERVICES[activeServiceIdx].subItems.map((subItem) => (
+                              <li key={subItem.name}>
+                                <Link
+                                  href={subItem.href}
+                                  className="flex items-center gap-4 text-soft-charcoal hover:text-charcoal hover:translate-x-1 transition-all text-sm font-medium"
+                                >
+                                  <div className="w-1.5 h-1.5 rounded-full bg-luxury-gold/50" />
+                                  {subItem.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+
+          {/* CTA & Mobile Toggle */}
+          <div className="flex items-center gap-4 relative z-50">
+            <div className="hidden md:block">
+              <PremiumButton href="/contact" className="px-6 py-2.5 shadow-sm hover:-translate-y-[2px]">
+                Quick Consultation
+              </PremiumButton>
+            </div>
+
+            <button
+              className="lg:hidden text-charcoal hover:text-charcoal transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-3xl pt-28 px-6 pb-6 flex flex-col overflow-y-auto"
+          >
+             <div className="flex flex-col space-y-8">
+              {NAV_LINKS.map((link, idx) => (
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  key={link.name}
+                >
+                  {link.hasMegaMenu ? (
+                    <button
+                      className={cn(
+                        "text-4xl font-serif text-charcoal hover:text-charcoal transition-colors flex items-center justify-between w-full text-left",
+                        mobileServicesOpen && "text-charcoal"
+                      )}
+                      onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                    >
+                      {link.name}
+                      <ChevronDown className={cn("w-6 h-6 transition-transform", mobileServicesOpen && "rotate-180")} />
+                    </button>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "text-4xl font-serif hover:text-charcoal transition-colors block w-full",
+                        pathname === link.href ? "text-charcoal" : "text-charcoal"
+                      )}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.name}
+                    </Link>
+                  )}
+                  
+                  {/* Expandable Services Accordion */}
+                  {link.hasMegaMenu && (
+                    <AnimatePresence>
+                      {mobileServicesOpen && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-6 ml-4 space-y-4 overflow-hidden"
+                        >
+                          {MEGA_MENU_SERVICES.map((service) => (
+                            <div key={service.title} className="bg-card/50 rounded-2xl overflow-hidden border border-border/50 shadow-sm">
+                              <button 
+                                className="w-full flex items-center justify-between p-4"
+                                onClick={() => setExpandedMobileCategory(expandedMobileCategory === service.title ? null : service.title)}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-luxury-gold/10 flex items-center justify-center">
+                                    <service.icon className="w-4 h-4 text-charcoal" />
+                                  </div>
+                                  <span className="text-[13px] font-bold text-charcoal tracking-wide uppercase">{service.title}</span>
+                                </div>
+                                <ChevronDown className={cn("w-4 h-4 text-gray-500 transition-transform", expandedMobileCategory === service.title && "rotate-180")} />
+                              </button>
+                              
+                              <AnimatePresence>
+                                {expandedMobileCategory === service.title && (
+                                  <motion.div 
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="overflow-hidden bg-white/50"
+                                  >
+                                    <ul className="pb-4 px-4 space-y-1">
+                                      {service.subItems.map((item) => (
+                                        <li key={item.name}>
+                                          <Link
+                                            href={item.href}
+                                            className="flex items-center gap-3 py-2.5 text-sm text-soft-charcoal hover:text-charcoal font-medium"
+                                            onClick={() => setMobileMenuOpen(false)}
+                                          >
+                                            <div className="w-1.5 h-1.5 rounded-full bg-luxury-gold/40" />
+                                            {item.name}
+                                          </Link>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+  
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mt-auto pt-12"
+            >
+              <Link
+                href="/contact"
+                className="w-full block text-center bg-charcoal text-off-white px-8 py-4 rounded-full text-lg font-bold shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] hover:shadow-[0_10px_40px_-10px_rgba(212,175,55,0.4)] hover:bg-luxury-gold transition-all duration-300"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Quick Consultation &rarr;
+              </Link>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
