@@ -4,6 +4,7 @@ import "./globals.css";
 import { FloatingNav } from "@/components/FloatingNav";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import { GlobalScrollColor } from "@/components/GlobalScrollColor";
+import { FloatingCallButton } from "@/components/FloatingCallButton";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,6 +32,7 @@ export default function RootLayout({
         <GlobalScrollColor />
         <ScrollAnimation />
         <FloatingNav />
+        <FloatingCallButton />
         {children}
       </body>
     </html>
