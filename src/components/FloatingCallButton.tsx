@@ -49,7 +49,7 @@ export function FloatingCallButton() {
               <X className="w-5 h-5" />
             </button>
             <h4 className="text-[#D4AF37] font-serif text-xl mb-3">
-              Let's Talk!
+              Let&apos;s Talk!
             </h4>
             <p className="text-[#F7F5EF]/80 text-sm mb-5 leading-relaxed">
               Ready to elevate your digital presence? Give us a call directly to discuss how we can help your business grow.
