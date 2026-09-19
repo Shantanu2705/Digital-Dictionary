@@ -32,8 +32,8 @@ export default function RootLayout({
         <GlobalScrollColor />
         <ScrollAnimation />
         <FloatingNav />
-        <FloatingCallButton />
         {children}
+        <FloatingCallButton />
       </body>
     </html>
   );
