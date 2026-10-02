@@ -9,7 +9,6 @@ export default function ScrollAnimation() {
   const [isMobile, setIsMobile] = useState(() => 
     typeof window !== 'undefined' ? window.innerWidth < 768 : false
   );
-  const [imagesLoaded, setImagesLoaded] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -82,8 +81,10 @@ export default function ScrollAnimation() {
           img.onload = () => {
             if (isCancelled) return resolve();
             loadedCount++;
-            setImagesLoaded(loadedCount);
-            if (i === 1 && currentImageIndex === 1) renderImage(img);
+            if (i === currentImageIndex) {
+              if (animationFrameId) cancelAnimationFrame(animationFrameId);
+              animationFrameId = requestAnimationFrame(() => renderImage(img));
+            }
             resolve();
           };
           img.onerror = () => resolve();
@@ -106,7 +107,10 @@ export default function ScrollAnimation() {
             img.onload = () => {
               if (isCancelled) return resolve();
               loadedCount++;
-              setImagesLoaded((prev) => prev + 1);
+              if (index === currentImageIndex) {
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                animationFrameId = requestAnimationFrame(() => renderImage(img));
+              }
               resolve();
             };
             img.onerror = () => resolve();
@@ -129,24 +133,29 @@ export default function ScrollAnimation() {
       // Map 0-1 to 1-600
       const frameIndex = Math.max(1, Math.min(FRAME_COUNT, Math.floor(scrollFraction * FRAME_COUNT) + 1));
 
-      if (currentImageIndex !== frameIndex && images[frameIndex - 1] && images[frameIndex - 1].complete) {
+      if (currentImageIndex !== frameIndex) {
         currentImageIndex = frameIndex;
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        animationFrameId = requestAnimationFrame(() => {
-          renderImage(images[frameIndex - 1]);
-        });
+        if (images[frameIndex - 1] && images[frameIndex - 1].complete) {
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
+          animationFrameId = requestAnimationFrame(() => {
+            renderImage(images[frameIndex - 1]);
+          });
+        }
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("resize", () => {
+    const handleCanvasResize = () => {
       updateCanvasSize();
       handleScroll();
-    });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleCanvasResize, { passive: true });
 
     return () => {
       isCancelled = true;
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleCanvasResize);
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, [isMobile]);
