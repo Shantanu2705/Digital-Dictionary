@@ -28,6 +28,7 @@ export default function ScrollAnimation() {
 
     let animationFrameId: number;
     let currentImageIndex = 1;
+    let renderedImageIndex = 0;
 
     const renderImage = (img: HTMLImageElement) => {
       const canvasRatio = canvas.width / canvas.height;
@@ -38,7 +39,6 @@ export default function ScrollAnimation() {
       let offsetX = 0;
       let offsetY = 0;
 
-      // Object-cover equivalent mapping
       if (imgRatio > canvasRatio) {
         drawWidth = canvas.height * imgRatio;
         offsetX = (canvas.width - drawWidth) / 2;
@@ -48,6 +48,38 @@ export default function ScrollAnimation() {
       }
 
       context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+    };
+
+    const renderClosestFrame = () => {
+      let closestFrameIndex = currentImageIndex - 1;
+      
+      if (images[closestFrameIndex] && images[closestFrameIndex].complete) {
+         // Exact match
+      } else {
+         let offset = 1;
+         let found = false;
+         while (offset < FRAME_COUNT) {
+           const down = closestFrameIndex - offset;
+           const up = closestFrameIndex + offset;
+           if (down >= 0 && images[down] && images[down].complete) {
+              closestFrameIndex = down; found = true; break;
+           }
+           if (up < FRAME_COUNT && images[up] && images[up].complete) {
+              closestFrameIndex = up; found = true; break;
+           }
+           offset++;
+         }
+         if (!found) return; // Nothing loaded yet
+      }
+
+      const targetFrame = closestFrameIndex + 1;
+      if (renderedImageIndex !== targetFrame) {
+         renderedImageIndex = targetFrame;
+         if (animationFrameId) cancelAnimationFrame(animationFrameId);
+         animationFrameId = requestAnimationFrame(() => {
+            renderImage(images[closestFrameIndex]);
+         });
+      }
     };
 
     const updateCanvasSize = () => {
@@ -66,55 +98,76 @@ export default function ScrollAnimation() {
       }
     };
 
-    // Preload images in batches to prevent network/browser lag
-    let loadedCount = 0;
     let isCancelled = false;
     
+    const getLoadSequence = () => {
+      const sequence: number[] = [];
+      const added = new Set<number>();
+      
+      const add = (i: number) => {
+        if (i >= 1 && i <= FRAME_COUNT && !added.has(i)) {
+          sequence.push(i);
+          added.add(i);
+        }
+      };
+      
+      for (let i = 1; i <= 10; i++) add(i);
+      for (let i = 20; i <= FRAME_COUNT; i += 20) add(i);
+      for (let i = 10; i <= FRAME_COUNT; i += 10) add(i);
+      for (let i = 5; i <= FRAME_COUNT; i += 5) add(i);
+      for (let i = 1; i <= FRAME_COUNT; i++) add(i);
+      
+      return sequence;
+    };
+
     const preloadImages = async () => {
-      // Fast load for the first 10 frames
+      const sequence = getLoadSequence();
+      
       const initialPromises = [];
-      for (let i = 1; i <= Math.min(10, FRAME_COUNT); i++) {
+      for (let k = 0; k < 10; k++) {
+        const index = sequence[k];
         initialPromises.push(new Promise<void>((resolve) => {
           if (isCancelled) return resolve();
           const img = new Image();
-          img.src = getFrameUrl(i);
+          images[index - 1] = img;
+          img.src = getFrameUrl(index);
           img.onload = () => {
             if (isCancelled) return resolve();
-            loadedCount++;
-            if (i === currentImageIndex) {
-              if (animationFrameId) cancelAnimationFrame(animationFrameId);
-              animationFrameId = requestAnimationFrame(() => renderImage(img));
+            
+            const currentDistance = Math.abs(currentImageIndex - renderedImageIndex);
+            const newDistance = Math.abs(currentImageIndex - index);
+            if (renderedImageIndex === 0 || newDistance < currentDistance) {
+               renderClosestFrame();
             }
             resolve();
           };
           img.onerror = () => resolve();
-          images[i - 1] = img;
         }));
       }
       await Promise.all(initialPromises);
 
-      // Load the rest in small chunks sequentially
       const CHUNK_SIZE = 4;
-      for (let i = 11; i <= FRAME_COUNT; i += CHUNK_SIZE) {
+      for (let k = 10; k < sequence.length; k += CHUNK_SIZE) {
         if (isCancelled) break;
         const chunkPromises = [];
-        for (let j = 0; j < CHUNK_SIZE && i + j <= FRAME_COUNT; j++) {
+        for (let j = 0; j < CHUNK_SIZE && k + j < sequence.length; j++) {
+          const index = sequence[k + j];
           chunkPromises.push(new Promise<void>((resolve) => {
             if (isCancelled) return resolve();
-            const index = i + j;
             const img = new Image();
+            images[index - 1] = img;
             img.src = getFrameUrl(index);
             img.onload = () => {
               if (isCancelled) return resolve();
-              loadedCount++;
-              if (index === currentImageIndex) {
-                if (animationFrameId) cancelAnimationFrame(animationFrameId);
-                animationFrameId = requestAnimationFrame(() => renderImage(img));
+              
+              const currentDistance = Math.abs(currentImageIndex - renderedImageIndex);
+              const newDistance = Math.abs(currentImageIndex - index);
+              if (renderedImageIndex === 0 || newDistance < currentDistance) {
+                 renderClosestFrame();
               }
               resolve();
             };
             img.onerror = () => resolve();
-            images[index - 1] = img;
           }));
         }
         await Promise.all(chunkPromises);
@@ -130,17 +183,11 @@ export default function ScrollAnimation() {
       if (maxScrollTop <= 0) return;
 
       const scrollFraction = Math.max(0, Math.min(1, scrollTop / maxScrollTop));
-      // Map 0-1 to 1-600
       const frameIndex = Math.max(1, Math.min(FRAME_COUNT, Math.floor(scrollFraction * FRAME_COUNT) + 1));
 
       if (currentImageIndex !== frameIndex) {
         currentImageIndex = frameIndex;
-        if (images[frameIndex - 1] && images[frameIndex - 1].complete) {
-          if (animationFrameId) cancelAnimationFrame(animationFrameId);
-          animationFrameId = requestAnimationFrame(() => {
-            renderImage(images[frameIndex - 1]);
-          });
-        }
+        renderClosestFrame();
       }
     };
 
