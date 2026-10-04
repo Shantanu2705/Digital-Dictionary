@@ -6,6 +6,37 @@ import Image from "next/image";
 import fs from "fs";
 import path from "path";
 import { DynamicTextColor } from "@/components/DynamicTextColor";
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ service: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const slug = resolvedParams.service;
+  const title = slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+  return {
+    title: `${title} Services`,
+    description: `Expert ${title} services by Digital Dictionary. Elevate your brand with our premium digital solutions and strategic marketing approach.`,
+    keywords: [
+      `${title}`,
+      `${title} Services`,
+      `${title} Agency`,
+      `Premium ${title}`,
+      "Digital Dictionary Services"
+    ],
+    openGraph: {
+      title: `${title} Services | Digital Dictionary`,
+      description: `Expert ${title} services by Digital Dictionary. Elevate your brand with our premium digital solutions.`,
+      url: `https://digitaldictionary.in/${slug}`,
+      type: "website",
+    },
+    alternates: {
+      canonical: `/${slug}`,
+    }
+  };
+}
 
 function getFallbackImage(slug: string) {
   const s = slug.toLowerCase();

@@ -3,6 +3,16 @@ import { Footer } from "@/components/Footer";
 import { Lightbulb, PenTool, Code, Rocket, CheckCircle2, Quote, Star } from "lucide-react";
 import Image from "next/image";
 import { DynamicTextColor } from "@/components/DynamicTextColor";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About Us | Digital Dictionary",
+  description: "Digital Dictionary is a team of strategists, designers, and engineers. Learn about our story, luxury web design, data-driven marketing, and dedicated partnerships.",
+  keywords: ["About Digital Dictionary", "Our Story", "Luxury Web Design Team", "Digital Agency India", "Best Digital Marketing Agency"],
+  alternates: {
+    canonical: "/about",
+  }
+};
 
 const PROCESS = [
   {

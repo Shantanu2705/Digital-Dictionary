@@ -5,6 +5,33 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import React from "react";
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const post = POSTS.find((p) => p.id.toString() === resolvedParams.id);
+
+  if (!post) {
+    return {
+      title: "Post Not Found",
+    };
+  }
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    keywords: [post.category, "Digital Dictionary Blog", "Digital Insights", "Web Development Trends"],
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      type: "article",
+      url: `https://digitaldictionary.in/blog/${post.id}`,
+    },
+    alternates: {
+      canonical: `/blog/${post.id}`,
+    }
+  };
+}
 
 export default function BlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = React.use(params);
