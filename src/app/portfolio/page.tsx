@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { DynamicTextColor } from "@/components/DynamicTextColor";
-
 import Image from "next/image";
+import Link from "next/link";
 
 const CATEGORIES = [
   "All", 
@@ -70,36 +69,41 @@ export default function PortfolioPage() {
     : PROJECTS.filter(p => p.category === activeCategory);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-transparent">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-background overflow-hidden relative">
       <Navbar />
+
+      {/* Ambient gold glow */}
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#C5A059]/10 rounded-full blur-[140px] pointer-events-none" />
       
-      <section className="w-full pt-40 pb-24 relative z-10">
+      <section className="w-full pt-44 pb-24 relative z-10">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="mb-12">
-            <DynamicTextColor as="h1" className="text-[12px] uppercase tracking-widest mb-4 font-bold border-b-2 border-luxury-gold inline-block pb-2">Our Portfolio</DynamicTextColor>
-            <DynamicTextColor as="h2" className="text-4xl md:text-5xl font-bold tracking-tighter uppercase drop-shadow-[0_1px_1px_rgba(255,255,255,1)]">
-              Recent work we&apos;re <br />
-              <span className="font-serif italic font-light text-charcoal">proud of:</span>
-            </DynamicTextColor>
+          <div className="mb-10 text-center md:text-left">
+            <span className="text-xs uppercase tracking-widest mb-3 font-semibold text-[#8C6A16] block">
+              Credentials &amp; Deployments
+            </span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-slate-900 leading-tight">
+              Client Case Studies &amp; <br />
+              <span className="italic font-light text-[#8C6A16]">Production Work.</span>
+            </h1>
           </div>
           
-          <div className="bg-white/10 backdrop-blur-md border border-luxury-gold/30 rounded-3xl p-6 max-w-2xl shadow-sm mb-12">
-            <p className="text-xl text-charcoal font-semibold">
-                A collection of digital experiences we&apos;ve built for forward-thinking brands and organizations.
+          <div className="bg-[#F8FAFC] border border-slate-200 rounded-2xl p-6 max-w-2xl shadow-2xs mb-10">
+            <p className="text-sm md:text-base text-slate-600 font-normal leading-relaxed">
+              A curated portfolio of high-performance web systems, brand architectures, and booking engines engineered by Digital Dictionary.
             </p>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-4 mb-12">
+          <div className="flex flex-wrap gap-2.5 mb-12">
             {CATEGORIES.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
                 className={cn(
-                  "px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 shadow-sm border",
+                  "px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 shadow-2xs border cursor-pointer",
                   activeCategory === category 
-                    ? "bg-gradient-to-r from-[#B38728] via-[#FBF5B7] to-[#B38728] text-charcoal border-luxury-gold shadow-[0_4px_15px_rgba(212,175,55,0.4)]" 
-                    : "bg-white/20 backdrop-blur-md border-luxury-gold/30 text-charcoal hover:bg-white/40 hover:border-luxury-gold"
+                    ? "bg-[#0F172A] text-white border-[#0F172A] font-bold" 
+                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
                 )}
               >
                 {category}
@@ -119,38 +123,60 @@ export default function PortfolioPage() {
                 <div
                   key={project.id}
                   className={cn(
-                    "group relative block overflow-hidden rounded-3xl bg-white/10 backdrop-blur-xl border border-luxury-gold/30 hover:border-luxury-gold shadow-sm hover:shadow-[0_10px_40px_rgba(212,175,55,0.2)] hover:-translate-y-1 transition-all duration-500",
+                    "group relative block overflow-hidden rounded-3xl bg-white border border-[#E8DFC8] hover:border-[#C5A059] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300",
                     spanClass
                   )}
                 >
-                {/* Project Image */}
-                <div className="absolute inset-0 flex items-center justify-center overflow-hidden transition-transform duration-700 group-hover:scale-105">
-                  <div className="relative w-full h-full p-8 md:p-12">
-                    <Image
-                      src={`/clients/${project.image}`}
-                      alt={project.title}
-                      fill
-                      className="object-contain p-4"
-                    />
+                  {/* Project Image */}
+                  <div className="absolute inset-0 flex items-center justify-center overflow-hidden transition-transform duration-700 group-hover:scale-105 p-6 md:p-8">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={`/clients/${project.image}`}
+                        alt={project.title}
+                        fill
+                        className="object-contain"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Dark Gradient Overlay for Contrast on hover only */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                  {/* Hover Details */}
+                  <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
+                    <span className="text-[#DFB76C] text-[10px] font-bold tracking-[0.2em] uppercase mb-1">
+                      {project.category}
+                    </span>
+                    <h3 className="text-base md:text-lg font-bold text-white leading-snug mb-3">
+                      {project.title}
+                    </h3>
+                    <div className="w-9 h-9 shrink-0 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40 hover:bg-[#C5A059] hover:border-[#C5A059] transition-colors">
+                      <ArrowUpRight className="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                <div className="absolute inset-0 p-4 flex flex-col justify-end translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-10">
-                  <p className="text-charcoal text-[10px] font-bold tracking-widest uppercase mb-1">
-                    {project.category}
-                  </p>
-                  <h4 className="text-sm md:text-base font-medium text-off-white leading-snug mb-3">
-                    {project.title}
-                  </h4>
-                  <div className="w-8 h-8 md:w-10 md:h-10 shrink-0 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-off-white border border-white/20 hover:bg-luxury-gold transition-colors">
-                    <ArrowUpRight className="w-3 h-3 md:w-4 md:h-4" />
-                  </div>
-                </div>
-              </div>
               );
             })}
+          </div>
+
+          {/* Bottom CTA to Contact / Custom Project */}
+          <div className="mt-20 p-8 md:p-12 rounded-2xl bg-[#F8FAFC] border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#8C6A16] block mb-1">
+                Initiate a Project
+              </span>
+              <h3 className="text-xl md:text-2xl font-serif font-bold text-slate-900">
+                Ready to Engineer a High-Performance Digital Platform?
+              </h3>
+            </div>
+            <Link
+              href="/contact"
+              className="px-7 py-3.5 rounded-lg bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs uppercase tracking-wider shadow-xs hover:shadow-sm transition-all whitespace-nowrap flex items-center gap-2"
+            >
+              <span>Schedule a Consultation</span>
+              <ArrowUpRight className="w-4 h-4 text-[#DFB76C]" />
+            </Link>
           </div>
         </div>
       </section>

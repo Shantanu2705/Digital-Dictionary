@@ -1,85 +1,95 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { DynamicTextColor } from "@/components/DynamicTextColor";
 
-const PROCESS = [
-  { id: "01", title: "DISCOVER", desc: "Understand the business, the audience, and the objective." },
-  { id: "02", title: "STRATEGIZE", desc: "Create the digital roadmap and architecture." },
-  { id: "03", title: "DESIGN", desc: "Turn strategy into an unforgettable visual experience." },
-  { id: "04", title: "BUILD", desc: "Engineer the solution with scalable, modern technology." },
-  { id: "05", title: "LAUNCH", desc: "Deploy seamlessly and ensure flawless performance." },
-  { id: "06", title: "GROW", desc: "Optimize continuously to compound results." },
+const METHODOLOGY_STEPS = [
+  {
+    id: "01",
+    badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
+    topStripe: "from-blue-600 to-indigo-600",
+    title: "Strategic Discovery & Requirements",
+    desc: "We analyze business unit economics, competitive landscape, audience personas, and technical specifications to establish a definitive project roadmap."
+  },
+  {
+    id: "02",
+    badgeColor: "bg-purple-50 text-purple-700 border-purple-200",
+    topStripe: "from-purple-600 to-pink-600",
+    title: "System Architecture & UI/UX Design",
+    desc: "Our senior design team architects interactive prototypes, wireframes, and design systems aligned with corporate branding and conversion funnels."
+  },
+  {
+    id: "03",
+    badgeColor: "bg-amber-50 text-amber-700 border-amber-200",
+    topStripe: "from-amber-500 to-orange-500",
+    title: "Production Engineering & Next.js Build",
+    desc: "We build on Next.js 16 App Router, TypeScript, and Tailwind CSS. Clean, modular codebases engineered for zero downtime and sub-second load times."
+  },
+  {
+    id: "04",
+    badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    topStripe: "from-emerald-600 to-teal-600",
+    title: "Security Hardening & Quality Assurance",
+    desc: "Rigorous cross-browser testing, automated vulnerability scans, CSP & HSTS security header configuration, and Core Web Vitals optimization."
+  },
+  {
+    id: "05",
+    badgeColor: "bg-cyan-50 text-cyan-700 border-cyan-200",
+    topStripe: "from-cyan-600 to-blue-600",
+    title: "Deployment & Managed Growth",
+    desc: "Seamless zero-downtime deployment on global edge networks, followed by search console indexing, analytics tracking, and continuous compounding."
+  },
 ];
 
 export function ProcessSection() {
   return (
-    <section className="py-20 md:py-32 bg-transparent relative">
-      <div className="container mx-auto px-6 md:px-12 relative z-10 text-off-white">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-32 text-center"
-        >
-          <DynamicTextColor as={motion.h2} className="text-sm uppercase tracking-[0.2em] font-bold border-b-2 border-luxury-gold pb-2 inline-block mb-6">How We Work</DynamicTextColor>
-          <DynamicTextColor as={motion.h3} className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter uppercase drop-shadow-[0_1px_2px_rgba(255,255,255,0.8)]">
-            A proven methodology for <span className="font-serif italic font-light text-charcoal">digital dominance.</span>
-          </DynamicTextColor>
-        </motion.div>
+    <section className="py-24 md:py-32 bg-gradient-to-b from-[#EFE8D8] via-[#E6DBC6] to-[#EFE8D8] relative overflow-hidden border-b border-[#C8B89A]">
+      <div className="container mx-auto px-6 md:px-12 relative z-10 max-w-6xl">
 
-        <div className="max-w-5xl mx-auto relative">
-          {/* Vertical Line */}
-          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-[2px] bg-luxury-gold/30 -translate-x-1/2" />
-
-          <div className="flex flex-col gap-16 md:gap-24">
-            {PROCESS.map((step, index) => {
-              const isEven = index % 2 === 0;
-              return (
-                <motion.div 
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.1 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  key={step.id} 
-                  className="relative flex flex-col md:flex-row items-center justify-between w-full group"
-                >
-                  {/* Left Side */}
-                  <div className={cn(
-                    "w-full md:w-[45%] pl-20 md:pl-0",
-                    isEven ? "md:text-right md:pr-16" : "md:order-2 md:pl-16"
-                  )}>
-                    <div className="bg-transparent border border-luxury-gold/30 p-10 group-hover:bg-white/5 transition-all rounded-[2rem] shadow-[0_8px_30px_rgba(212,175,55,0.05)] hover:shadow-[0_15px_40px_rgba(212,175,55,0.2)] hover:-translate-y-2 duration-300 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-br from-luxury-gold/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                      
-                      <div className="relative z-10">
-                        <h4 className="text-3xl md:text-4xl font-bold text-charcoal mb-6 tracking-tight uppercase drop-shadow-[0_1px_1px_rgba(255,255,255,1)]">
-                          <span className="font-serif text-lg mr-4 md:hidden text-charcoal">{step.id}</span>
-                          {step.title}
-                        </h4>
-                        <p className="text-gray-800 text-lg leading-relaxed font-bold drop-shadow-[0_1px_1px_rgba(255,255,255,1)]">
-                          {step.desc}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Center Node */}
-                  <div className="absolute left-8 md:left-1/2 -translate-x-1/2 w-20 h-20 bg-white border-[3px] border-luxury-gold flex items-center justify-center z-10 hidden md:flex shadow-[0_4px_15px_rgba(212,175,55,0.3)] group-hover:shadow-[0_8px_25px_rgba(212,175,55,0.5)] transition-all rounded-full group-hover:scale-110">
-                    <span className="font-serif font-bold text-charcoal text-2xl group-hover:text-charcoal transition-colors">{step.id}</span>
-                  </div>
-
-                  {/* Right Side Empty for flex balance */}
-                  <div className={cn(
-                    "hidden md:block w-[45%]",
-                    isEven ? "order-2" : ""
-                  )} />
-                </motion.div>
-              );
-            })}
-          </div>
+        <div className="mb-16 text-center max-w-3xl mx-auto">
+          <span className="text-xs uppercase tracking-widest font-bold text-[#8C6A16] block mb-2">
+            Engineering Methodology
+          </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-slate-900 tracking-tight mb-4">
+            A Disciplined Framework for <span className="italic font-light text-[#8C6A16]">Predictable Results.</span>
+          </h2>
+          <p className="text-sm md:text-base text-slate-700 font-normal leading-relaxed">
+            Every engagement follows our standardized institutional engineering process, ensuring absolute transparency, on-time delivery, and zero technical debt.
+          </p>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {METHODOLOGY_STEPS.map((step) => (
+            <div
+              key={step.id}
+              className="group relative rounded-2xl bg-white border border-[#E2D8C3] hover:border-[#B8860B] transition-all shadow-xs hover:shadow-xl hover:-translate-y-1 duration-300 overflow-hidden flex flex-col justify-between"
+            >
+              <div className={`h-1 w-full bg-gradient-to-r ${step.topStripe}`} />
+
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-5">
+                  <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-mono font-bold text-sm shadow-2xs ${step.badgeColor}`}>
+                    {step.id}
+                  </div>
+                  <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400">
+                    Phase {step.id}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-[#8C6A16] transition-colors">
+                  {step.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                  {step.desc}
+                </p>
+              </div>
+
+              <div className="px-8 pb-6 pt-2 text-[11px] font-semibold text-slate-500 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span>Verified Milestones</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
     </section>
   );

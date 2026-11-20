@@ -5,8 +5,9 @@ import { ServiceEnquiryModal } from "@/components/ServiceEnquiryModal";
 import Image from "next/image";
 import fs from "fs";
 import path from "path";
-import { DynamicTextColor } from "@/components/DynamicTextColor";
 import { Metadata } from "next";
+import Link from "next/link";
+import { ArrowUpRight, CheckCircle2, Sparkles } from "lucide-react";
 
 export async function generateMetadata({ params }: { params: Promise<{ service: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
@@ -56,13 +57,11 @@ export default async function GenericServicePage({ params }: { params: Promise<{
   const resolvedParams = await params;
   const slug = resolvedParams.service;
   
-  // Convert slug to Title Case (e.g. "google-ads" -> "Google Ads")
   const title = slug
     .split('-')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  // Check if custom image has been generated yet, otherwise use fallback
   const customImagePath = path.join(process.cwd(), 'public', `${slug}.jpg`);
   const imageSrc = fs.existsSync(customImagePath) ? `/${slug}.jpg` : getFallbackImage(slug);
 
@@ -73,24 +72,28 @@ export default async function GenericServicePage({ params }: { params: Promise<{
       <div className="fixed inset-0 pointer-events-none z-0">
         <ParticleBackground />
       </div>
+
+      {/* Ambient gold glow */}
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#C5A059]/10 rounded-full blur-[140px] pointer-events-none" />
       
       {/* Hero Section */}
-      <section className="w-full pt-48 pb-24 relative z-10">
+      <section className="w-full pt-44 pb-20 relative z-10">
         <div className="container mx-auto px-6 md:px-12 text-center">
-          <DynamicTextColor as="h2" className="text-[12px] uppercase tracking-[0.2em] font-bold border-b-2 border-luxury-gold inline-block pb-2 mb-6">
-            DIGITAL SOLUTIONS
-          </DynamicTextColor>
-          <DynamicTextColor as="h1" className="text-5xl md:text-7xl font-bold tracking-tighter leading-[1.05] mb-8 max-w-4xl mx-auto uppercase">
-            Premium {title} <br /> Services
-          </DynamicTextColor>
-          <div className="bg-white/10 backdrop-blur-md border border-luxury-gold/30 rounded-3xl p-6 max-w-3xl mx-auto shadow-sm mb-16">
-            <p className="text-lg md:text-xl text-charcoal font-semibold leading-relaxed">
+          <span className="text-xs uppercase tracking-[0.25em] font-bold border-b border-[#E8DFC8] inline-block pb-2 mb-6 text-[#8C6A16]">
+            DIGITAL SOLUTIONS &middot; SPECIALIZED CAPABILITY
+          </span>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] mb-8 max-w-4xl mx-auto uppercase text-slate-900 font-serif">
+            Premium {title} <br />
+            <span className="italic font-light text-[#B8860B] text-gold-gradient">Services</span>
+          </h1>
+          <div className="bg-white border border-[#E8DFC8] rounded-3xl p-6 max-w-3xl mx-auto shadow-sm mb-14">
+            <p className="text-base md:text-lg text-slate-700 font-normal leading-relaxed">
               We deliver state-of-the-art solutions tailored to elevate your brand. 
               Our {title} services are built on data-driven strategies and luxury design principles.
             </p>
           </div>
 
-          <div className="relative w-full max-w-5xl mx-auto aspect-[21/9] rounded-[32px] overflow-hidden shadow-lg border border-luxury-gold/30">
+          <div className="relative w-full max-w-5xl mx-auto aspect-[21/9] rounded-[32px] overflow-hidden shadow-md border border-[#E8DFC8]">
              <Image 
                src={imageSrc} 
                alt={`${title} Services`}
@@ -98,27 +101,52 @@ export default async function GenericServicePage({ params }: { params: Promise<{
                className="object-cover"
                priority
              />
-             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
           </div>
         </div>
       </section>
 
       {/* Feature Section */}
-      <section className="w-full py-24 relative z-10 bg-transparent">
+      <section className="w-full py-20 relative z-10 bg-[#FAF8F3] border-y border-[#E8DFC8]">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="p-10 rounded-[2rem] bg-white/10 backdrop-blur-xl border border-luxury-gold/30 text-center shadow-[0_10px_40px_rgba(212,175,55,0.1)] hover:-translate-y-2 hover:bg-white/20 transition-all duration-500">
-               <h3 className="text-2xl font-bold text-charcoal mb-4 tracking-tight uppercase">Strategic Approach</h3>
-               <p className="text-charcoal leading-relaxed text-sm font-semibold">Every {title} project begins with a deep dive into your market to ensure we deliver measurable ROI.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-8 md:p-10 rounded-[2rem] bg-white border border-[#E8DFC8] text-left shadow-sm hover:-translate-y-1 hover:border-[#C5A059] transition-all duration-300">
+               <div className="w-10 h-10 rounded-full bg-[#FAF8F3] flex items-center justify-center text-[#B8860B] mb-6 border border-[#E8DFC8]">
+                 <CheckCircle2 className="w-5 h-5" />
+               </div>
+               <h3 className="text-xl font-bold text-slate-900 mb-3 tracking-tight uppercase">Strategic Approach</h3>
+               <p className="text-slate-600 leading-relaxed text-sm">Every {title} project begins with a deep dive into your market to ensure we deliver measurable ROI and competitive moat.</p>
             </div>
-            <div className="p-10 rounded-[2rem] bg-white/10 backdrop-blur-xl border border-luxury-gold/30 text-center shadow-[0_10px_40px_rgba(212,175,55,0.1)] hover:-translate-y-2 hover:bg-white/20 transition-all duration-500">
-               <h3 className="text-2xl font-bold text-charcoal mb-4 tracking-tight uppercase">Expert Execution</h3>
-               <p className="text-charcoal leading-relaxed text-sm font-semibold">Our team of specialists utilize cutting-edge technology and premium aesthetics to build your digital presence.</p>
+            
+            <div className="p-8 md:p-10 rounded-[2rem] bg-white border border-[#E8DFC8] text-left shadow-sm hover:-translate-y-1 hover:border-[#C5A059] transition-all duration-300">
+               <div className="w-10 h-10 rounded-full bg-[#FAF8F3] flex items-center justify-center text-[#B8860B] mb-6 border border-[#E8DFC8]">
+                 <CheckCircle2 className="w-5 h-5" />
+               </div>
+               <h3 className="text-xl font-bold text-slate-900 mb-3 tracking-tight uppercase">Expert Execution</h3>
+               <p className="text-slate-600 leading-relaxed text-sm">Our team of specialists utilize cutting-edge technology, enterprise security, and premium aesthetics to build your digital presence.</p>
             </div>
-            <div className="p-10 rounded-[2rem] bg-white/10 backdrop-blur-xl border border-luxury-gold/30 text-center shadow-[0_10px_40px_rgba(212,175,55,0.1)] hover:-translate-y-2 hover:bg-white/20 transition-all duration-500">
-               <h3 className="text-2xl font-bold text-charcoal mb-4 tracking-tight uppercase">Ongoing Growth</h3>
-               <p className="text-charcoal leading-relaxed text-sm font-semibold">We don&apos;t just deliver a product; we partner with you to scale and optimize your {title} operations.</p>
+
+            <div className="p-8 md:p-10 rounded-[2rem] bg-white border border-[#E8DFC8] text-left shadow-sm hover:-translate-y-1 hover:border-[#C5A059] transition-all duration-300">
+               <div className="w-10 h-10 rounded-full bg-[#FAF8F3] flex items-center justify-center text-[#B8860B] mb-6 border border-[#E8DFC8]">
+                 <CheckCircle2 className="w-5 h-5" />
+               </div>
+               <h3 className="text-xl font-bold text-slate-900 mb-3 tracking-tight uppercase">Ongoing Growth</h3>
+               <p className="text-slate-600 leading-relaxed text-sm">We don&apos;t just deliver a product; we partner with you to scale, monitor, and optimize your {title} operations continuously.</p>
             </div>
+          </div>
+
+          {/* Quick CTA to Contact / Enquiry */}
+          <div className="mt-16 p-8 rounded-3xl bg-white border border-[#E8DFC8] flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+            <div>
+              <h4 className="text-lg font-serif text-slate-900">Need customized {title} solutions?</h4>
+              <p className="text-xs text-slate-500">Connect directly with our engineering team for a dedicated strategy.</p>
+            </div>
+            <Link
+              href="/contact"
+              className="px-6 py-3 rounded-full bg-gradient-to-r from-[#DFB76C] to-[#C5A059] text-slate-900 font-bold text-xs uppercase tracking-widest transition-all shadow-sm hover:-translate-y-0.5 flex items-center gap-1.5 whitespace-nowrap"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-slate-900" />
+              Discuss With Our Team
+            </Link>
           </div>
         </div>
       </section>

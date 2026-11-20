@@ -3,7 +3,7 @@ import { Footer } from "@/components/Footer";
 import { POSTS } from "@/data/blog";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Clock, Tag } from "lucide-react";
 import React from "react";
 import { Metadata } from "next";
 
@@ -42,46 +42,76 @@ export default function BlogPostPage({ params }: { params: Promise<{ id: string 
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-white">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-background overflow-hidden relative">
       <Navbar />
       
-      <article className="w-full pt-48 pb-24 bg-background min-h-screen">
+      {/* Ambient gold glow */}
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#C5A059]/10 rounded-full blur-[140px] pointer-events-none" />
+
+      <article className="w-full pt-44 pb-32 min-h-screen relative z-10">
         <div className="container mx-auto px-6 md:px-12 max-w-4xl">
           <Link 
             href="/blog" 
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-charcoal transition-colors mb-12"
+            className="inline-flex items-center gap-2 text-[#8C6A16] hover:underline transition-all text-xs uppercase tracking-widest font-bold mb-10"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Insights
           </Link>
 
-          <div className="mb-12">
-            <div className="flex items-center gap-4 mb-6">
-              <span className="text-sm font-medium tracking-wider uppercase text-charcoal px-3 py-1 bg-luxury-gold/10 rounded-full">
+          <div className="bg-white p-8 md:p-14 rounded-[2.5rem] border border-[#E8DFC8] shadow-sm mb-12">
+            <div className="flex flex-wrap items-center gap-4 mb-6">
+              <span className="text-xs font-bold tracking-wider uppercase text-[#8C6A16] px-3.5 py-1 bg-[#FAF8F3] border border-[#E8DFC8] rounded-full flex items-center gap-1.5">
+                <Tag className="w-3 h-3 text-[#B8860B]" />
                 {post.category}
               </span>
-              <span className="text-soft-charcoal text-sm">{post.date}</span>
+              <span className="text-slate-500 text-xs flex items-center gap-1.5 font-medium">
+                <Clock className="w-3.5 h-3.5 text-[#B8860B]" />
+                {post.date}
+              </span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-medium tracking-tight text-charcoal mb-6">
+            
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-slate-900 mb-8 leading-tight">
               {post.title}
             </h1>
-            <p className="text-xl text-soft-charcoal">
+            
+            <p className="text-lg md:text-xl text-slate-700 font-normal leading-relaxed border-l-2 border-[#C5A059] pl-6">
               {post.excerpt}
             </p>
           </div>
 
-          <div className="prose prose-lg max-w-none text-soft-charcoal prose-headings:text-charcoal prose-headings:font-medium prose-a:text-charcoal hover:prose-a:text-charcoal/80 prose-h1:hidden">
-            {/* Simple Markdown Rendering */}
+          <div className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-[#E8DFC8] text-slate-700 leading-relaxed space-y-6 text-base md:text-lg shadow-sm">
             {post.content.split('\n').map((paragraph, index) => {
               if (paragraph.trim().startsWith('##')) {
-                return <h2 key={index} className="text-3xl mt-12 mb-6">{paragraph.replace('##', '').trim()}</h2>;
+                return (
+                  <h2 key={index} className="text-2xl md:text-3xl font-serif text-slate-900 mt-10 mb-4 pt-4 border-t border-[#E8DFC8] first:mt-0 first:pt-0 first:border-none">
+                    {paragraph.replace('##', '').trim()}
+                  </h2>
+                );
               } else if (paragraph.trim().startsWith('#')) {
-                return null; // Skip main title as it's already rendered
+                return null;
               } else if (paragraph.trim()) {
-                return <p key={index} className="mb-6 leading-relaxed">{paragraph}</p>;
+                return <p key={index} className="leading-relaxed text-slate-700">{paragraph}</p>;
               }
               return null;
             })}
+          </div>
+
+          {/* Share & Back */}
+          <div className="mt-12 flex items-center justify-between pt-8 border-t border-[#E8DFC8]">
+            <Link 
+              href="/blog" 
+              className="inline-flex items-center gap-2 text-[#8C6A16] hover:underline text-xs uppercase tracking-widest font-bold"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              All Insights
+            </Link>
+
+            <Link
+              href="/contact"
+              className="px-6 py-2.5 rounded-full bg-gradient-to-r from-[#DFB76C] to-[#C5A059] text-slate-900 font-bold text-xs uppercase tracking-widest shadow-sm hover:-translate-y-0.5 transition-all"
+            >
+              Consult With Our Team
+            </Link>
           </div>
         </div>
       </article>

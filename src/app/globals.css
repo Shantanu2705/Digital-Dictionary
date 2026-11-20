@@ -5,51 +5,69 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-border: var(--border);
-  --color-primary-gold: #C9A227;
-  --color-luxury-gold: #D4AF37;
-  --color-bright-gold: #F2D675;
-  --color-deep-gold: #8C6A16;
-  --color-charcoal: #1A1A1A; /* Charcoal */
-  --color-soft-charcoal: #333333; /* Soft Charcoal */
-  --color-off-white: #F7F5EF;
+  --color-primary-gold: #B8860B;
+  --color-luxury-gold: #967424;
+  --color-deep-gold: #7D601C;
+  --color-dark-gold: #5C4510;
+  --color-corporate-slate: #0F172A;
+  --color-corporate-muted: #475569;
+  --color-corporate-bg: #F8FAFC;
   
   --font-sans: var(--font-inter);
   --font-serif: var(--font-playfair);
 }
 
 :root {
-  --background: transparent; /* Changed from #FFFDF7 to show video background */
-  --foreground: #1A1A1A; /* Charcoal */
-  --card: #FDF9EC; /* Light golden cream for cards */
-  --border: #E8DCC0; /* Soft golden border */
+  --background: #F4ECE0;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --border: #D5C7A3;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar for a premium feel */
+/* Subtle, clean enterprise scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: #F8FAFC;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-luxury-gold);
+  background: #CBD5E1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-deep-gold);
+  background: #94A3B8;
 }
 
 /* Selection Color */
 ::selection {
-  background-color: var(--color-luxury-gold);
-  color: #fff;
+  background-color: #B8860B;
+  color: #FFFFFF;
+}
+
+/* Dignified Corporate Gold Utilities (Restrained, Institutional) */
+.text-gold-accent {
+  color: #967424;
+}
+
+.text-gold-gradient {
+  background: linear-gradient(135deg, #8C6A16 0%, #B8860B 50%, #7D601C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.border-gold-subtle {
+  border-color: #E2D9C2;
 }
 
 @keyframes marquee {
@@ -57,10 +75,5 @@ body {
   100% { transform: translateX(-50%); }
 }
 .animate-marquee {
-  animation: marquee 90s linear infinite;
+  animation: marquee 70s linear infinite;
 }
-
-@keyframes shimmer {
-  100% { transform: translateX(150%); }
-}
-

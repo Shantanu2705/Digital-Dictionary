@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SmartContactLink } from "@/components/SmartContactLink";
-import { DynamicTextColor } from "@/components/DynamicTextColor";
+import { Mail, Phone, MapPin, Send, ShieldCheck, Clock, Sparkles } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,7 +14,9 @@ export default function ContactPage() {
     company: "",
     service: "Digital Marketing",
     message: "",
+    honeypot: "",
   });
+  const [submitted, setSubmitted] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -22,152 +24,244 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const text = `*New Enquiry from Website*%0A%0A*Name:* ${formData.name}%0A*Email:* ${formData.email}%0A*Phone:* ${formData.phone}%0A*Company:* ${formData.company}%0A*Service Required:* ${formData.service}%0A*Message:* ${formData.message}`;
-    const encodedText = encodeURIComponent(text);
-    const whatsappUrl = `https://wa.me/916291111428?text=${encodedText}`;
+    if (formData.honeypot) return;
+
+    const cleanName = formData.name.trim().replace(/[<>]/g, "");
+    const cleanEmail = formData.email.trim();
+    const cleanPhone = formData.phone.trim();
+    const cleanCompany = formData.company.trim().replace(/[<>]/g, "");
+    const cleanService = formData.service;
+    const cleanMessage = formData.message.trim().replace(/[<>]/g, "");
+
+    const text = `*New Enquiry from Digital Dictionary Website*%0A%0A*Name:* ${encodeURIComponent(cleanName)}%0A*Email:* ${encodeURIComponent(cleanEmail)}%0A*Phone:* ${encodeURIComponent(cleanPhone)}%0A*Company:* ${encodeURIComponent(cleanCompany)}%0A*Service Required:* ${encodeURIComponent(cleanService)}%0A*Message:* ${encodeURIComponent(cleanMessage)}`;
+    const whatsappUrl = `https://wa.me/916291111428?text=${text}`;
+    
+    setSubmitted(true);
     window.open(whatsappUrl, "_blank");
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-background">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-background overflow-hidden relative">
       <Navbar />
+
+      {/* Ambient gold glow */}
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[#C5A059]/10 rounded-full blur-[150px] pointer-events-none" />
       
-      <section className="w-full pt-40 pb-24 relative z-10">
+      <section className="w-full pt-44 pb-24 relative z-10">
         <div className="container mx-auto px-6 md:px-12">
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <DynamicTextColor as="h1" className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 uppercase">
-              Let&apos;s build something <br />
-              <span className="font-serif italic font-light text-charcoal">worth remembering.</span>
-            </DynamicTextColor>
-            <div className="bg-white/10 backdrop-blur-md border border-luxury-gold/30 rounded-3xl p-6 max-w-2xl mx-auto shadow-sm">
-              <p className="text-xl text-charcoal font-semibold">
-                Fill out the form below or reach out to us directly. We&apos;ll get back to you within 24 hours.
+            <span className="text-xs uppercase tracking-widest font-semibold text-[#8C6A16] block mb-3">
+              Direct Advisory &amp; Client Inquiries
+            </span>
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-medium tracking-tight mb-6 text-slate-900 leading-[1.15]">
+              Connect With Our <br />
+              <span className="italic font-light text-[#8C6A16]">Strategy &amp; Technology Team.</span>
+            </h1>
+            <div className="bg-[#F8FAFC] border border-slate-200 rounded-2xl p-6 max-w-2xl mx-auto shadow-2xs">
+              <p className="text-base text-slate-600 font-normal leading-relaxed">
+                Submit your project specifications or contact our studio directly. Our engineering leadership will review your requirements and respond with architectural guidance within 24 hours.
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-16 lg:gap-8 max-w-6xl mx-auto">
-            {/* Contact Info */}
-            <div className="w-full lg:w-1/3 space-y-8">
-              <div className="bg-white/10 backdrop-blur-xl border border-luxury-gold/30 rounded-[2rem] p-8 shadow-[0_10px_40px_rgba(212,175,55,0.1)]">
-                <h3 className="text-sm uppercase tracking-widest text-charcoal font-bold mb-6 border-b border-luxury-gold/20 pb-2">Contact</h3>
-                <div className="space-y-4 text-charcoal text-lg font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,1)]">
-                  <SmartContactLink type="email" value="supportdigitaldictionary@gmail.com" className="block hover:text-charcoal transition-colors break-all" />
-                  <SmartContactLink type="email" value="admin07digitaldictionary@gmail.com" className="block hover:text-charcoal transition-colors break-all" />
-                  <SmartContactLink type="phone" value="+91 62911 11428" className="block hover:text-charcoal transition-colors mt-6" />
-                  <SmartContactLink type="phone" value="+91 62978 68104" className="block hover:text-charcoal transition-colors" />
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-8 max-w-6xl mx-auto">
+            {/* Contact Info Sidebar */}
+            <div className="w-full lg:w-1/3 space-y-6">
+              <div className="bg-white border border-[#E8DFC8] rounded-[2rem] p-8 shadow-sm">
+                <div className="flex items-center gap-3 mb-6 border-b border-[#E8DFC8] pb-3">
+                  <Mail className="w-5 h-5 text-[#B8860B]" />
+                  <h3 className="text-xs uppercase tracking-widest text-[#8C6A16] font-bold">Direct Channels</h3>
+                </div>
+                <div className="space-y-4 text-slate-700 text-sm font-medium">
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider text-slate-400 block mb-1">General Inquiries</span>
+                    <SmartContactLink type="email" value="admin07digitaldictionary@gmail.com" className="block text-slate-900 hover:text-[#B8860B] transition-colors break-all" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase tracking-wider text-slate-400 block mb-1">Internship &amp; Hiring</span>
+                    <SmartContactLink type="email" value="hr@digitaldictionary.in" className="block text-[#8C6A16] hover:underline font-bold break-all" />
+                  </div>
+                  <div className="pt-2 border-t border-[#E8DFC8]">
+                    <span className="text-[10px] uppercase tracking-wider text-slate-400 block mb-1">Phone / WhatsApp</span>
+                    <SmartContactLink type="phone" value="+91 62911 11428" className="block text-slate-900 hover:text-[#B8860B] transition-colors" />
+                    <SmartContactLink type="phone" value="+91 62978 68104" className="block text-slate-900 hover:text-[#B8860B] transition-colors mt-1" />
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-xl border border-luxury-gold/30 rounded-[2rem] p-8 shadow-[0_10px_40px_rgba(212,175,55,0.1)]">
-                <h3 className="text-sm uppercase tracking-widest text-charcoal font-bold mb-6 border-b border-luxury-gold/20 pb-2">Location</h3>
-                <p className="text-charcoal text-lg leading-relaxed font-semibold drop-shadow-[0_1px_1px_rgba(255,255,255,1)]">
+              <div className="bg-white border border-[#E8DFC8] rounded-[2rem] p-8 shadow-sm">
+                <div className="flex items-center gap-3 mb-6 border-b border-[#E8DFC8] pb-3">
+                  <MapPin className="w-5 h-5 text-[#B8860B]" />
+                  <h3 className="text-xs uppercase tracking-widest text-[#8C6A16] font-bold">Studio Location</h3>
+                </div>
+                <p className="text-slate-700 text-sm leading-relaxed">
                   Kawakhali Bazar,<br />
                   Kawakhali Road,<br />
                   Siliguri, West Bengal, India,<br />
-                  Pin: 734012
+                  PIN: 734012
+                </p>
+                <div className="mt-4 pt-4 border-t border-[#E8DFC8] flex items-center gap-2 text-xs text-slate-500">
+                  <Clock className="w-4 h-4 text-[#B8860B]" />
+                  <span>Mon &ndash; Sat: 10:00 AM &ndash; 7:00 PM IST</span>
+                </div>
+              </div>
+
+              <div className="bg-[#FAF8F3] border border-[#C5A059] rounded-[2rem] p-6 shadow-sm">
+                <div className="flex items-center gap-3 mb-2">
+                  <ShieldCheck className="w-5 h-5 text-[#B8860B]" />
+                  <span className="text-xs uppercase tracking-wider font-bold text-slate-900">Client Guarantee</span>
+                </div>
+                <p className="text-xs text-slate-700 leading-relaxed">
+                  Every project is covered by a milestone agreement, enterprise-grade Next.js architecture, and guaranteed 99.9% uptime deployment.
                 </p>
               </div>
             </div>
 
             {/* Form */}
             <div className="w-full lg:w-2/3">
-              <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-2xl p-8 md:p-12 rounded-[3rem] border border-luxury-gold/30 shadow-[0_10px_40px_rgba(212,175,55,0.15)] relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-luxury-gold/5 to-transparent pointer-events-none" />
+              <form onSubmit={handleSubmit} className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-[#E8DFC8] shadow-sm relative overflow-hidden">
+                <input 
+                  type="text" 
+                  name="honeypot" 
+                  value={formData.honeypot} 
+                  onChange={handleChange} 
+                  className="hidden" 
+                  tabIndex={-1} 
+                  autoComplete="off" 
+                />
+
                 <div className="relative z-10">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                  <h2 className="text-xl md:text-2xl font-serif text-slate-900 mb-2 uppercase tracking-wide">
+                    Project Consultation Form
+                  </h2>
+                  <p className="text-xs text-slate-500 mb-8">
+                    Share your requirements with our technical team for a free estimation and architecture blueprint.
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                      <label htmlFor="name" className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wider">Full Name *</label>
+                      <label htmlFor="name" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                        Full Name *
+                      </label>
                       <input 
                         required
                         type="text" 
                         id="name" 
                         name="name"
                         maxLength={100}
+                        placeholder="e.g. Rahul Sharma"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full bg-white/40 border border-luxury-gold/30 rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold focus:bg-white/60 transition-all font-semibold" 
+                        className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm placeholder:text-slate-400" 
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wider">Email Address *</label>
+                      <label htmlFor="email" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                        Email Address *
+                      </label>
                       <input 
                         required
                         type="email" 
                         id="email" 
                         name="email"
                         maxLength={254}
+                        placeholder="e.g. rahul@company.com"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full bg-white/40 border border-luxury-gold/30 rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold focus:bg-white/60 transition-all font-semibold" 
+                        className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm placeholder:text-slate-400" 
                       />
                     </div>
                     <div>
-                      <label htmlFor="phone" className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wider">Phone Number</label>
+                      <label htmlFor="phone" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                        Phone Number *
+                      </label>
                       <input 
+                        required
                         type="tel" 
                         id="phone" 
                         name="phone"
                         maxLength={30}
+                        placeholder="e.g. +91 98765 43210"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full bg-white/40 border border-luxury-gold/30 rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold focus:bg-white/60 transition-all font-semibold" 
+                        className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm placeholder:text-slate-400" 
                       />
                     </div>
                     <div>
-                      <label htmlFor="company" className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wider">Company Name</label>
+                      <label htmlFor="company" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                        Company / Brand Name
+                      </label>
                       <input 
                         type="text" 
                         id="company" 
                         name="company"
                         maxLength={150}
+                        placeholder="e.g. Apex Hospital / Shivaay Corp"
                         value={formData.company}
                         onChange={handleChange}
-                        className="w-full bg-white/40 border border-luxury-gold/30 rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold focus:bg-white/60 transition-all font-semibold" 
+                        className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm placeholder:text-slate-400" 
                       />
                     </div>
                   </div>
 
-                  <div className="mb-8">
-                    <label htmlFor="service" className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wider">Service Required *</label>
+                  <div className="mb-6">
+                    <label htmlFor="service" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                      Service or Product Required *
+                    </label>
                     <select 
                       id="service" 
                       name="service"
                       value={formData.service}
                       onChange={handleChange}
-                      className="w-full bg-white/40 border border-luxury-gold/30 rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold focus:bg-white/60 transition-all font-semibold"
+                      className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm font-medium"
                     >
-                      <option value="Digital Marketing">Digital Marketing</option>
-                      <option value="Web Development">Web Development</option>
-                      <option value="Software Development">Software Development</option>
-                      <option value="eCommerce Development">eCommerce Development</option>
-                      <option value="App Development">App Development</option>
-                      <option value="Brand Identity Design">Brand Identity Design</option>
-                      <option value="Website Design">Website Design</option>
-                      <option value="SEO Service">SEO Service</option>
+                      <option value="Single-Page Express Landing Page (₹12,000)">Single-Page Express Landing Page (₹12,000)</option>
+                      <option value="Starter Business Website - 5 Pages (₹25,000)">Starter Business Website - 5 Pages (₹25,000)</option>
+                      <option value="Growth Corporate Website - 10 Pages (₹35,000)">Growth Corporate Website - 10 Pages (₹35,000)</option>
+                      <option value="Enterprise B2B Authority Portal (₹49,000+)">Enterprise B2B Authority Portal (₹49,000+)</option>
+                      <option value="D2C E-Commerce Store (₹65,000)">D2C E-Commerce Store (₹65,000)</option>
+                      <option value="Native Mobile App MVP (₹65,000)">Native Mobile App MVP (₹65,000)</option>
+                      <option value="Omnichannel Combo: Web + Native App (₹75,000)">Omnichannel Combo: Web + Native App (₹75,000)</option>
+                      <option value="Service / Booking Fleet App (₹1,25,000+)">Service / Booking Fleet App (₹1,25,000+)</option>
+                      <option value="Digital Marketing & Performance Ads">Digital Marketing &amp; Performance Ads</option>
+                      <option value="SEO Service & Local Google Maps">SEO Service &amp; Local Google Maps</option>
+                      <option value="Brand Identity & Graphic Designing">Brand Identity &amp; Graphic Designing</option>
+                      <option value="Custom Software Development">Custom Software Development</option>
                     </select>
                   </div>
 
                   <div className="mb-8">
-                    <label htmlFor="message" className="block text-sm font-bold text-charcoal mb-2 uppercase tracking-wider">Project Details *</label>
+                    <label htmlFor="message" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                      Project Details &amp; Objectives *
+                    </label>
                     <textarea 
                       required
                       id="message" 
                       name="message" 
                       rows={4}
                       maxLength={2000}
+                      placeholder="Describe your target audience, timeline, specific features needed, and key business goals..."
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full bg-white/40 border border-luxury-gold/30 rounded-xl px-4 py-3 text-charcoal outline-none focus:border-luxury-gold focus:ring-1 focus:ring-luxury-gold focus:bg-white/60 transition-all font-semibold resize-none" 
-                    ></textarea>
+                      className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm resize-none placeholder:text-slate-400" 
+                    />
                   </div>
 
                   <button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-[#B38728] via-[#FBF5B7] to-[#B38728] text-charcoal font-bold tracking-widest uppercase text-sm py-5 rounded-xl hover:-translate-y-1 transition-all shadow-[0_4px_15px_rgba(212,175,55,0.4)] hover:shadow-[0_10px_25px_rgba(212,175,55,0.6)]"
+                    className="w-full bg-gradient-to-r from-[#DFB76C] via-[#F2D675] to-[#C5A059] text-slate-900 font-bold tracking-widest uppercase text-xs sm:text-sm py-4 rounded-xl hover:-translate-y-0.5 transition-all shadow-md flex items-center justify-center gap-2"
                   >
-                    Send Enquiry
+                    <Send className="w-4 h-4 text-slate-900" />
+                    Submit Project Enquiry
                   </button>
+
+                  {submitted && (
+                    <div className="mt-4 p-4 rounded-xl bg-[#FAF8F3] border border-[#C5A059] text-center">
+                      <p className="text-xs text-[#8C6A16] font-bold">
+                        Thank you! We are redirecting you to our official WhatsApp channel for instantaneous response.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </form>
             </div>

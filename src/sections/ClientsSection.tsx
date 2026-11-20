@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { DynamicTextColor } from "@/components/DynamicTextColor";
 
 export const CLIENT_LOGOS = [
   "DS Customer Solutions.jpeg",
@@ -46,31 +45,34 @@ export const CLIENT_LOGOS = [
 
 export function ClientsSection() {
   return (
-    <section className="py-24 bg-transparent relative overflow-hidden mt-12">
-      <div className="container mx-auto px-6 md:px-12 mb-16 text-center relative z-10 overflow-hidden">
-        <DynamicTextColor as="h2" className="text-sm uppercase tracking-[0.2em] font-bold mb-4 border-b-2 border-luxury-gold inline-block pb-2">
-          OUR CLIENTS
-        </DynamicTextColor>
-        <DynamicTextColor as="h3" className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter mb-12 uppercase drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)]">
-          Trusted by ambitious brands.
-        </DynamicTextColor>
+    <section className="py-20 md:py-28 bg-gradient-to-b from-[#EAE0CE] via-[#E2D4BF] to-[#EAE0CE] relative overflow-hidden border-b border-[#C8B89A]">
+      <div className="container mx-auto px-6 md:px-12 mb-12 text-center relative z-10 max-w-4xl">
+        <span className="text-xs uppercase tracking-widest font-bold text-[#8C6A16] block mb-2">
+          Client Credentials &amp; Verified Deployments
+        </span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium text-slate-900 tracking-tight mb-4">
+          Trusted by <span className="italic font-light text-[#8C6A16]">Ambitious Brands</span> &amp; Industry Leaders.
+        </h2>
+        <p className="text-slate-700 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
+          From regional leaders and healthcare networks to consumer enterprises, we engineer scalable platforms that drive verified commercial growth.
+        </p>
       </div>
         
-      {/* Infinite Horizontal Scroll Container */}
-      <div className="relative flex overflow-hidden z-10 before:absolute before:left-0 before:top-0 before:w-32 before:h-full before:bg-gradient-to-r before:from-white/50 before:to-transparent before:z-10 after:absolute after:right-0 after:top-0 after:w-32 after:h-full after:bg-gradient-to-l after:from-white/50 after:to-transparent after:z-10">
-        <div className="flex w-max animate-marquee hover:[animation-play-state:paused] py-8">
+      {/* Infinite Horizontal Marquee with Full Color Logos */}
+      <div className="relative flex overflow-hidden z-10 before:absolute before:left-0 before:top-0 before:w-32 before:h-full before:bg-gradient-to-r before:from-[#F2ECE1] before:to-transparent before:z-10 after:absolute after:right-0 after:top-0 after:w-32 after:h-full after:bg-gradient-to-l after:from-[#F2ECE1] after:to-transparent after:z-10">
+        <div className="flex w-max animate-marquee hover:[animation-play-state:paused] py-3">
           {[...CLIENT_LOGOS, ...CLIENT_LOGOS].map((filename, index) => (
             <div 
               key={index}
-              className="flex-none w-[280px] h-[160px] bg-white border border-luxury-gold/30 flex items-center justify-center p-6 mx-4 opacity-100 hover:-translate-y-2 transition-transform shadow-[0_4px_20px_rgba(212,175,55,0.15)] hover:shadow-[0_10px_30px_rgba(212,175,55,0.3)] duration-300 rounded-[2rem]"
+              className="group flex-none w-[200px] sm:w-[240px] h-[115px] sm:h-[125px] bg-white rounded-2xl border border-[#D5C7A3] hover:border-[#B8860B] flex items-center justify-center p-5 mx-3 shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
-              <div className="relative w-full h-full flex items-center justify-center">
+              <div className="relative w-full h-full flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
                 <Image
                   src={`/clients/${filename}`}
                   alt={`Client Logo ${index + 1}`}
                   fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-contain mix-blend-multiply"
+                  className="object-contain"
+                  sizes="(max-width: 640px) 200px, 240px"
                   loading="lazy"
                 />
               </div>

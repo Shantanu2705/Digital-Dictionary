@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   ChevronDown, 
   Menu, 
@@ -18,12 +17,21 @@ import {
   Server, 
   Camera, 
   Video,
-  ChevronRight
+  ChevronRight,
+  Phone,
+  Mail,
+  Award
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PremiumButton } from "./PremiumButton";
 
-const NAV_LINKS = [
+interface NavLinkItem {
+  name: string;
+  href: string;
+  hasMegaMenu?: boolean;
+}
+
+const NAV_LINKS: NavLinkItem[] = [
   { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   {
@@ -32,6 +40,7 @@ const NAV_LINKS = [
     hasMegaMenu: true,
   },
   { name: "Portfolio", href: "/portfolio" },
+  { name: "Careers", href: "/careers" },
   { name: "Blog", href: "/blog" },
   { name: "Contact", href: "/contact" },
 ];
@@ -42,11 +51,11 @@ const MEGA_MENU_SERVICES = [
     icon: Megaphone,
     href: "/digital-marketing",
     subItems: [
-      { name: "SEO", href: "/seo" },
-      { name: "Google Ads", href: "/google-ads" },
-      { name: "Meta Ads", href: "/meta-ads" },
-      { name: "Social Media Marketing", href: "/social-media-marketing" },
-      { name: "Content Marketing", href: "/content-marketing" },
+      { name: "SEO Optimization", href: "/seo" },
+      { name: "Google Search & Display Ads", href: "/google-ads" },
+      { name: "Meta & Social Ads", href: "/meta-ads" },
+      { name: "Social Media Strategy", href: "/social-media-marketing" },
+      { name: "Content & Copywriting", href: "/content-marketing" },
     ],
   },
   {
@@ -54,10 +63,10 @@ const MEGA_MENU_SERVICES = [
     icon: Monitor,
     href: "/web-development",
     subItems: [
-      { name: "Corporate Websites", href: "/corporate-websites" },
-      { name: "E-Commerce Stores", href: "/ecommerce-stores" },
-      { name: "Web Portals", href: "/web-portals" },
-      { name: "Landing Pages", href: "/landing-pages" },
+      { name: "Corporate Web Portals", href: "/corporate-websites" },
+      { name: "High-Scale E-Commerce", href: "/ecommerce-stores" },
+      { name: "Custom Web Applications", href: "/web-portals" },
+      { name: "High-Conversion Landing Pages", href: "/landing-pages" },
     ],
   },
   {
@@ -65,10 +74,10 @@ const MEGA_MENU_SERVICES = [
     icon: Palette,
     href: "/website-designing",
     subItems: [
-      { name: "UI/UX Design", href: "/ui-ux-design" },
-      { name: "Wireframing", href: "/wireframing" },
-      { name: "Prototyping", href: "/prototyping" },
-      { name: "Website Revamp", href: "/website-revamp" },
+      { name: "UI/UX Architecture", href: "/ui-ux-design" },
+      { name: "Wireframing & Prototyping", href: "/wireframing" },
+      { name: "Figma Component Systems", href: "/prototyping" },
+      { name: "Full Website Redesign", href: "/website-revamp" },
     ],
   },
   {
@@ -76,10 +85,10 @@ const MEGA_MENU_SERVICES = [
     icon: Code,
     href: "/software-development",
     subItems: [
-      { name: "Custom Software", href: "/custom-software" },
-      { name: "SaaS Development", href: "/saas-development" },
-      { name: "CRM Systems", href: "/crm-systems" },
-      { name: "ERP Solutions", href: "/erp-solutions" },
+      { name: "Custom Business Software", href: "/custom-software" },
+      { name: "SaaS Platform Engineering", href: "/saas-development" },
+      { name: "Internal CRM Architectures", href: "/crm-systems" },
+      { name: "Enterprise ERP Solutions", href: "/erp-solutions" },
     ],
   },
   {
@@ -87,10 +96,10 @@ const MEGA_MENU_SERVICES = [
     icon: Smartphone,
     href: "/app-development",
     subItems: [
-      { name: "iOS Development", href: "/ios-development" },
-      { name: "Android Development", href: "/android-development" },
-      { name: "Cross-Platform Apps", href: "/cross-platform-apps" },
-      { name: "App Maintenance", href: "/app-maintenance" },
+      { name: "Native iOS Apps", href: "/ios-development" },
+      { name: "Native Android Apps", href: "/android-development" },
+      { name: "Cross-Platform React Native", href: "/cross-platform-apps" },
+      { name: "App Maintenance & SLA", href: "/app-maintenance" },
     ],
   },
   {
@@ -98,47 +107,35 @@ const MEGA_MENU_SERVICES = [
     icon: PenTool,
     href: "/graphics-designing",
     subItems: [
-      { name: "Logo Design", href: "/logo-design" },
-      { name: "Brand Identity", href: "/brand-identity" },
-      { name: "Marketing Collaterals", href: "/marketing-collaterals" },
-      { name: "Social Media Posts", href: "/social-media-posts" },
+      { name: "Corporate Logo Design", href: "/logo-design" },
+      { name: "Brand Guidelines & System", href: "/brand-identity" },
+      { name: "Executive Marketing Collaterals", href: "/marketing-collaterals" },
+      { name: "Social Media Campaign Kits", href: "/social-media-posts" },
     ],
   },
   {
-    title: "Domain Hosting",
+    title: "Cloud & Infrastructure",
     icon: Server,
     href: "/domain-hosting",
     subItems: [
-      { name: "Shared Hosting", href: "/shared-hosting" },
-      { name: "VPS Hosting", href: "/vps-hosting" },
-      { name: "Dedicated Servers", href: "/dedicated-servers" },
-      { name: "Domain Registration", href: "/domain-registration" },
+      { name: "High-Performance Cloud Hosting", href: "/shared-hosting" },
+      { name: "Dedicated Server Deployment", href: "/vps-hosting" },
+      { name: "Enterprise Edge CDN", href: "/dedicated-servers" },
+      { name: "Domain & DNS Governance", href: "/domain-registration" },
     ],
   },
   {
-    title: "Product Photography",
-    icon: Camera,
-    href: "/product-photography",
-    subItems: [
-      { name: "E-commerce Photography", href: "/ecommerce-photography" },
-      { name: "Lifestyle Photography", href: "/lifestyle-photography" },
-      { name: "Studio Shoots", href: "/studio-shoots" },
-      { name: "Image Editing", href: "/image-editing" },
-    ],
-  },
-  {
-    title: "Commercial Ads",
+    title: "Commercial Media & Video",
     icon: Video,
     href: "/commercial-ads",
     subItems: [
-      { name: "Video Production", href: "/video-production" },
-      { name: "Ad Campaigns", href: "/ad-campaigns" },
-      { name: "Scriptwriting", href: "/scriptwriting" },
-      { name: "Post Production", href: "/post-production" },
+      { name: "Commercial Video Production", href: "/video-production" },
+      { name: "Digital Ad Campaigns", href: "/ad-campaigns" },
+      { name: "Scriptwriting & Storyboards", href: "/scriptwriting" },
+      { name: "Color Grading & Post Production", href: "/post-production" },
     ],
   },
 ];
-
 
 export function Navbar() {
   const pathname = usePathname();
@@ -151,7 +148,7 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -161,131 +158,117 @@ export function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
-          isScrolled
-            ? "bg-white/80 backdrop-blur-2xl border-b border-luxury-gold/20 py-2 shadow-[0_4px_30px_rgba(212,175,55,0.1)]"
-            : "bg-transparent py-4 md:py-6"
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b border-[#E2D8C3] backdrop-blur-md",
+          isScrolled ? "py-2 shadow-xs bg-white/98" : "py-3 md:py-3.5 bg-white/95"
         )}
       >
-        <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
-          <Link href="/" className="relative z-50 flex items-center">
+        <div className="container mx-auto px-6 md:px-12 flex items-center justify-between max-w-7xl">
+          
+          {/* Logo on Left - Big, Bold, Beautiful & Perfectly Contained */}
+          <Link href="/" className="relative z-50 flex items-center group py-0.5">
             <Image
-              src="/logo.png"
+              src="/brand-logo.png"
               alt="Digital Dictionary"
-              width={180}
-              height={50}
-              className="object-contain w-32 h-auto md:w-44"
+              width={260}
+              height={195}
+              className="object-contain h-14 sm:h-16 md:h-17 w-auto drop-shadow-sm transition-transform duration-200 group-hover:scale-105"
               priority
+              unoptimized
             />
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center space-x-8">
+          {/* Desktop Navigation Links */}
+          <nav className="hidden lg:flex items-center space-x-7">
             {NAV_LINKS.map((link) => (
               <div
                 key={link.name}
-                className="relative group"
+                className="relative"
                 onMouseEnter={() => link.hasMegaMenu && setMegaMenuOpen(true)}
                 onMouseLeave={() => link.hasMegaMenu && setMegaMenuOpen(false)}
               >
                 <Link
                   href={link.href}
                   className={cn(
-                    "text-sm font-medium transition-all flex items-center pb-6 -mb-6 group",
-                    link.name === "Digital Solutions" ? "" : "text-charcoal hover:text-charcoal"
+                    "text-xs uppercase tracking-wider font-semibold transition-colors flex items-center gap-1.5 py-2",
+                    pathname === link.href ? "text-[#8C6A16]" : "text-slate-700 hover:text-slate-900"
                   )}
                 >
-                  <span className={cn(
-                    "relative flex items-center gap-1 transition-all py-1",
-                    link.name === "Digital Solutions" 
-                      ? "text-off-white bg-charcoal px-4 py-1.5 rounded-full shadow-lg border border-luxury-gold/30 hover:border-luxury-gold hover:shadow-[0_0_15px_rgba(212,175,55,0.4)]" 
-                      : (pathname === link.href ? "font-bold text-charcoal" : "")
-                  )}>
-                    {link.name}
-                    {link.hasMegaMenu && (
-                      <ChevronDown className={cn("w-4 h-4 transition-transform", megaMenuOpen && "rotate-180")} />
-                    )}
-                    {link.name !== "Digital Solutions" && (
-                      <span 
-                        className={cn(
-                          "absolute bottom-0 left-0 w-full h-[2px] bg-charcoal rounded-full transition-all duration-300",
-                          pathname === link.href ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
-                        )} 
-                      />
-                    )}
-                  </span>
+                  <span>{link.name}</span>
+                  {link.hasMegaMenu && (
+                    <ChevronDown className={cn("w-3.5 h-3.5 text-slate-400 transition-transform", megaMenuOpen && "rotate-180")} />
+                  )}
                 </Link>
 
-                {/* Mega Menu Dropdown */}
+                {/* Structured Mega-Menu Dropdown (Like Microsoft / Google Cloud) */}
                 {link.hasMegaMenu && megaMenuOpen && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-[750px] bg-white/95 backdrop-blur-2xl rounded-3xl border border-luxury-gold/30 flex overflow-hidden z-50 shadow-[0_10px_40px_rgba(212,175,55,0.15)]">
-                    
-                    {/* Left Pane - Services List */}
-                    <div className="w-[45%] bg-luxury-gold/5 p-6 border-r border-luxury-gold/20">
-                      <h4 className="text-[11px] font-bold tracking-widest text-charcoal uppercase mb-4 ml-4">
-                        SERVICES
-                      </h4>
-                      <div className="flex flex-col h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                        {MEGA_MENU_SERVICES.map((service, idx) => {
-                          const isActive = activeServiceIdx === idx;
-                          return (
-                            <Link
-                              href={service.href}
-                              key={service.title}
-                              onMouseEnter={() => setActiveServiceIdx(idx)}
-                              className={cn(
-                                "flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 mb-1",
-                                isActive 
-                                  ? "bg-gradient-to-r from-luxury-gold to-bright-gold text-off-white shadow-md shadow-luxury-gold/20" 
-                                  : "text-soft-charcoal hover:text-charcoal hover:bg-white/50"
-                              )}
-                            >
-                              <div className="flex items-center gap-3">
-                                <service.icon className={cn("w-4 h-4", isActive ? "text-off-white" : "text-charcoal")} />
-                                <span className={cn("text-sm font-medium", isActive ? "text-off-white" : "text-gray-700")}>
-                                  {service.title}
-                                </span>
-                              </div>
-                              {isActive && <ChevronRight className="w-4 h-4 text-off-white" />}
-                            </Link>
-                          );
-                        })}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 pt-3 w-[780px] z-50">
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden flex">
+                      
+                      {/* Left Column: Solution Tracks */}
+                      <div className="w-[45%] bg-[#F8FAFC] p-5 border-r border-slate-200">
+                        <span className="text-[10px] font-bold tracking-widest text-[#8C6A16] uppercase block mb-3 px-3">
+                          Solution Tracks
+                        </span>
+                        <div className="space-y-1">
+                          {MEGA_MENU_SERVICES.map((service, idx) => {
+                            const isActive = activeServiceIdx === idx;
+                            return (
+                              <Link
+                                href={service.href}
+                                key={service.title}
+                                onMouseEnter={() => setActiveServiceIdx(idx)}
+                                className={cn(
+                                  "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors",
+                                  isActive 
+                                    ? "bg-white text-slate-900 shadow-xs border border-slate-200 font-bold" 
+                                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                                )}
+                              >
+                                <div className="flex items-center gap-2.5">
+                                  <service.icon className={cn("w-4 h-4", isActive ? "text-[#8C6A16]" : "text-slate-400")} />
+                                  <span>{service.title}</span>
+                                </div>
+                                {isActive && <ChevronRight className="w-3.5 h-3.5 text-[#8C6A16]" />}
+                              </Link>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Right Pane - Sub Items */}
-                    <div className="w-[55%] bg-white p-10">
-                      {MEGA_MENU_SERVICES[activeServiceIdx] && (
+                      {/* Right Column: Detailed Sub-Capabilities */}
+                      <div className="w-[55%] p-6 flex flex-col justify-between">
                         <div>
-                          <div className="flex items-center gap-3 mb-6">
-                            <div className="text-charcoal">
-                              {(() => {
-                                const Icon = MEGA_MENU_SERVICES[activeServiceIdx].icon;
-                                return <Icon className="w-6 h-6" />;
-                              })()}
-                            </div>
-                            <h3 className="text-xl font-bold text-charcoal">
+                          <div className="flex items-center gap-2 pb-3 mb-4 border-b border-slate-100">
+                            <h4 className="text-sm font-bold text-slate-900">
                               {MEGA_MENU_SERVICES[activeServiceIdx].title}
-                            </h3>
+                            </h4>
                           </div>
-                          
-                          <div className="w-full h-[1px] bg-border mb-8" />
-                          
-                          <ul className="space-y-6">
-                            {MEGA_MENU_SERVICES[activeServiceIdx].subItems.map((subItem) => (
-                              <li key={subItem.name}>
-                                <Link
-                                  href={subItem.href}
-                                  className="flex items-center gap-4 text-soft-charcoal hover:text-charcoal hover:translate-x-1 transition-all text-sm font-medium"
+
+                          <ul className="space-y-3">
+                            {MEGA_MENU_SERVICES[activeServiceIdx].subItems.map((sub) => (
+                              <li key={sub.name}>
+                                <Link 
+                                  href={sub.href}
+                                  className="text-xs text-slate-600 hover:text-[#8C6A16] flex items-center justify-between group transition-colors"
                                 >
-                                  <div className="w-1.5 h-1.5 rounded-full bg-luxury-gold/50" />
-                                  {subItem.name}
+                                  <span>{sub.name}</span>
+                                  <ChevronRight className="w-3 h-3 text-slate-300 group-hover:text-[#8C6A16] group-hover:translate-x-0.5 transition-all" />
                                 </Link>
                               </li>
                             ))}
                           </ul>
                         </div>
-                      )}
+
+                        <div className="pt-4 border-t border-slate-100 mt-6 flex items-center justify-between">
+                          <Link 
+                            href="/contact" 
+                            className="text-xs text-[#8C6A16] hover:underline flex items-center gap-1 font-bold uppercase tracking-wider"
+                          >
+                            Discuss Solution With Team &rarr;
+                          </Link>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
                 )}
@@ -293,143 +276,99 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* CTA & Mobile Toggle */}
+          {/* Right Action Button & Mobile Toggle */}
           <div className="flex items-center gap-4 relative z-50">
             <div className="hidden md:block">
-              <PremiumButton href="/contact" className="px-6 py-2.5 shadow-sm hover:-translate-y-[2px]">
-                Quick Consultation
-              </PremiumButton>
+              <Link
+                href="/contact"
+                className="px-5 py-2 rounded-full bg-gradient-to-r from-[#B8860B] via-[#D4AF37] to-[#996515] hover:from-[#996515] hover:to-[#B8860B] text-white font-semibold text-xs tracking-wider uppercase transition-all shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] border border-[#F3E5AB]/40 inline-flex items-center gap-1.5"
+              >
+                <span>Get In Touch</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
             </div>
 
             <button
-              className="lg:hidden text-charcoal hover:text-charcoal transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
+              aria-label="Toggle navigation"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
+
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-3xl pt-28 px-6 pb-6 flex flex-col overflow-y-auto"
-          >
-             <div className="flex flex-col space-y-8">
-              {NAV_LINKS.map((link, idx) => (
-                <motion.div 
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  key={link.name}
-                >
-                  {link.hasMegaMenu ? (
+      {/* Clean Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 top-[74px] bg-white z-40 lg:hidden overflow-y-auto border-t border-slate-200 p-6 flex flex-col justify-between">
+          <div className="space-y-4">
+            {NAV_LINKS.map((link) => (
+              <div key={link.name}>
+                {link.hasMegaMenu ? (
+                  <div>
                     <button
-                      className={cn(
-                        "text-4xl font-serif text-charcoal hover:text-charcoal transition-colors flex items-center justify-between w-full text-left",
-                        mobileServicesOpen && "text-charcoal"
-                      )}
                       onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                      className="w-full flex items-center justify-between py-2 text-base font-bold text-slate-900 border-b border-slate-100"
                     >
-                      {link.name}
-                      <ChevronDown className={cn("w-6 h-6 transition-transform", mobileServicesOpen && "rotate-180")} />
+                      <span>{link.name}</span>
+                      <ChevronDown className={cn("w-4 h-4 transition-transform", mobileServicesOpen && "rotate-180")} />
                     </button>
-                  ) : (
-                    <Link
-                      href={link.href}
-                      className={cn(
-                        "text-4xl font-serif hover:text-charcoal transition-colors block w-full",
-                        pathname === link.href ? "text-charcoal" : "text-charcoal"
-                      )}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
-                  )}
-                  
-                  {/* Expandable Services Accordion */}
-                  {link.hasMegaMenu && (
-                    <AnimatePresence>
-                      {mobileServicesOpen && (
-                        <motion.div 
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="mt-6 ml-4 space-y-4 overflow-hidden"
-                        >
-                          {MEGA_MENU_SERVICES.map((service) => (
-                            <div key={service.title} className="bg-card/50 rounded-2xl overflow-hidden border border-border/50 shadow-sm">
-                              <button 
-                                className="w-full flex items-center justify-between p-4"
-                                onClick={() => setExpandedMobileCategory(expandedMobileCategory === service.title ? null : service.title)}
-                              >
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-full bg-luxury-gold/10 flex items-center justify-center">
-                                    <service.icon className="w-4 h-4 text-charcoal" />
-                                  </div>
-                                  <span className="text-[13px] font-bold text-charcoal tracking-wide uppercase">{service.title}</span>
-                                </div>
-                                <ChevronDown className={cn("w-4 h-4 text-gray-500 transition-transform", expandedMobileCategory === service.title && "rotate-180")} />
-                              </button>
-                              
-                              <AnimatePresence>
-                                {expandedMobileCategory === service.title && (
-                                  <motion.div 
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="overflow-hidden bg-white/50"
+
+                    {mobileServicesOpen && (
+                      <div className="pl-4 py-3 space-y-3 bg-[#F8FAFC] rounded-xl my-2">
+                        {MEGA_MENU_SERVICES.map((cat) => (
+                          <div key={cat.title}>
+                            <button
+                              onClick={() => setExpandedMobileCategory(expandedMobileCategory === cat.title ? null : cat.title)}
+                              className="w-full flex items-center justify-between text-xs font-bold text-slate-800 py-1"
+                            >
+                              <span>{cat.title}</span>
+                              <ChevronDown className={cn("w-3 h-3", expandedMobileCategory === cat.title && "rotate-180")} />
+                            </button>
+                            {expandedMobileCategory === cat.title && (
+                              <div className="pl-3 py-1 space-y-1">
+                                {cat.subItems.map((sub) => (
+                                  <Link
+                                    key={sub.name}
+                                    href={sub.href}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="block text-xs text-slate-600 hover:text-slate-900 py-1"
                                   >
-                                    <ul className="pb-4 px-4 space-y-1">
-                                      {service.subItems.map((item) => (
-                                        <li key={item.name}>
-                                          <Link
-                                            href={item.href}
-                                            className="flex items-center gap-3 py-2.5 text-sm text-soft-charcoal hover:text-charcoal font-medium"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                          >
-                                            <div className="w-1.5 h-1.5 rounded-full bg-luxury-gold/40" />
-                                            {item.name}
-                                          </Link>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  )}
-                </motion.div>
-              ))}
+                                    {sub.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    href={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block py-2 text-base font-bold text-slate-900 border-b border-slate-100 hover:text-[#8C6A16] transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-8 border-t border-slate-200 mt-6 space-y-3">
+            <PremiumButton href="/contact" className="w-full justify-center">
+              Schedule a Consultation
+            </PremiumButton>
+            <div className="text-center text-xs text-slate-500">
+              Direct Phone: +91 62911 11428 &middot; hr@digitaldictionary.in
             </div>
-  
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mt-auto pt-12"
-            >
-              <Link
-                href="/contact"
-                className="w-full block text-center bg-charcoal text-off-white px-8 py-4 rounded-full text-lg font-bold shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)] hover:shadow-[0_10px_40px_-10px_rgba(212,175,55,0.4)] hover:bg-luxury-gold transition-all duration-300"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Quick Consultation &rarr;
-              </Link>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </>
   );
 }

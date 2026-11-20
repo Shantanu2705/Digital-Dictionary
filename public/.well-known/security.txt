@@ -1,0 +1,7 @@
+Contact: mailto:hr@digitaldictionary.in
+Contact: mailto:admin07digitaldictionary@gmail.com
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, hi
+Canonical: https://digitaldictionary.in/.well-known/security.txt
+Policy: https://digitaldictionary.in/contact
+Hiring: https://digitaldictionary.in/careers
