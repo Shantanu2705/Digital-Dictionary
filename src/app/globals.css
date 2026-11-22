@@ -5,23 +5,26 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-border: var(--border);
-  --color-primary-gold: #B8860B;
-  --color-luxury-gold: #967424;
-  --color-deep-gold: #7D601C;
-  --color-dark-gold: #5C4510;
-  --color-corporate-slate: #0F172A;
-  --color-corporate-muted: #475569;
-  --color-corporate-bg: #F8FAFC;
-  
+
+  /* Master Brand Color Tokens */
+  --color-gold-metallic: #D4AF37;
+  --color-gold-champagne: #E8D18A;
+  --color-gold-deep: #A67C22;
+  --color-rich-black: #101010;
+  --color-charcoal: #1B1B1B;
+  --color-warm-white: #FAFAF8;
+  --color-soft-grey: #F2F2F0;
+  --color-muted-grey: #777777;
+
   --font-sans: var(--font-inter);
   --font-serif: var(--font-playfair);
 }
 
 :root {
-  --background: #F4ECE0;
-  --foreground: #0F172A;
+  --background: #FAFAF8;
+  --foreground: #101010;
   --card: #FFFFFF;
-  --border: #D5C7A3;
+  --border: #E5E5E2;
 }
 
 body {
@@ -34,46 +37,47 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Subtle, clean enterprise scrollbar */
+/* Precise Enterprise Scrollbar */
 ::-webkit-scrollbar {
-  width: 7px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F8FAFC;
+  background: #FAFAF8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 4px;
+  background: #D1D1CD;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #A67C22;
 }
 
-/* Selection Color */
+/* Strategic Gold Selection Color */
 ::selection {
-  background-color: #B8860B;
-  color: #FFFFFF;
+  background-color: #D4AF37;
+  color: #101010;
 }
 
-/* Dignified Corporate Gold Utilities (Restrained, Institutional) */
-.text-gold-accent {
-  color: #967424;
-}
-
+/* Strategic Metallic Gold Utilities */
 .text-gold-gradient {
-  background: linear-gradient(135deg, #8C6A16 0%, #B8860B 50%, #7D601C 100%);
+  background: linear-gradient(135deg, #D4AF37 0%, #E8D18A 50%, #A67C22 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.border-gold-subtle {
-  border-color: #E2D9C2;
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #E8D18A 50%, #A67C22 100%);
 }
 
+.border-gold-subtle {
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+/* Infinite Marquee */
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
 }
 .animate-marquee {
-  animation: marquee 70s linear infinite;
+  animation: marquee 60s linear infinite;
 }

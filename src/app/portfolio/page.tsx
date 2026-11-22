@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
@@ -69,26 +69,26 @@ export default function PortfolioPage() {
     : PROJECTS.filter(p => p.category === activeCategory);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-background overflow-hidden relative">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-[#FAFAF8] overflow-hidden relative">
       <Navbar />
 
       {/* Ambient gold glow */}
-      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#C5A059]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#D4AF37]/5 rounded-full blur-[140px] pointer-events-none" />
       
-      <section className="w-full pt-44 pb-24 relative z-10">
+      <section className="w-full pt-44 pb-24 relative z-10 border-b border-[#E5E5E2]">
         <div className="container mx-auto px-6 md:px-12">
           <div className="mb-10 text-center md:text-left">
-            <span className="text-xs uppercase tracking-widest mb-3 font-semibold text-[#8C6A16] block">
+            <span className="text-xs uppercase tracking-widest mb-3 font-semibold text-[#A67C22] block">
               Credentials &amp; Deployments
             </span>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-slate-900 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-[#101010] leading-tight">
               Client Case Studies &amp; <br />
-              <span className="italic font-light text-[#8C6A16]">Production Work.</span>
+              <span className="italic font-light text-[#A67C22]">Production Work.</span>
             </h1>
           </div>
           
-          <div className="bg-[#F8FAFC] border border-slate-200 rounded-2xl p-6 max-w-2xl shadow-2xs mb-10">
-            <p className="text-sm md:text-base text-slate-600 font-normal leading-relaxed">
+          <div className="bg-white border border-[#E5E5E2] rounded-2xl p-6 max-w-2xl shadow-2xs mb-10">
+            <p className="text-sm md:text-base text-[#1B1B1B]/80 font-normal leading-relaxed">
               A curated portfolio of high-performance web systems, brand architectures, and booking engines engineered by Digital Dictionary.
             </p>
           </div>
@@ -102,8 +102,8 @@ export default function PortfolioPage() {
                 className={cn(
                   "px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all duration-200 shadow-2xs border cursor-pointer",
                   activeCategory === category 
-                    ? "bg-[#0F172A] text-white border-[#0F172A] font-bold" 
-                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                    ? "bg-[#101010] text-white border-[#101010] font-bold" 
+                    : "bg-white border-[#E5E5E2] text-[#777777] hover:bg-[#F2F2F0] hover:border-[#D4AF37] hover:text-[#101010]"
                 )}
               >
                 {category}
@@ -123,7 +123,7 @@ export default function PortfolioPage() {
                 <div
                   key={project.id}
                   className={cn(
-                    "group relative block overflow-hidden rounded-3xl bg-white border border-[#E8DFC8] hover:border-[#C5A059] shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300",
+                    "group relative block overflow-hidden rounded-2xl bg-white border border-[#E5E5E2] hover:border-[#D4AF37] shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300",
                     spanClass
                   )}
                 >
@@ -131,7 +131,7 @@ export default function PortfolioPage() {
                   <div className="absolute inset-0 flex items-center justify-center overflow-hidden transition-transform duration-700 group-hover:scale-105 p-6 md:p-8">
                     <div className="relative w-full h-full">
                       <Image
-                        src={`/clients/${project.image}`}
+                        src={`/clients/${encodeURIComponent(project.image)}`}
                         alt={project.title}
                         fill
                         className="object-contain"
@@ -141,17 +141,17 @@ export default function PortfolioPage() {
                   </div>
 
                   {/* Dark Gradient Overlay for Contrast on hover only */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                   {/* Hover Details */}
                   <div className="absolute inset-0 p-6 flex flex-col justify-end translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-10">
-                    <span className="text-[#DFB76C] text-[10px] font-bold tracking-[0.2em] uppercase mb-1">
+                    <span className="text-[#E8D18A] text-[10px] font-bold tracking-[0.2em] uppercase mb-1">
                       {project.category}
                     </span>
                     <h3 className="text-base md:text-lg font-bold text-white leading-snug mb-3">
                       {project.title}
                     </h3>
-                    <div className="w-9 h-9 shrink-0 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40 hover:bg-[#C5A059] hover:border-[#C5A059] transition-colors">
+                    <div className="w-8 h-8 shrink-0 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white border border-white/40 hover:bg-[#D4AF37] hover:border-[#D4AF37] hover:text-[#101010] transition-colors">
                       <ArrowUpRight className="w-4 h-4" />
                     </div>
                   </div>
@@ -160,22 +160,22 @@ export default function PortfolioPage() {
             })}
           </div>
 
-          {/* Bottom CTA to Contact / Custom Project */}
-          <div className="mt-20 p-8 md:p-12 rounded-2xl bg-[#F8FAFC] border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xs">
+          {/* Bottom CTA to Contact */}
+          <div className="mt-20 p-8 md:p-12 rounded-2xl bg-[#101010] text-white border border-[#D4AF37]/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
             <div>
-              <span className="text-xs font-semibold uppercase tracking-widest text-[#8C6A16] block mb-1">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#E8D18A] block mb-1">
                 Initiate a Project
               </span>
-              <h3 className="text-xl md:text-2xl font-serif font-bold text-slate-900">
+              <h3 className="text-xl md:text-2xl font-serif font-bold text-white">
                 Ready to Engineer a High-Performance Digital Platform?
               </h3>
             </div>
             <Link
               href="/contact"
-              className="px-7 py-3.5 rounded-lg bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs uppercase tracking-wider shadow-xs hover:shadow-sm transition-all whitespace-nowrap flex items-center gap-2"
+              className="px-7 py-3.5 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#E8D18A] to-[#A67C22] hover:from-[#A67C22] hover:to-[#D4AF37] text-[#101010] font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-xl transition-all whitespace-nowrap flex items-center gap-2"
             >
               <span>Schedule a Consultation</span>
-              <ArrowUpRight className="w-4 h-4 text-[#DFB76C]" />
+              <ArrowUpRight className="w-4 h-4 text-[#101010]" />
             </Link>
           </div>
         </div>

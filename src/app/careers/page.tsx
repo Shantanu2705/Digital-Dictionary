@@ -4,9 +4,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { 
-  Briefcase, 
   Mail, 
-  FileText, 
   CheckCircle2, 
   ArrowUpRight, 
   Copy, 
@@ -17,12 +15,9 @@ import {
   ShieldCheck, 
   Video, 
   Target, 
-  Users, 
   GraduationCap, 
-  Award,
-  ChevronDown
+  Award
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const INTERNSHIP_ROLES = [
   {
@@ -177,7 +172,6 @@ const INTERNSHIP_ROLES = [
 
 export default function CareersPage() {
   const [copied, setCopied] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
 
   const hrEmail = "hr@digitaldictionary.in";
 
@@ -221,55 +215,55 @@ Sincerely,
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-white overflow-hidden relative">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-[#FAFAF8] overflow-hidden relative">
       <Navbar />
 
       {/* Hero Header */}
-      <section className="w-full pt-40 pb-16 relative z-10 bg-[#F8FAFC] border-b border-slate-200">
+      <section className="w-full pt-40 pb-16 relative z-10 bg-[#F2F2F0] border-b border-[#E5E5E2]">
         <div className="container mx-auto px-6 md:px-12 text-center max-w-5xl">
           
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-slate-200 bg-white shadow-2xs mb-6">
-            <GraduationCap className="w-4 h-4 text-[#8C6A16]" />
-            <span className="text-xs uppercase tracking-wider font-semibold text-slate-700">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#E5E5E2] bg-white shadow-2xs mb-6">
+            <GraduationCap className="w-4 h-4 text-[#A67C22]" />
+            <span className="text-xs uppercase tracking-wider font-semibold text-[#101010]">
               Digital Dictionary Talent Program &middot; 2026 Cohort
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium tracking-tight text-slate-900 mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-medium tracking-tight text-[#101010] mb-6 leading-tight">
             Build Your Career on <br />
-            <span className="italic font-light text-[#8C6A16]">Production-Grade Systems.</span>
+            <span className="italic font-light text-[#A67C22]">Production-Grade Systems.</span>
           </h1>
 
-          <p className="text-base md:text-lg text-slate-600 max-w-3xl mx-auto leading-relaxed mb-12">
+          <p className="text-base md:text-lg text-[#1B1B1B]/80 max-w-3xl mx-auto leading-relaxed mb-12">
             At Digital Dictionary, interns work directly alongside senior engineers and strategists on live client architectures, enterprise web applications, and real-world commercial campaigns.
           </p>
 
           {/* FORMAL APPLICATION DESK BANNER */}
-          <div className="max-w-4xl mx-auto bg-white border border-slate-200 rounded-2xl p-8 md:p-10 shadow-xs text-left">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+          <div className="max-w-4xl mx-auto bg-white border border-[#E5E5E2] rounded-2xl p-8 md:p-10 shadow-xs text-left">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-6 border-b border-[#E5E5E2]">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-widest text-[#8C6A16] block mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-widest text-[#A67C22] block mb-1">
                   Official Talent Recruitment Desk
                 </span>
-                <h2 className="text-xl md:text-2xl font-serif text-slate-900 flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-[#8C6A16]" />
-                  Direct Applications: <span className="text-slate-900 font-mono font-bold">{hrEmail}</span>
+                <h2 className="text-xl md:text-2xl font-serif text-[#101010] flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-[#A67C22]" />
+                  Direct Applications: <span className="text-[#101010] font-mono font-bold">{hrEmail}</span>
                 </h2>
               </div>
 
               <div className="flex items-center gap-3 w-full md:w-auto">
                 <button
                   onClick={handleCopyEmail}
-                  className="px-5 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow-2xs cursor-pointer"
+                  className="px-5 py-2.5 rounded-lg border border-[#E5E5E2] bg-white hover:bg-[#F2F2F0] text-[#101010] text-xs font-semibold uppercase tracking-wider transition-all flex items-center gap-2 shadow-2xs cursor-pointer"
                 >
                   {copied ? (
                     <>
-                      <Check className="w-4 h-4 text-green-600" />
+                      <Check className="w-4 h-4 text-emerald-600" />
                       Email Copied!
                     </>
                   ) : (
                     <>
-                      <Copy className="w-4 h-4 text-slate-500" />
+                      <Copy className="w-4 h-4 text-[#777777]" />
                       Copy HR Email
                     </>
                   )}
@@ -277,9 +271,9 @@ Sincerely,
 
                 <a
                   href={generateMailto("General Internship Application")}
-                  className="px-6 py-2.5 rounded-lg bg-[#0F172A] hover:bg-[#1E293B] text-white font-semibold text-xs uppercase tracking-wider shadow-xs hover:shadow-sm transition-all flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-lg bg-[#101010] hover:bg-[#1B1B1B] text-white font-semibold text-xs uppercase tracking-wider shadow-xs hover:shadow-sm transition-all flex items-center gap-2"
                 >
-                  <Mail className="w-4 h-4 text-[#DFB76C]" />
+                  <Mail className="w-4 h-4 text-[#D4AF37]" />
                   Open Email Client
                 </a>
               </div>
@@ -287,41 +281,41 @@ Sincerely,
 
             {/* MANDATORY APPLICATION INSTRUCTIONS */}
             <div className="pt-6">
-              <h3 className="text-xs uppercase tracking-wider font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#8C6A16]" />
+              <h3 className="text-xs uppercase tracking-wider font-bold text-[#101010] mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#A67C22]" />
                 Mandatory Application Instructions for All Candidates:
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-[#F8FAFC] rounded-xl p-5 border border-slate-200">
-                  <div className="w-7 h-7 rounded-md bg-white text-[#8C6A16] border border-slate-200 flex items-center justify-center font-bold text-xs mb-3 shadow-2xs">
+                <div className="bg-[#F2F2F0] rounded-xl p-5 border border-[#E5E5E2]">
+                  <div className="w-7 h-7 rounded-md bg-white text-[#A67C22] border border-[#E5E5E2] flex items-center justify-center font-bold text-xs mb-3 shadow-2xs">
                     01
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-1">Target Role in Subject</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  <h4 className="text-sm font-bold text-[#101010] mb-1">Target Role in Subject</h4>
+                  <p className="text-xs text-[#777777] leading-relaxed font-normal">
                     Specify the exact role in the email subject line. Format: <br />
-                    <span className="text-slate-900 font-mono text-[11px] font-semibold block mt-1">
+                    <span className="text-[#101010] font-mono text-[11px] font-semibold block mt-1">
                       [Internship] - &lt;Role Title&gt; - &lt;Your Name&gt;
                     </span>
                   </p>
                 </div>
 
-                <div className="bg-[#F8FAFC] rounded-xl p-5 border border-slate-200">
-                  <div className="w-7 h-7 rounded-md bg-white text-[#8C6A16] border border-slate-200 flex items-center justify-center font-bold text-xs mb-3 shadow-2xs">
+                <div className="bg-[#F2F2F0] rounded-xl p-5 border border-[#E5E5E2]">
+                  <div className="w-7 h-7 rounded-md bg-white text-[#A67C22] border border-[#E5E5E2] flex items-center justify-center font-bold text-xs mb-3 shadow-2xs">
                     02
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-1">Updated PDF Resume</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                    Attach your updated resume in <strong className="text-slate-900 font-semibold">PDF format</strong>. Highlight technical proficiencies, coursework, and relevant tools.
+                  <h4 className="text-sm font-bold text-[#101010] mb-1">Updated PDF Resume</h4>
+                  <p className="text-xs text-[#777777] leading-relaxed font-normal">
+                    Attach your updated resume in <strong className="text-[#101010] font-semibold">PDF format</strong>. Highlight technical proficiencies, coursework, and relevant tools.
                   </p>
                 </div>
 
-                <div className="bg-[#F8FAFC] rounded-xl p-5 border border-slate-200">
-                  <div className="w-7 h-7 rounded-md bg-white text-[#8C6A16] border border-slate-200 flex items-center justify-center font-bold text-xs mb-3 shadow-2xs">
+                <div className="bg-[#F2F2F0] rounded-xl p-5 border border-[#E5E5E2]">
+                  <div className="w-7 h-7 rounded-md bg-white text-[#A67C22] border border-[#E5E5E2] flex items-center justify-center font-bold text-xs mb-3 shadow-2xs">
                     03
                   </div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-1">Work Samples &amp; Proof</h4>
-                  <p className="text-xs text-slate-600 leading-relaxed font-normal">
+                  <h4 className="text-sm font-bold text-[#101010] mb-1">Work Samples &amp; Proof</h4>
+                  <p className="text-xs text-[#777777] leading-relaxed font-normal">
                     Include your GitHub repository, live project links, Figma design portfolio, or writing samples for technical review.
                   </p>
                 </div>
@@ -337,16 +331,16 @@ Sincerely,
       <section className="w-full py-20 relative z-10">
         <div className="container mx-auto px-6 md:px-12 max-w-6xl">
           
-          <div className="mb-12 pb-4 border-b border-slate-200 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="mb-12 pb-4 border-b border-[#E5E5E2] flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <span className="text-xs uppercase tracking-widest font-semibold text-[#8C6A16] block mb-1">
+              <span className="text-xs uppercase tracking-widest font-semibold text-[#A67C22] block mb-1">
                 Open Cohort Tracks
               </span>
-              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900">
+              <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#101010]">
                 Explore Available Internship Opportunities
               </h2>
             </div>
-            <span className="text-xs text-slate-500 font-medium">
+            <span className="text-xs text-[#777777] font-medium">
               Location: On-Site Siliguri Studio &amp; Hybrid
             </span>
           </div>
@@ -355,41 +349,41 @@ Sincerely,
             {INTERNSHIP_ROLES.map((role) => (
               <div
                 key={role.id}
-                className="p-8 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between"
+                className="p-8 rounded-2xl bg-white border border-[#E5E5E2] hover:border-[#D4AF37] shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#F8FAFC] border border-slate-200 flex items-center justify-center text-[#8C6A16]">
-                        <role.icon className="w-5 h-5" />
+                      <div className="w-10 h-10 rounded-xl bg-[#F2F2F0] border border-[#E5E5E2] flex items-center justify-center text-[#A67C22]">
+                        <role.icon className="w-5 h-5 text-[#D4AF37]" />
                       </div>
                       <div>
-                        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-[#777777] block">
                           {role.category}
                         </span>
-                        <h3 className="text-lg font-bold text-slate-900 leading-snug">
+                        <h3 className="text-lg font-bold text-[#101010] leading-snug">
                           {role.title}
                         </h3>
                       </div>
                     </div>
-                    <span className="text-[10px] font-semibold px-2.5 py-1 rounded-md bg-[#F8FAFC] border border-slate-200 text-slate-700 whitespace-nowrap">
+                    <span className="text-[10px] font-semibold px-2.5 py-1 rounded-md bg-[#F2F2F0] border border-[#E5E5E2] text-[#101010] whitespace-nowrap">
                       {role.badge}
                     </span>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                  <p className="text-xs sm:text-sm text-[#777777] leading-relaxed mb-6">
                     {role.description}
                   </p>
 
-                  <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <div className="space-y-4 pt-4 border-t border-[#E5E5E2]">
                     <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-800 block mb-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#101010] block mb-2">
                         Core Responsibilities:
                       </span>
-                      <ul className="space-y-1.5 text-xs text-slate-600">
+                      <ul className="space-y-1.5 text-xs text-[#777777]">
                         {role.responsibilities.map((resp, i) => (
                           <li key={i} className="flex items-start gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-1.5 shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] mt-1.5 shrink-0" />
                             <span>{resp}</span>
                           </li>
                         ))}
@@ -397,13 +391,13 @@ Sincerely,
                     </div>
 
                     <div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-800 block mb-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-[#101010] block mb-2">
                         Requirements:
                       </span>
-                      <ul className="space-y-1.5 text-xs text-slate-600">
+                      <ul className="space-y-1.5 text-xs text-[#777777]">
                         {role.requirements.map((req, i) => (
                           <li key={i} className="flex items-start gap-2">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
+                            <CheckCircle2 className="w-3.5 h-3.5 text-[#A67C22] mt-0.5 shrink-0" />
                             <span>{req}</span>
                           </li>
                         ))}
@@ -412,17 +406,17 @@ Sincerely,
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-slate-100 mt-6 flex items-center justify-between gap-4">
-                  <span className="text-xs font-medium text-slate-500">
+                <div className="pt-6 border-t border-[#E5E5E2] mt-6 flex items-center justify-between gap-4">
+                  <span className="text-xs font-medium text-[#777777]">
                     Duration: {role.type}
                   </span>
 
                   <a
                     href={generateMailto(role.title)}
-                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs font-semibold uppercase tracking-wider shadow-2xs hover:shadow-xs transition-all"
+                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[#101010] hover:bg-[#1B1B1B] text-white text-xs font-semibold uppercase tracking-wider shadow-2xs hover:shadow-xs transition-all"
                   >
                     <span>Apply via Email</span>
-                    <ArrowUpRight className="w-3.5 h-3.5 text-[#DFB76C]" />
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[#D4AF37]" />
                   </a>
                 </div>
               </div>
@@ -433,38 +427,38 @@ Sincerely,
       </section>
 
       {/* WHY INTERN AT DIGITAL DICTIONARY */}
-      <section className="w-full py-16 relative z-10 bg-[#F8FAFC] border-t border-slate-200">
+      <section className="w-full py-16 relative z-10 bg-[#F2F2F0] border-t border-[#E5E5E2]">
         <div className="container mx-auto px-6 md:px-12 max-w-5xl">
           <div className="text-center mb-12">
-            <span className="text-xs uppercase tracking-widest font-semibold text-[#8C6A16] block mb-2">
+            <span className="text-xs uppercase tracking-widest font-semibold text-[#A67C22] block mb-2">
               Career Development Standards
             </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-900 mb-3">
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#101010] mb-3">
               Why Launch Your Career at Digital Dictionary?
             </h2>
-            <p className="text-sm text-slate-600 max-w-2xl mx-auto">
+            <p className="text-sm text-[#777777] max-w-2xl mx-auto">
               Our internship program is structured as an intensive incubator for future technology leaders.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2">
-              <h3 className="text-sm font-bold text-slate-900">Direct Senior Mentorship</h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+            <div className="p-6 rounded-xl bg-white border border-[#E5E5E2] shadow-2xs space-y-2">
+              <h3 className="text-sm font-bold text-[#101010]">Direct Senior Mentorship</h3>
+              <p className="text-xs text-[#777777] leading-relaxed font-normal">
                 Weekly architectural code reviews, 1-on-1 strategy sessions, and direct access to agency leadership.
               </p>
             </div>
 
-            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2">
-              <h3 className="text-sm font-bold text-slate-900">Live Client Deployments</h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+            <div className="p-6 rounded-xl bg-white border border-[#E5E5E2] shadow-2xs space-y-2">
+              <h3 className="text-sm font-bold text-[#101010]">Live Client Deployments</h3>
+              <p className="text-xs text-[#777777] leading-relaxed font-normal">
                 No simulated toy apps. Your code, designs, and campaigns will ship to production for real paying clients.
               </p>
             </div>
 
-            <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-2xs space-y-2">
-              <h3 className="text-sm font-bold text-slate-900">Full-Time Conversion Path</h3>
-              <p className="text-xs text-slate-600 leading-relaxed font-normal">
+            <div className="p-6 rounded-xl bg-white border border-[#E5E5E2] shadow-2xs space-y-2">
+              <h3 className="text-sm font-bold text-[#101010]">Full-Time Conversion Path</h3>
+              <p className="text-xs text-[#777777] leading-relaxed font-normal">
                 Top performers in each cohort receive formal full-time associate offers and equity consideration.
               </p>
             </div>

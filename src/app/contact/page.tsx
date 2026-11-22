@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SmartContactLink } from "@/components/SmartContactLink";
-import { Mail, Phone, MapPin, Send, ShieldCheck, Clock, Sparkles } from "lucide-react";
+import { Mail, Phone, MapPin, Send, ShieldCheck, Clock } from "lucide-react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -41,24 +41,24 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-background overflow-hidden relative">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-[#FAFAF8] overflow-hidden relative">
       <Navbar />
 
       {/* Ambient gold glow */}
-      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[#C5A059]/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-[#D4AF37]/5 rounded-full blur-[150px] pointer-events-none" />
       
-      <section className="w-full pt-44 pb-24 relative z-10">
+      <section className="w-full pt-44 pb-24 relative z-10 border-b border-[#E5E5E2]">
         <div className="container mx-auto px-6 md:px-12">
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <span className="text-xs uppercase tracking-widest font-semibold text-[#8C6A16] block mb-3">
+            <span className="text-xs uppercase tracking-widest font-semibold text-[#A67C22] block mb-3">
               Direct Advisory &amp; Client Inquiries
             </span>
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-medium tracking-tight mb-6 text-slate-900 leading-[1.15]">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl font-serif font-medium tracking-tight mb-6 text-[#101010] leading-[1.15]">
               Connect With Our <br />
-              <span className="italic font-light text-[#8C6A16]">Strategy &amp; Technology Team.</span>
+              <span className="italic font-light text-[#A67C22]">Strategy &amp; Technology Team.</span>
             </h1>
-            <div className="bg-[#F8FAFC] border border-slate-200 rounded-2xl p-6 max-w-2xl mx-auto shadow-2xs">
-              <p className="text-base text-slate-600 font-normal leading-relaxed">
+            <div className="bg-white border border-[#E5E5E2] rounded-2xl p-6 max-w-2xl mx-auto shadow-2xs">
+              <p className="text-base text-[#1B1B1B]/80 font-normal leading-relaxed">
                 Submit your project specifications or contact our studio directly. Our engineering leadership will review your requirements and respond with architectural guidance within 24 hours.
               </p>
             </div>
@@ -67,51 +67,51 @@ export default function ContactPage() {
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-8 max-w-6xl mx-auto">
             {/* Contact Info Sidebar */}
             <div className="w-full lg:w-1/3 space-y-6">
-              <div className="bg-white border border-[#E8DFC8] rounded-[2rem] p-8 shadow-sm">
-                <div className="flex items-center gap-3 mb-6 border-b border-[#E8DFC8] pb-3">
-                  <Mail className="w-5 h-5 text-[#B8860B]" />
-                  <h3 className="text-xs uppercase tracking-widest text-[#8C6A16] font-bold">Direct Channels</h3>
+              <div className="bg-white border border-[#E5E5E2] rounded-2xl p-7 shadow-xs">
+                <div className="flex items-center gap-3 mb-5 border-b border-[#E5E5E2] pb-3">
+                  <Mail className="w-5 h-5 text-[#A67C22]" />
+                  <h3 className="text-xs uppercase tracking-widest text-[#A67C22] font-bold">Direct Channels</h3>
                 </div>
                 <div className="space-y-4 text-slate-700 text-sm font-medium">
                   <div>
-                    <span className="text-[10px] uppercase tracking-wider text-slate-400 block mb-1">General Inquiries</span>
-                    <SmartContactLink type="email" value="admin07digitaldictionary@gmail.com" className="block text-slate-900 hover:text-[#B8860B] transition-colors break-all" />
+                    <span className="text-[10px] uppercase tracking-wider text-[#777777] block mb-1">General Inquiries</span>
+                    <SmartContactLink type="email" value="admin07digitaldictionary@gmail.com" className="block text-[#101010] hover:text-[#A67C22] transition-colors break-all" />
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase tracking-wider text-slate-400 block mb-1">Internship &amp; Hiring</span>
-                    <SmartContactLink type="email" value="hr@digitaldictionary.in" className="block text-[#8C6A16] hover:underline font-bold break-all" />
+                    <span className="text-[10px] uppercase tracking-wider text-[#777777] block mb-1">Internship &amp; Hiring</span>
+                    <SmartContactLink type="email" value="hr@digitaldictionary.in" className="block text-[#A67C22] hover:underline font-bold break-all" />
                   </div>
-                  <div className="pt-2 border-t border-[#E8DFC8]">
-                    <span className="text-[10px] uppercase tracking-wider text-slate-400 block mb-1">Phone / WhatsApp</span>
-                    <SmartContactLink type="phone" value="+91 62911 11428" className="block text-slate-900 hover:text-[#B8860B] transition-colors" />
-                    <SmartContactLink type="phone" value="+91 62978 68104" className="block text-slate-900 hover:text-[#B8860B] transition-colors mt-1" />
+                  <div className="pt-2 border-t border-[#E5E5E2]">
+                    <span className="text-[10px] uppercase tracking-wider text-[#777777] block mb-1">Phone / WhatsApp</span>
+                    <SmartContactLink type="phone" value="+91 62911 11428" className="block text-[#101010] hover:text-[#A67C22] transition-colors" />
+                    <SmartContactLink type="phone" value="+91 62978 68104" className="block text-[#101010] hover:text-[#A67C22] transition-colors mt-1" />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white border border-[#E8DFC8] rounded-[2rem] p-8 shadow-sm">
-                <div className="flex items-center gap-3 mb-6 border-b border-[#E8DFC8] pb-3">
-                  <MapPin className="w-5 h-5 text-[#B8860B]" />
-                  <h3 className="text-xs uppercase tracking-widest text-[#8C6A16] font-bold">Studio Location</h3>
+              <div className="bg-white border border-[#E5E5E2] rounded-2xl p-7 shadow-xs">
+                <div className="flex items-center gap-3 mb-5 border-b border-[#E5E5E2] pb-3">
+                  <MapPin className="w-5 h-5 text-[#A67C22]" />
+                  <h3 className="text-xs uppercase tracking-widest text-[#A67C22] font-bold">Studio Location</h3>
                 </div>
-                <p className="text-slate-700 text-sm leading-relaxed">
+                <p className="text-[#101010] text-sm leading-relaxed">
                   Kawakhali Bazar,<br />
                   Kawakhali Road,<br />
                   Siliguri, West Bengal, India,<br />
                   PIN: 734012
                 </p>
-                <div className="mt-4 pt-4 border-t border-[#E8DFC8] flex items-center gap-2 text-xs text-slate-500">
-                  <Clock className="w-4 h-4 text-[#B8860B]" />
+                <div className="mt-4 pt-4 border-t border-[#E5E5E2] flex items-center gap-2 text-xs text-[#777777]">
+                  <Clock className="w-4 h-4 text-[#A67C22]" />
                   <span>Mon &ndash; Sat: 10:00 AM &ndash; 7:00 PM IST</span>
                 </div>
               </div>
 
-              <div className="bg-[#FAF8F3] border border-[#C5A059] rounded-[2rem] p-6 shadow-sm">
+              <div className="bg-[#F2F2F0] border border-[#E5E5E2] rounded-2xl p-6 shadow-2xs">
                 <div className="flex items-center gap-3 mb-2">
-                  <ShieldCheck className="w-5 h-5 text-[#B8860B]" />
-                  <span className="text-xs uppercase tracking-wider font-bold text-slate-900">Client Guarantee</span>
+                  <ShieldCheck className="w-5 h-5 text-[#A67C22]" />
+                  <span className="text-xs uppercase tracking-wider font-bold text-[#101010]">Client Guarantee</span>
                 </div>
-                <p className="text-xs text-slate-700 leading-relaxed">
+                <p className="text-xs text-[#777777] leading-relaxed">
                   Every project is covered by a milestone agreement, enterprise-grade Next.js architecture, and guaranteed 99.9% uptime deployment.
                 </p>
               </div>
@@ -119,7 +119,7 @@ export default function ContactPage() {
 
             {/* Form */}
             <div className="w-full lg:w-2/3">
-              <form onSubmit={handleSubmit} className="bg-white p-8 md:p-12 rounded-[2.5rem] border border-[#E8DFC8] shadow-sm relative overflow-hidden">
+              <form onSubmit={handleSubmit} className="bg-white p-8 md:p-10 rounded-2xl border border-[#E5E5E2] shadow-xs relative overflow-hidden">
                 <input 
                   type="text" 
                   name="honeypot" 
@@ -131,16 +131,16 @@ export default function ContactPage() {
                 />
 
                 <div className="relative z-10">
-                  <h2 className="text-xl md:text-2xl font-serif text-slate-900 mb-2 uppercase tracking-wide">
+                  <h2 className="text-xl md:text-2xl font-serif text-[#101010] mb-2 uppercase tracking-wide">
                     Project Consultation Form
                   </h2>
-                  <p className="text-xs text-slate-500 mb-8">
+                  <p className="text-xs text-[#777777] mb-8">
                     Share your requirements with our technical team for a free estimation and architecture blueprint.
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                      <label htmlFor="name" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                      <label htmlFor="name" className="block text-xs font-bold text-[#A67C22] mb-2 uppercase tracking-wider">
                         Full Name *
                       </label>
                       <input 
@@ -152,11 +152,11 @@ export default function ContactPage() {
                         placeholder="e.g. Rahul Sharma"
                         value={formData.name}
                         onChange={handleChange}
-                        className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm placeholder:text-slate-400" 
+                        className="w-full bg-[#F2F2F0] border border-[#E5E5E2] rounded-xl px-4 py-3 text-[#101010] outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:bg-white transition-all text-sm placeholder:text-[#777777]" 
                       />
                     </div>
                     <div>
-                      <label htmlFor="email" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                      <label htmlFor="email" className="block text-xs font-bold text-[#A67C22] mb-2 uppercase tracking-wider">
                         Email Address *
                       </label>
                       <input 
@@ -168,11 +168,11 @@ export default function ContactPage() {
                         placeholder="e.g. rahul@company.com"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm placeholder:text-slate-400" 
+                        className="w-full bg-[#F2F2F0] border border-[#E5E5E2] rounded-xl px-4 py-3 text-[#101010] outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:bg-white transition-all text-sm placeholder:text-[#777777]" 
                       />
                     </div>
                     <div>
-                      <label htmlFor="phone" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                      <label htmlFor="phone" className="block text-xs font-bold text-[#A67C22] mb-2 uppercase tracking-wider">
                         Phone Number *
                       </label>
                       <input 
@@ -184,11 +184,11 @@ export default function ContactPage() {
                         placeholder="e.g. +91 98765 43210"
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm placeholder:text-slate-400" 
+                        className="w-full bg-[#F2F2F0] border border-[#E5E5E2] rounded-xl px-4 py-3 text-[#101010] outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:bg-white transition-all text-sm placeholder:text-[#777777]" 
                       />
                     </div>
                     <div>
-                      <label htmlFor="company" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                      <label htmlFor="company" className="block text-xs font-bold text-[#A67C22] mb-2 uppercase tracking-wider">
                         Company / Brand Name
                       </label>
                       <input 
@@ -199,13 +199,13 @@ export default function ContactPage() {
                         placeholder="e.g. Apex Hospital / Shivaay Corp"
                         value={formData.company}
                         onChange={handleChange}
-                        className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm placeholder:text-slate-400" 
+                        className="w-full bg-[#F2F2F0] border border-[#E5E5E2] rounded-xl px-4 py-3 text-[#101010] outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:bg-white transition-all text-sm placeholder:text-[#777777]" 
                       />
                     </div>
                   </div>
 
                   <div className="mb-6">
-                    <label htmlFor="service" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                    <label htmlFor="service" className="block text-xs font-bold text-[#A67C22] mb-2 uppercase tracking-wider">
                       Service or Product Required *
                     </label>
                     <select 
@@ -213,7 +213,7 @@ export default function ContactPage() {
                       name="service"
                       value={formData.service}
                       onChange={handleChange}
-                      className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm font-medium"
+                      className="w-full bg-[#F2F2F0] border border-[#E5E5E2] rounded-xl px-4 py-3 text-[#101010] outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:bg-white transition-all text-sm font-medium"
                     >
                       <option value="Single-Page Express Landing Page (₹12,000)">Single-Page Express Landing Page (₹12,000)</option>
                       <option value="Starter Business Website - 5 Pages (₹25,000)">Starter Business Website - 5 Pages (₹25,000)</option>
@@ -231,7 +231,7 @@ export default function ContactPage() {
                   </div>
 
                   <div className="mb-8">
-                    <label htmlFor="message" className="block text-xs font-bold text-[#8C6A16] mb-2 uppercase tracking-wider">
+                    <label htmlFor="message" className="block text-xs font-bold text-[#A67C22] mb-2 uppercase tracking-wider">
                       Project Details &amp; Objectives *
                     </label>
                     <textarea 
@@ -243,21 +243,21 @@ export default function ContactPage() {
                       placeholder="Describe your target audience, timeline, specific features needed, and key business goals..."
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full bg-[#FAF8F3] border border-[#E8DFC8] rounded-xl px-4 py-3.5 text-slate-900 outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] focus:bg-white transition-all text-sm resize-none placeholder:text-slate-400" 
+                      className="w-full bg-[#F2F2F0] border border-[#E5E5E2] rounded-xl px-4 py-3 text-[#101010] outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:bg-white transition-all text-sm resize-none placeholder:text-[#777777]" 
                     />
                   </div>
 
                   <button 
                     type="submit" 
-                    className="w-full bg-gradient-to-r from-[#DFB76C] via-[#F2D675] to-[#C5A059] text-slate-900 font-bold tracking-widest uppercase text-xs sm:text-sm py-4 rounded-xl hover:-translate-y-0.5 transition-all shadow-md flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-[#D4AF37] via-[#E8D18A] to-[#A67C22] hover:from-[#A67C22] hover:to-[#D4AF37] text-[#101010] font-bold tracking-widest uppercase text-xs sm:text-sm py-4 rounded-xl hover:-translate-y-0.5 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer border border-[#E8D18A]/60"
                   >
-                    <Send className="w-4 h-4 text-slate-900" />
+                    <Send className="w-4 h-4 text-[#101010]" />
                     Submit Project Enquiry
                   </button>
 
                   {submitted && (
-                    <div className="mt-4 p-4 rounded-xl bg-[#FAF8F3] border border-[#C5A059] text-center">
-                      <p className="text-xs text-[#8C6A16] font-bold">
+                    <div className="mt-4 p-4 rounded-xl bg-[#F2F2F0] border border-[#D4AF37] text-center">
+                      <p className="text-xs text-[#A67C22] font-bold">
                         Thank you! We are redirecting you to our official WhatsApp channel for instantaneous response.
                       </p>
                     </div>

@@ -66,7 +66,7 @@ export default async function GenericServicePage({ params }: { params: Promise<{
   const imageSrc = fs.existsSync(customImagePath) ? `/${slug}.jpg` : getFallbackImage(slug);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between bg-background overflow-hidden relative">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-[#FAFAF8] overflow-hidden relative">
       <Navbar />
       
       <div className="fixed inset-0 pointer-events-none z-0">
@@ -74,26 +74,28 @@ export default async function GenericServicePage({ params }: { params: Promise<{
       </div>
 
       {/* Ambient gold glow */}
-      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#C5A059]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-32 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-[#D4AF37]/5 rounded-full blur-[140px] pointer-events-none" />
       
       {/* Hero Section */}
-      <section className="w-full pt-44 pb-20 relative z-10">
+      <section className="w-full pt-44 pb-20 relative z-10 border-b border-[#E5E5E2]">
         <div className="container mx-auto px-6 md:px-12 text-center">
-          <span className="text-xs uppercase tracking-[0.25em] font-bold border-b border-[#E8DFC8] inline-block pb-2 mb-6 text-[#8C6A16]">
-            DIGITAL SOLUTIONS &middot; SPECIALIZED CAPABILITY
+          <span className="text-xs uppercase tracking-widest font-bold text-[#A67C22] inline-block mb-4">
+            Digital Solutions &middot; Specialized Capability
           </span>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] mb-8 max-w-4xl mx-auto uppercase text-slate-900 font-serif">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08] mb-8 max-w-4xl mx-auto uppercase text-[#101010] font-serif">
             Premium {title} <br />
-            <span className="italic font-light text-[#B8860B] text-gold-gradient">Services</span>
+            <span className="italic font-light text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#E8D18A] to-[#A67C22]">
+              Services
+            </span>
           </h1>
-          <div className="bg-white border border-[#E8DFC8] rounded-3xl p-6 max-w-3xl mx-auto shadow-sm mb-14">
-            <p className="text-base md:text-lg text-slate-700 font-normal leading-relaxed">
+          <div className="bg-white border border-[#E5E5E2] rounded-2xl p-6 max-w-3xl mx-auto shadow-2xs mb-14">
+            <p className="text-base md:text-lg text-[#1B1B1B]/80 font-normal leading-relaxed">
               We deliver state-of-the-art solutions tailored to elevate your brand. 
               Our {title} services are built on data-driven strategies and luxury design principles.
             </p>
           </div>
 
-          <div className="relative w-full max-w-5xl mx-auto aspect-[21/9] rounded-[32px] overflow-hidden shadow-md border border-[#E8DFC8]">
+          <div className="relative w-full max-w-5xl mx-auto aspect-[21/9] rounded-2xl overflow-hidden shadow-md border border-[#E5E5E2]">
              <Image 
                src={imageSrc} 
                alt={`${title} Services`}
@@ -106,45 +108,45 @@ export default async function GenericServicePage({ params }: { params: Promise<{
       </section>
 
       {/* Feature Section */}
-      <section className="w-full py-20 relative z-10 bg-[#FAF8F3] border-y border-[#E8DFC8]">
+      <section className="w-full py-20 relative z-10 bg-[#F2F2F0] border-b border-[#E5E5E2]">
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 md:p-10 rounded-[2rem] bg-white border border-[#E8DFC8] text-left shadow-sm hover:-translate-y-1 hover:border-[#C5A059] transition-all duration-300">
-               <div className="w-10 h-10 rounded-full bg-[#FAF8F3] flex items-center justify-center text-[#B8860B] mb-6 border border-[#E8DFC8]">
-                 <CheckCircle2 className="w-5 h-5" />
+            <div className="p-8 md:p-10 rounded-2xl bg-white border border-[#E5E5E2] text-left shadow-xs hover:-translate-y-1 hover:border-[#D4AF37] transition-all duration-300">
+               <div className="w-10 h-10 rounded-xl bg-[#F2F2F0] flex items-center justify-center text-[#A67C22] mb-6 border border-[#E5E5E2]">
+                 <CheckCircle2 className="w-5 h-5 text-[#D4AF37]" />
                </div>
-               <h3 className="text-xl font-bold text-slate-900 mb-3 tracking-tight uppercase">Strategic Approach</h3>
-               <p className="text-slate-600 leading-relaxed text-sm">Every {title} project begins with a deep dive into your market to ensure we deliver measurable ROI and competitive moat.</p>
+               <h3 className="text-xl font-bold text-[#101010] mb-3 tracking-tight uppercase">Strategic Approach</h3>
+               <p className="text-[#777777] leading-relaxed text-sm">Every {title} project begins with a deep dive into your market to ensure we deliver measurable ROI and competitive moat.</p>
             </div>
             
-            <div className="p-8 md:p-10 rounded-[2rem] bg-white border border-[#E8DFC8] text-left shadow-sm hover:-translate-y-1 hover:border-[#C5A059] transition-all duration-300">
-               <div className="w-10 h-10 rounded-full bg-[#FAF8F3] flex items-center justify-center text-[#B8860B] mb-6 border border-[#E8DFC8]">
-                 <CheckCircle2 className="w-5 h-5" />
+            <div className="p-8 md:p-10 rounded-2xl bg-white border border-[#E5E5E2] text-left shadow-xs hover:-translate-y-1 hover:border-[#D4AF37] transition-all duration-300">
+               <div className="w-10 h-10 rounded-xl bg-[#F2F2F0] flex items-center justify-center text-[#A67C22] mb-6 border border-[#E5E5E2]">
+                 <CheckCircle2 className="w-5 h-5 text-[#D4AF37]" />
                </div>
-               <h3 className="text-xl font-bold text-slate-900 mb-3 tracking-tight uppercase">Expert Execution</h3>
-               <p className="text-slate-600 leading-relaxed text-sm">Our team of specialists utilize cutting-edge technology, enterprise security, and premium aesthetics to build your digital presence.</p>
+               <h3 className="text-xl font-bold text-[#101010] mb-3 tracking-tight uppercase">Expert Execution</h3>
+               <p className="text-[#777777] leading-relaxed text-sm">Our team of specialists utilize cutting-edge technology, enterprise security, and premium aesthetics to build your digital presence.</p>
             </div>
 
-            <div className="p-8 md:p-10 rounded-[2rem] bg-white border border-[#E8DFC8] text-left shadow-sm hover:-translate-y-1 hover:border-[#C5A059] transition-all duration-300">
-               <div className="w-10 h-10 rounded-full bg-[#FAF8F3] flex items-center justify-center text-[#B8860B] mb-6 border border-[#E8DFC8]">
-                 <CheckCircle2 className="w-5 h-5" />
+            <div className="p-8 md:p-10 rounded-2xl bg-white border border-[#E5E5E2] text-left shadow-xs hover:-translate-y-1 hover:border-[#D4AF37] transition-all duration-300">
+               <div className="w-10 h-10 rounded-xl bg-[#F2F2F0] flex items-center justify-center text-[#A67C22] mb-6 border border-[#E5E5E2]">
+                 <CheckCircle2 className="w-5 h-5 text-[#D4AF37]" />
                </div>
-               <h3 className="text-xl font-bold text-slate-900 mb-3 tracking-tight uppercase">Ongoing Growth</h3>
-               <p className="text-slate-600 leading-relaxed text-sm">We don&apos;t just deliver a product; we partner with you to scale, monitor, and optimize your {title} operations continuously.</p>
+               <h3 className="text-xl font-bold text-[#101010] mb-3 tracking-tight uppercase">Ongoing Growth</h3>
+               <p className="text-[#777777] leading-relaxed text-sm">We don&apos;t just deliver a product; we partner with you to scale, monitor, and optimize your {title} operations continuously.</p>
             </div>
           </div>
 
           {/* Quick CTA to Contact / Enquiry */}
-          <div className="mt-16 p-8 rounded-3xl bg-white border border-[#E8DFC8] flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+          <div className="mt-16 p-8 rounded-2xl bg-[#101010] text-white border border-[#D4AF37]/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
             <div>
-              <h4 className="text-lg font-serif text-slate-900">Need customized {title} solutions?</h4>
-              <p className="text-xs text-slate-500">Connect directly with our engineering team for a dedicated strategy.</p>
+              <h4 className="text-lg font-serif text-white">Need customized {title} solutions?</h4>
+              <p className="text-xs text-slate-300">Connect directly with our engineering team for a dedicated strategy.</p>
             </div>
             <Link
               href="/contact"
-              className="px-6 py-3 rounded-full bg-gradient-to-r from-[#DFB76C] to-[#C5A059] text-slate-900 font-bold text-xs uppercase tracking-widest transition-all shadow-sm hover:-translate-y-0.5 flex items-center gap-1.5 whitespace-nowrap"
+              className="px-7 py-3.5 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#E8D18A] to-[#A67C22] hover:from-[#A67C22] hover:to-[#D4AF37] text-[#101010] font-bold text-xs uppercase tracking-widest transition-all shadow-md hover:-translate-y-0.5 flex items-center gap-1.5 whitespace-nowrap"
             >
-              <Sparkles className="w-3.5 h-3.5 text-slate-900" />
+              <Sparkles className="w-3.5 h-3.5 text-[#101010]" />
               Discuss With Our Team
             </Link>
           </div>
