@@ -190,32 +190,32 @@ export default function NewClientPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Top Breadcrumb & Return */}
-      <div className="flex items-center justify-between pb-4 border-b border-[#E5E5E2]">
+      <div className="flex items-center justify-between pb-4 border-b border-white/10">
         <Link
           href="/admin/clients"
-          className="inline-flex items-center gap-1.5 text-xs text-[#777777] hover:text-[#101010] transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Client Directory</span>
         </Link>
-        <span className="text-[10px] uppercase font-bold tracking-widest text-[#A67C22]">
+        <span className="text-[10px] uppercase font-bold tracking-widest text-[#D4AF37]">
           New Client Onboarding Form
         </span>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Card 1: Basic Information */}
-        <div className="p-6 md:p-8 rounded-2xl bg-white border border-[#E5E5E2] shadow-2xs space-y-6">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-[#E5E5E2]">
-            <Building className="w-5 h-5 text-[#A67C22]" />
-            <h3 className="text-sm font-bold text-[#101010] uppercase tracking-wide">
+        <div className="p-6 md:p-8 rounded-2xl bg-[#121212] border border-white/10 shadow-2xl space-y-6">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-white/10">
+            <Building className="w-5 h-5 text-[#D4AF37]" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wide">
               1. Client &amp; Business Information
             </h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Company / Brand Name *
               </label>
               <input
@@ -224,12 +224,12 @@ export default function NewClientPage() {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="e.g. Apex Hospital / Shivaay Corp"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all font-medium"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Primary Contact Person *
               </label>
               <input
@@ -238,12 +238,12 @@ export default function NewClientPage() {
                 value={contactPerson}
                 onChange={(e) => setContactPerson(e.target.value)}
                 placeholder="e.g. Dr. Rajesh Sharma"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all font-medium"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Official Email Address *
               </label>
               <input
@@ -252,12 +252,12 @@ export default function NewClientPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. contact@company.com"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all font-medium"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Phone Number *
               </label>
               <input
@@ -266,12 +266,12 @@ export default function NewClientPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="e.g. +91 98765 43210"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all font-medium"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 WhatsApp Channel
               </label>
               <input
@@ -279,12 +279,12 @@ export default function NewClientPage() {
                 value={whatsapp}
                 onChange={(e) => setWhatsapp(e.target.value)}
                 placeholder="Leave blank to use phone number"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Existing Website URL
               </label>
               <input
@@ -292,12 +292,12 @@ export default function NewClientPage() {
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="e.g. https://company.com"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Registered Address &amp; Location
               </label>
               <input
@@ -305,33 +305,33 @@ export default function NewClientPage() {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Street address, building, floor..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all"
               />
             </div>
           </div>
         </div>
 
         {/* Card 2: Package Selection & Project Scope */}
-        <div className="p-6 md:p-8 rounded-2xl bg-white border border-[#E5E5E2] shadow-2xs space-y-6">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-[#E5E5E2]">
-            <Briefcase className="w-5 h-5 text-[#A67C22]" />
-            <h3 className="text-sm font-bold text-[#101010] uppercase tracking-wide">
+        <div className="p-6 md:p-8 rounded-2xl bg-[#121212] border border-white/10 shadow-2xl space-y-6">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-white/10">
+            <Briefcase className="w-5 h-5 text-[#D4AF37]" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wide">
               2. Package Selection &amp; Technical Scope
             </h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Selected Service Package (Official Catalogue)
               </label>
               <select
                 value={selectedPackageId}
                 onChange={(e) => handlePackageChange(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs font-semibold outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs font-semibold outline-none focus:border-[#D4AF37] transition-all"
               >
                 {packages.map((pkg) => (
-                  <option key={pkg.id} value={pkg.id}>
+                  <option key={pkg.id} value={pkg.id} className="bg-[#181818] text-white">
                     {pkg.code} &mdash; {pkg.name} (₹{pkg.price.toLocaleString("en-IN")}{pkg.billingType === "monthly" ? "/mo" : ""})
                   </option>
                 ))}
@@ -339,7 +339,7 @@ export default function NewClientPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Project Name *
               </label>
               <input
@@ -348,55 +348,55 @@ export default function NewClientPage() {
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
                 placeholder="e.g. Apex Health Next.js Platform"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all font-medium"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Engagement Status
               </label>
               <select
                 value={projectStatus}
                 onChange={(e) => setProjectStatus(e.target.value as ClientStatus)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs font-semibold outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs font-semibold outline-none focus:border-[#D4AF37] transition-all"
               >
-                <option value="closed_won">Closed — Won (Triggers 60-Min Onboarding Pack)</option>
-                <option value="active">Active (Production Underway)</option>
-                <option value="proposal_sent">Proposal Sent</option>
-                <option value="negotiation">Negotiation</option>
-                <option value="lead">Lead</option>
-                <option value="on_hold">On Hold</option>
-                <option value="completed">Completed</option>
+                <option value="closed_won" className="bg-[#181818] text-white">Closed — Won (Triggers 60-Min Onboarding Pack)</option>
+                <option value="active" className="bg-[#181818] text-white">Active (Production Underway)</option>
+                <option value="proposal_sent" className="bg-[#181818] text-white">Proposal Sent</option>
+                <option value="negotiation" className="bg-[#181818] text-white">Negotiation</option>
+                <option value="lead" className="bg-[#181818] text-white">Lead</option>
+                <option value="on_hold" className="bg-[#181818] text-white">On Hold</option>
+                <option value="completed" className="bg-[#181818] text-white">Completed</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Kickoff / Start Date
               </label>
               <input
                 type="date"
                 value={projectStartDate}
                 onChange={(e) => setProjectStartDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs outline-none focus:border-[#D4AF37] transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Target Handover Date
               </label>
               <input
                 type="date"
                 value={expectedDeliveryDate}
                 onChange={(e) => setExpectedDeliveryDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs outline-none focus:border-[#D4AF37] transition-all"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Detailed Scope Description &amp; Custom Requirements
               </label>
               <textarea
@@ -404,24 +404,24 @@ export default function NewClientPage() {
                 value={projectDescription}
                 onChange={(e) => setProjectDescription(e.target.value)}
                 placeholder="Specific features, third-party APIs, custom workflows, or integrations required..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all resize-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white placeholder:text-slate-500 text-xs outline-none focus:border-[#D4AF37] transition-all resize-none"
               />
             </div>
           </div>
         </div>
 
         {/* Card 3: Financial & Commercial Terms */}
-        <div className="p-6 md:p-8 rounded-2xl bg-white border border-[#E5E5E2] shadow-2xs space-y-6">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-[#E5E5E2]">
-            <DollarSign className="w-5 h-5 text-emerald-600" />
-            <h3 className="text-sm font-bold text-[#101010] uppercase tracking-wide">
+        <div className="p-6 md:p-8 rounded-2xl bg-[#121212] border border-white/10 shadow-2xl space-y-6">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-white/10">
+            <DollarSign className="w-5 h-5 text-emerald-400" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wide">
               3. Commercials &amp; Payment Architecture
             </h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Agreed Amount (INR) *
               </label>
               <input
@@ -429,77 +429,77 @@ export default function NewClientPage() {
                 type="number"
                 value={agreedAmount}
                 onChange={(e) => setAgreedAmount(Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs font-mono font-bold outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs font-mono font-bold outline-none focus:border-[#D4AF37] transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Advance Deposit (INR)
               </label>
               <input
                 type="number"
                 value={advancePayment}
                 onChange={(e) => setAdvancePayment(Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs font-mono font-bold outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs font-mono font-bold outline-none focus:border-[#D4AF37] transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Payment Status
               </label>
               <select
                 value={paymentStatus}
                 onChange={(e) => setPaymentStatus(e.target.value as PaymentStatus)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs font-semibold outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs font-semibold outline-none focus:border-[#D4AF37] transition-all"
               >
-                <option value="partial">Partial (Advance Received)</option>
-                <option value="paid">Fully Settled</option>
-                <option value="unpaid">Unpaid / Awaiting Transfer</option>
+                <option value="partial" className="bg-[#181818] text-white">Partial (Advance Received)</option>
+                <option value="paid" className="bg-[#181818] text-white">Fully Settled</option>
+                <option value="unpaid" className="bg-[#181818] text-white">Unpaid / Awaiting Transfer</option>
               </select>
             </div>
 
             <div className="sm:col-span-3">
-              <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
                 Payment Schedule Condition
               </label>
               <input
                 type="text"
                 value={paymentSchedule}
                 onChange={(e) => setPaymentSchedule(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs outline-none focus:border-[#D4AF37] transition-all"
               />
             </div>
           </div>
         </div>
 
         {/* Card 4: Team Assignment */}
-        <div className="p-6 md:p-8 rounded-2xl bg-white border border-[#E5E5E2] shadow-2xs space-y-6">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-[#E5E5E2]">
-            <Users className="w-5 h-5 text-[#A67C22]" />
-            <h3 className="text-sm font-bold text-[#101010] uppercase tracking-wide">
+        <div className="p-6 md:p-8 rounded-2xl bg-[#121212] border border-white/10 shadow-2xl space-y-6">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-white/10">
+            <Users className="w-5 h-5 text-[#D4AF37]" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wide">
               4. Primary Team Assignment
             </h3>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-[#101010] mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-bold text-slate-300 mb-1.5 uppercase tracking-wider">
               Primary Assigned Engineer / Lead
             </label>
             <select
               value={primaryEmployeeId}
               onChange={(e) => setPrimaryEmployeeId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs font-semibold outline-none focus:border-[#D4AF37] focus:bg-white transition-all"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-white text-xs font-semibold outline-none focus:border-[#D4AF37] transition-all"
             >
-              <option value="">-- Select Primary Lead (Can assign later) --</option>
+              <option value="" className="bg-[#181818] text-white">-- Select Primary Lead (Can assign later) --</option>
               {employees.map((emp) => (
-                <option key={emp.uid} value={emp.uid}>
+                <option key={emp.uid} value={emp.uid} className="bg-[#181818] text-white">
                   {emp.fullName} &mdash; {emp.designation} ({emp.department})
                 </option>
               ))}
             </select>
-            <p className="text-[11px] text-[#777777] mt-1.5">
+            <p className="text-[11px] text-slate-400 mt-1.5">
               Assigned employees will be able to view this client in their dedicated Employee Portal.
             </p>
           </div>
@@ -509,7 +509,7 @@ export default function NewClientPage() {
         <div className="flex items-center justify-end gap-3 pt-4">
           <Link
             href="/admin/clients"
-            className="px-5 py-2.5 rounded-xl border border-[#E5E5E2] bg-white text-xs font-semibold text-[#777777] hover:bg-[#F2F2F0] hover:text-[#101010] transition-colors"
+            className="px-5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-xs font-semibold text-slate-400 hover:bg-white/5 hover:text-white transition-colors"
           >
             Cancel
           </Link>

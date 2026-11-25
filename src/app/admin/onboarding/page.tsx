@@ -233,15 +233,15 @@ export default function OnboardingPage() {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E5E2]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
         <div>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-[#A67C22] block mb-1">
+          <span className="text-[10px] uppercase font-bold tracking-widest text-[#D4AF37] block mb-1">
             Executive SLA Protocol
           </span>
-          <h1 className="text-2xl font-serif font-bold text-[#101010]">
+          <h1 className="text-2xl font-serif font-bold text-white">
             First 60-Minutes Client Onboarding
           </h1>
-          <p className="text-xs text-[#777777]">
+          <p className="text-xs text-slate-400">
             Rapid document assembly, verification, and handover package for Closed-Won client engagements.
           </p>
         </div>
@@ -251,8 +251,8 @@ export default function OnboardingPage() {
             <div className={cn(
               "px-4 py-2 rounded-xl border flex items-center gap-2",
               isOverdue 
-                ? "bg-rose-50 border-rose-200 text-rose-700" 
-                : "bg-amber-50 border-amber-200 text-amber-800"
+                ? "bg-rose-500/10 border-rose-500/30 text-rose-300" 
+                : "bg-amber-500/10 border-amber-500/30 text-amber-300"
             )}>
               <Clock className="w-4 h-4 animate-pulse text-[#D4AF37]" />
               <div className="text-xs font-mono font-bold">
@@ -263,7 +263,7 @@ export default function OnboardingPage() {
             <button
               onClick={handleDownloadAllZip}
               disabled={generatingAll || !clientDetails}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E8D18A] to-[#A67C22] text-[#101010] text-xs font-bold uppercase tracking-wider shadow-sm hover:scale-[1.01] transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E8D18A] to-[#A67C22] text-[#101010] text-xs font-bold uppercase tracking-wider shadow-md hover:scale-[1.01] transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Download className="w-4 h-4" />
               <span>{generatingAll ? "Packaging ZIP..." : "Download 6-Doc ZIP Pack"}</span>
@@ -273,15 +273,15 @@ export default function OnboardingPage() {
       </div>
 
       {tasks.length === 0 ? (
-        <div className="p-16 text-center text-xs text-[#777777] bg-white rounded-2xl border border-[#E5E5E2] space-y-3">
-          <Clock className="w-8 h-8 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-bold text-[#101010]">No Active 60-Minute Onboarding Workflows</h3>
-          <p className="max-w-md mx-auto">
+        <div className="p-16 text-center text-xs text-slate-400 bg-[#121212] rounded-2xl border border-white/10 space-y-3 shadow-2xl">
+          <Clock className="w-8 h-8 text-slate-600 mx-auto" />
+          <h3 className="text-sm font-bold text-white">No Active 60-Minute Onboarding Workflows</h3>
+          <p className="max-w-md mx-auto text-slate-400">
             When a client status is set to &ldquo;Closed &mdash; Won&rdquo; in the Client Directory, an automated 60-minute countdown checklist will appear here immediately.
           </p>
           <Link
             href="/admin/clients/new"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#101010] text-white font-semibold"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#D4AF37] text-[#101010] font-bold"
           >
             Create Closed-Won Client
           </Link>
@@ -290,7 +290,7 @@ export default function OnboardingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Active Onboarding Tasks List */}
           <div className="space-y-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#777777] px-1 block">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1 block">
               Active Engagements ({tasks.length})
             </span>
             {tasks.map((t) => {
@@ -302,22 +302,22 @@ export default function OnboardingPage() {
                   className={cn(
                     "w-full p-4 rounded-2xl border text-left transition-all flex flex-col justify-between space-y-3 cursor-pointer",
                     isSelected 
-                      ? "bg-white border-[#D4AF37] shadow-md ring-2 ring-[#D4AF37]/15" 
-                      : "bg-[#FAFAF8] border-[#E5E5E2] hover:bg-white"
+                      ? "bg-[#181818] border-[#D4AF37] shadow-lg ring-1 ring-[#D4AF37]/30" 
+                      : "bg-[#121212] border-white/10 hover:border-white/20"
                   )}
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="text-xs font-bold text-[#101010]">{t.clientName}</h4>
-                      <span className="text-[10px] text-[#777777] font-mono block mt-0.5">
+                      <h4 className="text-xs font-bold text-white">{t.clientName}</h4>
+                      <span className="text-[10px] text-slate-400 font-mono block mt-0.5">
                         Won at {new Date(t.closedWonAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
                     <span className={cn(
                       "text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border",
-                      t.status === "shared" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                      t.status === "ready_to_share" ? "bg-blue-50 text-blue-700 border-blue-200" :
-                      "bg-amber-50 text-amber-700 border-amber-200"
+                      t.status === "shared" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                      t.status === "ready_to_share" ? "bg-blue-500/10 text-blue-400 border-blue-500/20" :
+                      "bg-amber-500/10 text-amber-400 border-amber-500/20"
                     )}>
                       {t.status.replace("_", " ")}
                     </span>
@@ -325,11 +325,11 @@ export default function OnboardingPage() {
 
                   {/* Progress Bar */}
                   <div>
-                    <div className="flex justify-between text-[10px] text-[#777777] mb-1 font-semibold">
+                    <div className="flex justify-between text-[10px] text-slate-400 mb-1 font-semibold">
                       <span>Documents Prepared</span>
-                      <span>{t.checklist.filter(i => i.completed).length} / {t.checklist.length}</span>
+                      <span className="text-[#E8D18A]">{t.checklist.filter(i => i.completed).length} / {t.checklist.length}</span>
                     </div>
-                    <div className="w-full h-1.5 bg-[#E5E5E2] rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-gradient-to-r from-[#D4AF37] to-[#A67C22]" 
                         style={{ width: `${(t.checklist.filter(i => i.completed).length / t.checklist.length) * 100}%` }}
@@ -345,17 +345,17 @@ export default function OnboardingPage() {
           {activeTask && clientDetails && (
             <div className="lg:col-span-2 space-y-6">
               {/* Card 1: Checklist Matrix */}
-              <div className="p-6 rounded-2xl bg-white border border-[#E5E5E2] shadow-2xs space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#E5E5E2]">
+              <div className="p-6 rounded-2xl bg-[#121212] border border-white/10 shadow-2xl space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-white/10">
                   <div>
-                    <h3 className="text-sm font-bold text-[#101010]">
+                    <h3 className="text-sm font-bold text-white">
                       60-Minute Preparation Checklist
                     </h3>
-                    <span className="text-xs text-[#777777]">
+                    <span className="text-xs text-slate-400">
                       Client: {clientDetails.companyName} &middot; {clientDetails.selectedPackageName}
                     </span>
                   </div>
-                  <span className="text-xs font-mono font-bold text-[#A67C22]">
+                  <span className="text-xs font-mono font-bold text-[#E8D18A]">
                     ₹{Number(clientDetails.agreedAmount || 0).toLocaleString("en-IN")}
                   </span>
                 </div>
@@ -368,23 +368,23 @@ export default function OnboardingPage() {
                       className={cn(
                         "p-3 rounded-xl border flex items-center justify-between transition-all cursor-pointer",
                         item.completed 
-                          ? "bg-emerald-50/40 border-emerald-200 text-emerald-900" 
-                          : "bg-[#FAFAF8] border-[#E5E5E2] text-[#101010] hover:bg-white hover:border-[#D4AF37]"
+                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-200" 
+                          : "bg-[#181818] border-white/10 text-slate-300 hover:border-[#D4AF37]/50 hover:text-white"
                       )}
                     >
                       <div className="flex items-center gap-3">
                         <div className={cn(
                           "w-5 h-5 rounded-md flex items-center justify-center border transition-colors",
                           item.completed 
-                            ? "bg-emerald-600 border-emerald-600 text-white" 
-                            : "bg-white border-[#E5E5E2]"
+                            ? "bg-emerald-500 border-emerald-500 text-[#101010]" 
+                            : "bg-[#181818] border-white/20"
                         )}>
-                          {item.completed && <Check className="w-3.5 h-3.5" />}
+                          {item.completed && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                         </div>
                         <span className="text-xs font-medium">{item.task}</span>
                       </div>
                       {item.docType && (
-                        <span className="text-[10px] uppercase font-bold text-[#A67C22] bg-white border border-[#E5E5E2] px-2 py-0.5 rounded">
+                        <span className="text-[10px] uppercase font-bold text-[#E8D18A] bg-white/5 border border-white/10 px-2 py-0.5 rounded">
                           PDF
                         </span>
                       )}
@@ -394,11 +394,11 @@ export default function OnboardingPage() {
               </div>
 
               {/* Card 2: Sharing & Delivery Execution */}
-              <div className="p-6 rounded-2xl bg-white border border-[#E5E5E2] shadow-2xs space-y-4">
-                <h3 className="text-sm font-bold text-[#101010] pb-2 border-b border-[#E5E5E2]">
+              <div className="p-6 rounded-2xl bg-[#121212] border border-white/10 shadow-2xl space-y-4">
+                <h3 className="text-sm font-bold text-white pb-2 border-b border-white/10">
                   Secure Delivery &amp; Client Access Link
                 </h3>
-                <p className="text-xs text-[#777777]">
+                <p className="text-xs text-slate-400">
                   Send this secure onboarding access link directly to the client or primary contact.
                 </p>
 
@@ -406,21 +406,21 @@ export default function OnboardingPage() {
                   <input
                     readOnly
                     value={`https://digitaldictionary.in/portal/login?client=${clientDetails.clientId}`}
-                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E5E5E2] bg-[#FAFAF8] text-xs font-mono text-[#101010]"
+                    className="flex-1 px-3.5 py-2.5 rounded-xl border border-white/10 bg-[#181818] text-xs font-mono text-white"
                   />
                   <button
                     onClick={handleCopyLink}
-                    className="px-4 py-2.5 rounded-xl border border-[#E5E5E2] bg-white hover:bg-[#F2F2F0] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                    className="px-4 py-2.5 rounded-xl border border-white/10 bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                   >
-                    {copiedLink ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
+                    {copiedLink ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-400" />}
                     <span>{copiedLink ? "Link Copied!" : "Copy Link"}</span>
                   </button>
                 </div>
 
-                <div className="pt-3 border-t border-[#E5E5E2] flex items-center justify-between">
+                <div className="pt-3 border-t border-white/10 flex items-center justify-between">
                   <div>
-                    <span className="text-xs font-bold text-[#101010] block">Delivery Status:</span>
-                    <span className="text-xs text-[#777777]">
+                    <span className="text-xs font-bold text-white block">Delivery Status:</span>
+                    <span className="text-xs text-slate-400">
                       {activeTask.status === "shared" ? `Confirmed Shared at ${new Date(activeTask.sharedAt || "").toLocaleString()}` : "Awaiting transmission confirmation"}
                     </span>
                   </div>
@@ -428,12 +428,12 @@ export default function OnboardingPage() {
                   {activeTask.status !== "shared" ? (
                     <button
                       onClick={handleMarkAsShared}
-                      className="px-5 py-2.5 rounded-xl bg-[#101010] hover:bg-[#1B1B1B] text-white text-xs font-bold uppercase tracking-wider shadow-2xs cursor-pointer"
+                      className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#E8D18A] to-[#A67C22] text-[#101010] text-xs font-bold uppercase tracking-wider shadow-md cursor-pointer hover:brightness-110"
                     >
                       Confirm Mark as Shared
                     </button>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/30">
                       <CheckCircle2 className="w-4 h-4" />
                       <span>Shared Successfully</span>
                     </span>

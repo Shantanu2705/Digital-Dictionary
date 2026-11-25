@@ -136,7 +136,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] text-[#101010] flex">
+    <div className="min-h-screen bg-[#0C0C0C] text-white flex">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
@@ -257,20 +257,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 lg:pl-72 flex flex-col min-h-screen">
+      <div className="flex-1 lg:pl-72 flex flex-col min-h-screen bg-[#0C0C0C]">
         {/* Top Header */}
-        <header className="sticky top-0 z-30 h-16 bg-white border-b border-[#E5E5E2] px-6 flex items-center justify-between">
+        <header className="sticky top-0 z-30 h-16 bg-[#121212]/95 backdrop-blur-md border-b border-white/10 px-6 flex items-center justify-between text-white">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg text-[#101010] hover:bg-[#F2F2F0]"
+              className="lg:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-white/5"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="flex items-center gap-2 text-xs text-[#777777]">
-              <span>Digital Dictionary</span>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[#101010] font-semibold capitalize">
+            <div className="flex items-center gap-2 text-xs text-slate-400">
+              <span className="text-[#D4AF37] font-semibold">Digital Dictionary</span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+              <span className="text-white font-medium capitalize">
                 {pathname.replace("/admin", "").replace("/", "").replace("-", " ") || "Dashboard"}
               </span>
             </div>
@@ -279,13 +279,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex items-center gap-3">
             <Link
               href="/admin/clients/new"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#101010] hover:bg-[#1B1B1B] text-white text-xs font-semibold uppercase tracking-wider shadow-2xs transition-all"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-semibold uppercase tracking-wider border border-white/10 shadow-xs transition-all"
             >
               <span>+ New Client</span>
             </Link>
             <Link
               href="/admin/documents/generate"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#D4AF37] via-[#E8D18A] to-[#A67C22] text-[#101010] text-xs font-bold uppercase tracking-wider shadow-xs hover:scale-[1.01] transition-all"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#A67C22] text-[#101010] text-xs font-bold uppercase tracking-wider shadow-md hover:brightness-110 transition-all"
             >
               <span>Generate PDF</span>
             </Link>
@@ -293,7 +293,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Main View Container */}
-        <main className="flex-1 p-6 md:p-8 bg-[#FAFAF8]">
+        <main className="flex-1 p-6 md:p-8 bg-[#0C0C0C] text-white">
           {children}
         </main>
       </div>
