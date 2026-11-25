@@ -3,33 +3,53 @@ import { adminAuth, adminDb } from "@/lib/firebase/admin";
 import { INITIAL_PACKAGES, DEFAULT_COMPANY_SETTINGS } from "@/lib/data/initialCatalogue";
 
 const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL || "coo@digitaldictionary.in";
+const EXPECTED_SECRET = process.env.BOOTSTRAP_SECRET_KEY || "dd-secure-bootstrap-key-2026";
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const body = await request.json();
     const { password, secretKey } = body;
 
-    // Verify secret key for security if configured
-    const expectedSecret = process.env.BOOTSTRAP_SECRET_KEY || "dd-secure-bootstrap-key-2026";
-    if (secretKey && secretKey !== expectedSecret) {
-      return NextResponse.json({ error: "Invalid bootstrap authorization key." }, { status: 403 });
+    // 1. Strict Secret Key Validation (Cannot be bypassed by omitting secretKey)
+    if (!secretKey || secretKey.trim() !== EXPECTED_SECRET) {
+      return NextResponse.json(
+        { error: "Forbidden: Invalid or missing bootstrap authorization key." },
+        { status: 403 }
+      );
     }
 
-    if (!password || password.length < 8) {
-      return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
+    // 2. Check if bootstrap is already permanently locked in system metadata
+    try {
+      const lockDoc = await adminDb.collection("system").doc("bootstrapState").get();
+      if (lockDoc.exists && lockDoc.data()?.isLocked === true) {
+        return NextResponse.json(
+          { error: "Access Denied: Initial system bootstrap has already been executed and permanently locked." },
+          { status: 403 }
+        );
+      }
+    } catch (e) {
+      // Continue if collection does not exist yet
+    }
+
+    // 3. Password Strength Validation (Min 10 characters for super admin)
+    if (!password || password.length < 10) {
+      return NextResponse.json(
+        { error: "Security Requirement: Master administrator password must be at least 10 characters." },
+        { status: 400 }
+      );
     }
 
     let userRecord;
     try {
       userRecord = await adminAuth.getUserByEmail(SUPER_ADMIN_EMAIL);
-      // User exists, update password and custom claims
+      // User exists, update password and ensure super_admin claim
       await adminAuth.updateUser(userRecord.uid, {
         password: password,
       });
       await adminAuth.setCustomUserClaims(userRecord.uid, { role: "super_admin" });
     } catch (err: any) {
       if (err.code === "auth/user-not-found") {
-        // Create user
         userRecord = await adminAuth.createUser({
           email: SUPER_ADMIN_EMAIL,
           password: password,
@@ -42,7 +62,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Save/Update in Firestore
+    // 4. Save/Update profile in Firestore
     const userProfile = {
       uid: userRecord.uid,
       email: SUPER_ADMIN_EMAIL,
@@ -60,7 +80,7 @@ export async function POST(request: Request) {
 
     await adminDb.collection("users").doc(userRecord.uid).set(userProfile, { merge: true });
 
-    // Seed initial packages if collection is empty
+    // 5. Seed initial packages if empty
     const packagesSnap = await adminDb.collection("packages").limit(1).get();
     if (packagesSnap.empty) {
       const batch = adminDb.batch();
@@ -71,21 +91,41 @@ export async function POST(request: Request) {
       await batch.commit();
     }
 
-    // Seed initial company settings if empty
-    const settingsRef = adminDb.collection("companySettings").doc("default");
+    // 6. Seed initial company settings if empty
+    const settingsRef = adminDb.collection("settings").doc("company");
     const settingsSnap = await settingsRef.get();
     if (!settingsSnap.exists) {
       await settingsRef.set(DEFAULT_COMPANY_SETTINGS);
     }
 
+    // 7. Permanently lock bootstrap to prevent replay / hijacking attacks
+    await adminDb.collection("system").doc("bootstrapState").set({
+      isLocked: true,
+      bootstrappedAt: new Date().toISOString(),
+      bootstrappedByUid: userRecord.uid,
+      bootstrappedIp: ip,
+    });
+
+    // 8. Log security event
+    await adminDb.collection("audit_logs").add({
+      userId: userRecord.uid,
+      userEmail: SUPER_ADMIN_EMAIL,
+      action: "MASTER_SYSTEM_BOOTSTRAP_LOCKED",
+      entityType: "auth",
+      details: `Executive Super Admin initialized and bootstrap service permanently locked from IP ${ip}.`,
+      timestamp: new Date().toISOString(),
+    });
+
     return NextResponse.json({
       success: true,
-      message: "Super Admin account initialized successfully.",
-      email: SUPER_ADMIN_EMAIL,
+      message: "Master COO Administrator established and bootstrap state permanently locked.",
       uid: userRecord.uid,
     });
   } catch (error: any) {
-    console.error("Bootstrap API error:", error);
-    return NextResponse.json({ error: error.message || "Bootstrap failed." }, { status: 500 });
+    console.error("Bootstrap security exception:", error);
+    return NextResponse.json(
+      { error: error.message || "Internal server error during bootstrap." },
+      { status: 500 }
+    );
   }
 }

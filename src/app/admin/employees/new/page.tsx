@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/AuthContext";
 import { 
   Users, 
   ArrowLeft, 
@@ -22,6 +23,7 @@ import {
 
 export default function NewEmployeePage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [createdResult, setCreatedResult] = useState<{
@@ -68,9 +70,13 @@ export default function NewEmployeePage() {
     setError(null);
 
     try {
+      const token = user ? await user.getIdToken() : "";
       const res = await fetch("/api/auth/create-user", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           email: formData.email,
           fullName: formData.fullName,

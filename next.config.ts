@@ -1,28 +1,36 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Speed & Performance Optimizations
+  // Speed & Core Web Vitals Optimizations
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 86400,
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       {
         protocol: "https",
         hostname: "digitaldictionary.in",
       },
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      },
     ],
   },
 
-  // Enterprise Security Hardening
+  // Enterprise Security & Caching Headers
   async headers() {
     return [
       {
+        // Global security headers across all routes
         source: "/(.*)",
         headers: [
           {
@@ -65,11 +73,11 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com https://apis.google.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https:",
               "font-src 'self' data: https://fonts.gstatic.com",
-              "connect-src 'self' https:",
+              "connect-src 'self' https: wss:",
               "frame-src 'none'",
               "object-src 'none'",
               "base-uri 'self'",
@@ -82,8 +90,8 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Cache static media and assets aggressively for blazing speed
-        source: "/(clients|logo.png|msme-logo.png|.*\\.jpg|.*\\.png|.*\\.svg)",
+        // Cache static brand assets and images aggressively
+        source: "/(clients|logo.png|brand-logo.png|official-logo.png|official-stamp.jpg|msme-logo.png|.*\\.jpg|.*\\.png|.*\\.svg|.*\\.webp|.*\\.avif)",
         headers: [
           {
             key: "Cache-Control",
