@@ -14,14 +14,13 @@ import {
   ArrowRight, 
   Eye, 
   EyeOff, 
-  AlertCircle,
-  KeyRound
+  AlertCircle
 } from "lucide-react";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const { login } = useAuth();
-  const [email, setEmail] = useState("coo@digitaldictionary.in");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,18 +52,8 @@ export default function AdminLoginPage() {
       }
       router.push(destination);
     } else {
-      setError(
-        res.error === "Invalid email or password."
-          ? "Invalid email or password. Use your authorized administrator credentials (Default: Admin@DigitalDict2026!)."
-          : res.error || "Authentication failed."
-      );
+      setError("Invalid email or password. Please verify your credentials and try again.");
     }
-  };
-
-  const handleAutofillDefault = () => {
-    setEmail("coo@digitaldictionary.in");
-    setPassword("Admin@DigitalDict2026!");
-    setError(null);
   };
 
   return (
@@ -97,19 +86,9 @@ export default function AdminLoginPage() {
         {/* Auth Card */}
         <div className="bg-[#141414] border border-white/10 rounded-3xl p-8 shadow-2xl backdrop-blur-md">
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex flex-col gap-2">
-              <div className="flex items-start gap-2.5">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
-                <span>{error}</span>
-              </div>
-              <button
-                type="button"
-                onClick={handleAutofillDefault}
-                className="text-[11px] font-bold text-[#E8D18A] hover:underline self-start mt-1 flex items-center gap-1"
-              >
-                <KeyRound className="w-3.5 h-3.5" />
-                <span>Use Master Super Admin Password (Admin@DigitalDict2026!)</span>
-              </button>
+            <div className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-center gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+              <span>{error}</span>
             </div>
           )}
 
