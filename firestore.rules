@@ -1,0 +1,145 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to get current user data
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    // Helper functions for roles
+    function isSuperAdmin() {
+      return isAuthenticated() && (
+        getUserData().role == 'super_admin' || 
+        request.auth.token.email == 'coo@digitaldictionary.in'
+      );
+    }
+    
+    function isHRManager() {
+      return isAuthenticated() && (
+        isSuperAdmin() || 
+        getUserData().role == 'hr_manager'
+      );
+    }
+    
+    function isFinanceManager() {
+      return isAuthenticated() && (
+        isSuperAdmin() || 
+        getUserData().role == 'finance_manager'
+      );
+    }
+    
+    function isEmployee() {
+      return isAuthenticated() && (
+        getUserData().role == 'employee' || 
+        getUserData().role == 'intern' ||
+        isSuperAdmin() ||
+        isHRManager() ||
+        isFinanceManager()
+      );
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin() || isHRManager());
+      allow write: if isSuperAdmin() || (isAuthenticated() && request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'accountStatus']));
+    }
+
+    // Clients Collection
+    match /clients/{clientId} {
+      allow read: if isSuperAdmin() || (isAuthenticated() && (
+        resource.data.primaryEmployeeId == request.auth.uid ||
+        request.auth.uid in resource.data.assignedEmployeeIds ||
+        isFinanceManager()
+      ));
+      allow write: if isSuperAdmin();
+    }
+
+    // Client Assignments
+    match /clientAssignments/{assignmentId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // Employees & Interns Records
+    match /employees/{employeeId} {
+      allow read: if isSuperAdmin() || isHRManager() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow write: if isSuperAdmin() || isHRManager();
+    }
+    
+    match /interns/{internId} {
+      allow read: if isSuperAdmin() || isHRManager() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow write: if isSuperAdmin() || isHRManager();
+    }
+
+    // Documents Collection
+    match /documents/{docId} {
+      allow read: if isSuperAdmin() || (isAuthenticated() && (
+        resource.data.relatedUserId == request.auth.uid ||
+        resource.data.assignedEmployeeIds.hasAny([request.auth.uid]) ||
+        isFinanceManager() ||
+        isHRManager()
+      ));
+      allow write: if isSuperAdmin() || isHRManager() || isFinanceManager();
+    }
+
+    // Document Templates
+    match /documentTemplates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // Packages & Service Catalogue
+    match /packages/{packageId} {
+      allow read: if true; // Public catalogue read
+      allow write: if isSuperAdmin();
+    }
+
+    match /customPackages/{customPackageId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // Payslips & Stipends
+    match /payslips/{payslipId} {
+      allow read: if isSuperAdmin() || isFinanceManager() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow write: if isSuperAdmin() || isFinanceManager();
+    }
+
+    // Onboarding Tasks
+    match /onboardingTasks/{taskId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // Audit Logs
+    match /activityLogs/{logId} {
+      allow read: if isSuperAdmin();
+      allow create: if isAuthenticated();
+      allow update, delete: if false; // Immutable audit log
+    }
+
+    // Company Settings
+    match /companySettings/{settingId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Document Counters (Atomic numbering)
+    match /documentCounters/{counterId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Notifications
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && (resource.data.recipientId == request.auth.uid || isSuperAdmin());
+      allow write: if isAuthenticated();
+    }
+  }
+}

@@ -1,0 +1,40 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Public brand assets (logos, stamps)
+    match /brand-assets/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.email == 'coo@digitaldictionary.in';
+    }
+    
+    // Client documents (Agreements, Invoices, Delivery Guides)
+    match /client-documents/{clientId}/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    // Employee documents (Payslips, Contracts, Offer Letters)
+    match /employee-documents/{employeeId}/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    // Intern documents (NOC, Certificates, Offer Letters)
+    match /intern-documents/{internId}/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+    
+    // User profile images
+    match /profile-images/{userId}/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+  }
+}
