@@ -17,7 +17,8 @@ import {
   Server, 
   Video,
   ChevronRight,
-  ArrowUpRight
+  ArrowUpRight,
+  Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PremiumButton } from "./PremiumButton";
@@ -284,9 +285,18 @@ export function Navbar() {
           </nav>
 
           {/* Right Action Button & Mobile Toggle */}
-          <div className="flex items-center gap-4 relative z-50">
+          <div className="flex items-center gap-3 relative z-50">
+            <Link
+              href="/portal/login"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[#D4AF37]/50 text-[#101010] hover:text-[#D4AF37] hover:border-[#D4AF37] text-xs font-semibold tracking-wider transition-all bg-white hover:bg-[#D4AF37]/10 shadow-2xs"
+              title="Employee, Intern & Executive Portal Login"
+            >
+              <Lock className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>Employee Login</span>
+            </Link>
+
             <div className="hidden md:block">
-              <PremiumButton href="/contact" variant="gold" className="px-6 py-2.5">
+              <PremiumButton href="/contact" variant="gold" className="px-5 py-2.5 text-xs">
                 Get In Touch
               </PremiumButton>
             </div>
@@ -362,7 +372,16 @@ export function Navbar() {
             ))}
           </div>
 
-          <div className="pt-8 border-t border-[#E5E5E2] mt-6 space-y-3">
+          <div className="pt-6 border-t border-[#E5E5E2] mt-6 space-y-3">
+            <Link
+              href="/portal/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-[#D4AF37]/60 text-[#101010] text-xs font-bold uppercase tracking-wider bg-white shadow-xs hover:bg-[#D4AF37]/10 transition-colors"
+            >
+              <Lock className="w-4 h-4 text-[#D4AF37]" />
+              <span>Employee &amp; Staff Login</span>
+            </Link>
+
             <PremiumButton href="/contact" variant="gold" className="w-full justify-center">
               Schedule a Consultation
             </PremiumButton>

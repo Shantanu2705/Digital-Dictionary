@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/config";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { 
   Lock, 
@@ -38,9 +40,34 @@ export default function PortalLoginPage() {
     setError(null);
 
     try {
-      await login(email, password);
-      // Auth context loads profile
-      router.push("/portal/dashboard");
+      const res = await login(email, password);
+      if (!res.success) {
+        setError(res.error || "Invalid email or password. Please verify your credentials.");
+        return;
+      }
+
+      // Role-based automatic dashboard dispatch
+      let destination = "/portal/dashboard";
+      if (auth.currentUser) {
+        try {
+          const userDocRef = doc(db, "users", auth.currentUser.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            const role = userDocSnap.data()?.role;
+            if (role === "super_admin" || email.toLowerCase() === "coo@digitaldictionary.in") {
+              destination = "/admin";
+            }
+          } else if (email.toLowerCase() === "coo@digitaldictionary.in") {
+            destination = "/admin";
+          }
+        } catch (e) {
+          if (email.toLowerCase() === "coo@digitaldictionary.in") {
+            destination = "/admin";
+          }
+        }
+      }
+
+      router.push(destination);
     } catch (err: any) {
       console.error("Portal login error:", err);
       if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
@@ -124,10 +151,10 @@ export default function PortalLoginPage() {
                 />
               </div>
               <h1 className="text-xl font-bold tracking-tight text-white">
-                Employee & Intern Workspace
+                Team, Intern &amp; Executive Portal
               </h1>
               <p className="text-xs text-neutral-400">
-                Sign in to access your allocated projects, clearance documents, and stipend slips.
+                Sign in to access your designated workspace. Admins, permanent engineers, and interns are authenticated and routed automatically to their respective dashboards.
               </p>
             </div>
 

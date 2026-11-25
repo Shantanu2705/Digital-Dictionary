@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/config";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { Lock, Mail, ShieldCheck, ArrowRight, KeyRound, Sparkles, AlertCircle } from "lucide-react";
 
@@ -29,7 +31,22 @@ export default function AdminLoginPage() {
     setLoading(false);
 
     if (res.success) {
-      router.push("/admin");
+      let destination = "/admin";
+      if (auth.currentUser) {
+        try {
+          const userDocRef = doc(db, "users", auth.currentUser.uid);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            const role = userDocSnap.data()?.role;
+            if (role !== "super_admin" && email.toLowerCase() !== "coo@digitaldictionary.in") {
+              destination = "/portal/dashboard";
+            }
+          }
+        } catch (e) {
+          // Fallback to /admin
+        }
+      }
+      router.push(destination);
     } else {
       setError(res.error || "Authentication failed.");
     }

@@ -158,6 +158,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/portal/login" className="text-slate-200 hover:text-[#E8D18A] flex items-center gap-1 font-medium transition-colors">
+                  <span>Employee &amp; Intern Portal</span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/blog" className="hover:text-white transition-colors">Insights &amp; Articles</Link>
               </li>
               <li>
@@ -211,6 +216,7 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-6 text-slate-400 font-medium">
+            <Link href="/portal/login" className="text-[#E8D18A] font-bold hover:underline">Employee Login</Link>
             <Link href="/contact" className="hover:text-white transition-colors">Security Disclosure</Link>
             <Link href="/contact" className="hover:text-white transition-colors">Privacy Policy</Link>
             <Link href="/contact" className="hover:text-white transition-colors">Terms of Service</Link>
