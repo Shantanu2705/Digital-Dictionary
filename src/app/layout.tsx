@@ -143,7 +143,7 @@ const jsonLd = {
       "name": "Digital Dictionary",
       "url": "https://digitaldictionary.in",
       "telephone": "+91 62911 11428",
-      "priceRange": "₹₹ - ₹₹₹₹",
+      "priceRange": "Contact for pricing",
       "image": "https://digitaldictionary.in/logo.png",
       "geo": {
         "@type": "GeoCoordinates",

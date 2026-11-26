@@ -12,7 +12,7 @@ export default function ContactPage() {
     email: "",
     phone: "",
     company: "",
-    service: "Digital Marketing",
+    service: "Single-Page Express Landing Page",
     message: "",
     honeypot: "",
   });
@@ -215,14 +215,14 @@ export default function ContactPage() {
                       onChange={handleChange}
                       className="w-full bg-[#F2F2F0] border border-[#E5E5E2] rounded-xl px-4 py-3 text-[#101010] outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:bg-white transition-all text-sm font-medium"
                     >
-                      <option value="Single-Page Express Landing Page (₹12,000)">Single-Page Express Landing Page (₹12,000)</option>
-                      <option value="Starter Business Website - 5 Pages (₹25,000)">Starter Business Website - 5 Pages (₹25,000)</option>
-                      <option value="Growth Corporate Website - 10 Pages (₹35,000)">Growth Corporate Website - 10 Pages (₹35,000)</option>
-                      <option value="Enterprise B2B Authority Portal (₹49,000+)">Enterprise B2B Authority Portal (₹49,000+)</option>
-                      <option value="D2C E-Commerce Store (₹65,000)">D2C E-Commerce Store (₹65,000)</option>
-                      <option value="Native Mobile App MVP (₹65,000)">Native Mobile App MVP (₹65,000)</option>
-                      <option value="Omnichannel Combo: Web + Native App (₹75,000)">Omnichannel Combo: Web + Native App (₹75,000)</option>
-                      <option value="Service / Booking Fleet App (₹1,25,000+)">Service / Booking Fleet App (₹1,25,000+)</option>
+                      <option value="Single-Page Express Landing Page">Single-Page Express Landing Page</option>
+                      <option value="Starter Business Website - 5 Pages">Starter Business Website - 5 Pages</option>
+                      <option value="Growth Corporate Website - 10 Pages">Growth Corporate Website - 10 Pages</option>
+                      <option value="Enterprise B2B Authority Portal">Enterprise B2B Authority Portal</option>
+                      <option value="D2C E-Commerce Store">D2C E-Commerce Store</option>
+                      <option value="Native Mobile App MVP">Native Mobile App MVP</option>
+                      <option value="Omnichannel Combo: Web + Native App">Omnichannel Combo: Web + Native App</option>
+                      <option value="Service / Booking Fleet App">Service / Booking Fleet App</option>
                       <option value="Digital Marketing & Performance Ads">Digital Marketing &amp; Performance Ads</option>
                       <option value="SEO Service & Local Google Maps">SEO Service &amp; Local Google Maps</option>
                       <option value="Brand Identity & Graphic Designing">Brand Identity &amp; Graphic Designing</option>
