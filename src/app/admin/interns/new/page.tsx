@@ -16,7 +16,11 @@ import {
   DollarSign, 
   CheckCircle, 
   Copy, 
-  AlertCircle 
+  AlertCircle,
+  KeyRound,
+  RefreshCw,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 export default function NewInternPage() {
@@ -31,11 +35,13 @@ export default function NewInternPage() {
     internId: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
+    customPassword: "",
     collegeName: "",
     universityName: "",
     course: "B.Tech in Computer Science & Engineering",
@@ -56,6 +62,15 @@ export default function NewInternPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const generateRandomPassword = () => {
+    const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&*";
+    let pwd = "DD@";
+    for (let i = 0; i < 8; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setFormData(prev => ({ ...prev, customPassword: pwd + "!" }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -73,6 +88,7 @@ export default function NewInternPage() {
           email: formData.email,
           fullName: formData.fullName,
           phone: formData.phone,
+          customPassword: formData.customPassword || undefined,
           role: "intern",
           employmentType: "intern",
           department: formData.department,
@@ -89,7 +105,7 @@ export default function NewInternPage() {
           durationMonths: Number(formData.durationMonths),
           internshipMode: formData.internshipMode,
           monthlyStipend: Number(formData.monthlyStipend),
-          autoGeneratePassword: true,
+          autoGeneratePassword: !formData.customPassword,
         }),
       });
 
@@ -112,6 +128,7 @@ export default function NewInternPage() {
       const assignedId = data.internId || data.employeeId || `DD-INT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
       const assignedUid = data.uid || `int-${Date.now()}`;
       const now = new Date().toISOString();
+      const finalPassword = data.tempPassword || formData.customPassword || "";
 
       // Write directly to Firestore using client SDK to guarantee real-time synchronization
       const internDoc = {
@@ -134,6 +151,7 @@ export default function NewInternPage() {
         internshipMode: formData.internshipMode,
         monthlyStipend: Number(formData.monthlyStipend),
         accountStatus: "active",
+        tempPassword: finalPassword,
         createdAt: now,
         updatedAt: now,
       };
@@ -151,14 +169,15 @@ export default function NewInternPage() {
         reportingManager: formData.assignedSupervisor,
         accountStatus: "active",
         mustChangePassword: true,
+        tempPassword: finalPassword,
         createdAt: now,
         updatedAt: now,
       };
 
       try {
         await Promise.all([
-          setDoc(doc(db, "users", assignedUid), data.userProfile || userProfile, { merge: true }),
-          setDoc(doc(db, "interns", assignedUid), data.record || internDoc, { merge: true }),
+          setDoc(doc(db, "users", assignedUid), { ...data.userProfile, ...userProfile }, { merge: true }),
+          setDoc(doc(db, "interns", assignedUid), { ...data.record, ...internDoc }, { merge: true }),
         ]);
       } catch (clientFsErr) {
         console.warn("Client Firestore sync notice:", clientFsErr);
@@ -167,7 +186,7 @@ export default function NewInternPage() {
       setCreatedResult({
         success: true,
         email: data.email,
-        tempPassword: data.tempPassword,
+        tempPassword: finalPassword,
         internId: assignedId,
       });
     } catch (err: any) {
@@ -178,15 +197,24 @@ export default function NewInternPage() {
   };
 
   const copyCredentials = () => {
-    if (!createdResult?.tempPassword) return;
-    const text = `Digital Dictionary Intern Portal Access:\nPortal: https://www.digitaldictionary.in/portal/login\nEmail: ${createdResult.email}\nTemp Password: ${createdResult.tempPassword}\nIntern ID: ${createdResult.internId}`;
-    navigator.clipboard.writeText(text);
+    if (!createdResult) return;
+    const credText = [
+      `DIGITAL DICTIONARY — STUDENT INTERN PORTAL ACCESS`,
+      `Portal Login URL: https://digitaldictionary.in/portal/login`,
+      `Authorized Email: ${createdResult.email}`,
+      `Temporary Password: ${createdResult.tempPassword || "[Check Administrator]"}`,
+      `Student ID: ${createdResult.internId}`,
+      `Please log in, review your engagement terms, and download your official Offer Letter and NOC.`,
+    ].join("\n");
+
+    navigator.clipboard.writeText(credText);
     setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    setTimeout(() => setCopied(false), 2500);
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* Top Breadcrumb */}
       <div>
         <Link
           href="/admin/interns"
@@ -197,6 +225,7 @@ export default function NewInternPage() {
         </Link>
       </div>
 
+      {/* Title */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
           <GraduationCap className="w-6 h-6 text-[#D4AF37]" />
@@ -207,31 +236,32 @@ export default function NewInternPage() {
         </p>
       </div>
 
+      {/* Success Notification Box */}
       {createdResult && (
-        <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-950/30 backdrop-blur-md space-y-4">
-          <div className="flex items-start gap-3">
-            <CheckCircle className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <h3 className="text-base font-semibold text-emerald-300">
-                Intern Enrolled & Credentials Issued!
-              </h3>
-              <p className="text-xs text-neutral-300">
-                A student account has been created. The intern can sign in at <Link href="/portal/login" target="_blank" className="underline text-emerald-400">/portal/login</Link> to view assigned tasks, download College Clearance NOCs, and access stipend slips.
-              </p>
+        <div className="p-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 backdrop-blur-md space-y-4 shadow-xl">
+          <div className="flex items-center gap-3 text-emerald-400">
+            <CheckCircle className="w-6 h-6 shrink-0" />
+            <div>
+              <h3 className="font-bold text-sm text-white">Student Intern Successfully Registered &amp; Provisioned!</h3>
+              <p className="text-xs text-emerald-300/80">Official student portal account created. Copy credentials below to share with the student.</p>
             </div>
           </div>
 
-          <div className="p-4 rounded-lg bg-black/60 border border-white/10 space-y-2 font-mono text-xs">
+          <div className="p-4 rounded-xl bg-neutral-950/80 border border-white/10 font-mono text-xs space-y-2">
             <div className="flex justify-between items-center py-1 border-b border-white/5">
-              <span className="text-neutral-400">Intern ID:</span>
+              <span className="text-neutral-400">Student ID:</span>
               <span className="text-white font-bold">{createdResult.internId}</span>
             </div>
             <div className="flex justify-between items-center py-1 border-b border-white/5">
+              <span className="text-neutral-400">Portal Login URL:</span>
+              <span className="text-[#D4AF37]">https://digitaldictionary.in/portal/login</span>
+            </div>
+            <div className="flex justify-between items-center py-1 border-b border-white/5">
               <span className="text-neutral-400">Login Email:</span>
-              <span className="text-white">{createdResult.email}</span>
+              <span className="text-white font-bold">{createdResult.email}</span>
             </div>
             <div className="flex justify-between items-center py-1">
-              <span className="text-neutral-400">Temporary Password:</span>
+              <span className="text-neutral-400">Assigned Password:</span>
               <span className="text-[#E8D18A] font-bold text-sm tracking-wider">{createdResult.tempPassword}</span>
             </div>
           </div>
@@ -239,16 +269,16 @@ export default function NewInternPage() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={copyCredentials}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 text-black font-semibold text-xs hover:bg-emerald-400 transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-emerald-500 text-black font-semibold text-xs hover:bg-emerald-400 transition-all cursor-pointer shadow-md"
             >
               <Copy className="w-3.5 h-3.5" />
-              {copied ? "Copied Credentials!" : "Copy Intern Welcome Packet"}
+              {copied ? "Copied Credentials Packet!" : "Copy Student Welcome Packet"}
             </button>
             <Link
               href="/admin/interns"
-              className="px-4 py-2 rounded-lg bg-neutral-800 text-neutral-300 font-medium text-xs hover:bg-neutral-700 transition-colors"
+              className="px-4 py-2.5 rounded-lg bg-neutral-800 text-neutral-300 font-medium text-xs hover:bg-neutral-700 transition-colors"
             >
-              Back to Interns List
+              View Cohort Directory
             </Link>
           </div>
         </div>
@@ -263,10 +293,10 @@ export default function NewInternPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Student Personal Info */}
-        <div className="p-6 rounded-xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4">
+        <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4 shadow-lg">
           <h2 className="text-base font-semibold text-white flex items-center gap-2 border-b border-white/5 pb-3">
             <GraduationCap className="w-4 h-4 text-[#D4AF37]" />
-            Student Identity & Contact
+            Student Identity &amp; Contact
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -280,7 +310,7 @@ export default function NewInternPage() {
                 required
                 value={formData.fullName}
                 onChange={handleChange}
-                placeholder="e.g. Ananya Das"
+                placeholder="e.g. Alvira Mallick"
                 className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
               />
             </div>
@@ -295,7 +325,7 @@ export default function NewInternPage() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="e.g. ananya@gmail.com"
+                placeholder="e.g. alvira@digitaldictionary.in"
                 className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
               />
             </div>
@@ -310,18 +340,67 @@ export default function NewInternPage() {
                 required
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+91 98765 43210"
-                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                placeholder="e.g. +91 6398360422"
+                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono"
               />
             </div>
           </div>
         </div>
 
-        {/* College & Academic Affiliation */}
-        <div className="p-6 rounded-xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4">
+        {/* Portal Access Password Setup */}
+        <div className="p-6 rounded-2xl border border-[#D4AF37]/20 bg-neutral-900/40 backdrop-blur-sm space-y-4 shadow-lg">
+          <div className="flex items-center justify-between border-b border-white/5 pb-3">
+            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-[#D4AF37]" />
+              Portal Access &amp; Password Configuration
+            </h2>
+            <button
+              type="button"
+              onClick={generateRandomPassword}
+              className="text-xs text-[#D4AF37] hover:underline flex items-center gap-1.5 cursor-pointer font-medium"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Auto-Generate Secure Password
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-neutral-300 mb-1">
+                Assigned Password (Optional - auto-generated if left blank)
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="customPassword"
+                  value={formData.customPassword}
+                  onChange={handleChange}
+                  placeholder="Leave empty to auto-generate or enter custom"
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center text-xs text-neutral-400 p-3 rounded-xl bg-neutral-950/60 border border-white/5">
+              <span>
+                The password configured here will be assigned to the student portal and saved in your Super Admin cohort desk for viewing, copying, or resetting at any time.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* College & University Details */}
+        <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4 shadow-lg">
           <h2 className="text-base font-semibold text-white flex items-center gap-2 border-b border-white/5 pb-3">
             <Building2 className="w-4 h-4 text-[#D4AF37]" />
-            College & University Details (For Institutional NOC)
+            College &amp; University Details (For Institutional NOC)
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -335,7 +414,7 @@ export default function NewInternPage() {
                 required
                 value={formData.collegeName}
                 onChange={handleChange}
-                placeholder="e.g. Siliguri Institute of Technology"
+                placeholder="e.g. Aligarh Muslim University"
                 className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
               />
             </div>
@@ -347,24 +426,24 @@ export default function NewInternPage() {
                 name="universityName"
                 value={formData.universityName}
                 onChange={handleChange}
-                placeholder="e.g. MAKAUT, West Bengal"
+                placeholder="e.g. Aligarh Muslim University"
                 className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-neutral-300 mb-1">Course & Degree</label>
+              <label className="block text-xs font-medium text-neutral-300 mb-1">Course &amp; Degree</label>
               <input
                 type="text"
                 name="course"
                 value={formData.course}
                 onChange={handleChange}
-                placeholder="e.g. B.Tech Computer Science"
+                placeholder="e.g. Bachelors in Business Administration (BBA)"
                 className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="block text-xs font-medium text-neutral-300 mb-1">Semester / Year</label>
                 <input
@@ -372,10 +451,11 @@ export default function NewInternPage() {
                   name="semester"
                   value={formData.semester}
                   onChange={handleChange}
-                  placeholder="e.g. 6th Semester"
+                  placeholder="e.g. Final Year"
                   className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
                 />
               </div>
+
               <div>
                 <label className="block text-xs font-medium text-neutral-300 mb-1">Roll / Registration No.</label>
                 <input
@@ -383,19 +463,19 @@ export default function NewInternPage() {
                   name="collegeRollNo"
                   value={formData.collegeRollNo}
                   onChange={handleChange}
-                  placeholder="e.g. SIT/2023/CS/042"
-                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                  placeholder="e.g. AMU/2026/042"
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono"
                 />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Internship Role & Terms */}
-        <div className="p-6 rounded-xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4">
+        {/* Internship Program Parameters */}
+        <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4 shadow-lg">
           <h2 className="text-base font-semibold text-white flex items-center gap-2 border-b border-white/5 pb-3">
             <BookOpen className="w-4 h-4 text-[#D4AF37]" />
-            Internship Terms & Stipend
+            Internship Terms, Mentorship &amp; Stipend
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -406,7 +486,7 @@ export default function NewInternPage() {
                 name="internshipRole"
                 value={formData.internshipRole}
                 onChange={handleChange}
-                placeholder="e.g. Next.js Full Stack Intern"
+                placeholder="e.g. Business Development Intern"
                 className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
               />
             </div>
@@ -418,7 +498,7 @@ export default function NewInternPage() {
                 name="assignedSupervisor"
                 value={formData.assignedSupervisor}
                 onChange={handleChange}
-                placeholder="e.g. Technical Director"
+                placeholder="e.g. Operations & Strategy Lead"
                 className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
               />
             </div>
@@ -481,7 +561,7 @@ export default function NewInternPage() {
                 name="monthlyStipend"
                 value={formData.monthlyStipend}
                 onChange={handleChange}
-                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono"
               />
             </div>
           </div>
@@ -498,7 +578,7 @@ export default function NewInternPage() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#A67C22] text-black font-semibold text-sm shadow-lg hover:brightness-110 disabled:opacity-50 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#A67C22] text-black font-semibold text-sm shadow-lg hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer"
           >
             <Save className="w-4 h-4" />
             {loading ? "Enrolling..." : "Enrol Intern & Issue Account"}

@@ -25,6 +25,7 @@ export interface UserProfile {
   assignedClientIds?: string[];
   accountStatus: AccountStatus;
   mustChangePassword?: boolean;
+  tempPassword?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -141,6 +142,7 @@ export interface PermanentEmployee {
     phone: string;
   };
   employmentStatus: 'active' | 'probation' | 'notice_period' | 'resigned' | 'terminated';
+  tempPassword?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -174,6 +176,7 @@ export interface InternRecord {
     phone: string;
   };
   accountStatus: 'active' | 'completed' | 'extended' | 'terminated';
+  tempPassword?: string;
   createdAt: string;
   updatedAt: string;
 }

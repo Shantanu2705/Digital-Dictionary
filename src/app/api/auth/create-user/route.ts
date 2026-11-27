@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { adminAuth } from "@/lib/firebase/admin";
 
 const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyD_cfB-UNl1KUvWiFKIZ6saQE-8Q12unuM";
 
@@ -142,8 +143,20 @@ export async function POST(request: Request) {
           ).catch(() => {});
         }
       } else if (signUpData.error?.message === "EMAIL_EXISTS") {
-        // If the account already exists in Auth, generate a stable deterministic UID for Firestore
-        userRecordUid = `auth-${crypto.createHash("md5").update(email).digest("hex").slice(0, 20)}`;
+        if (adminAuth) {
+          try {
+            const userRecord = await adminAuth.getUserByEmail(email);
+            if (userRecord?.uid) {
+              userRecordUid = userRecord.uid;
+              await adminAuth.updateUser(userRecord.uid, { password: tempPassword, displayName: fullName });
+            }
+          } catch (e) {
+            console.warn("Could not lookup/update existing user via Admin SDK:", e);
+          }
+        }
+        if (!userRecordUid) {
+          userRecordUid = `auth-${crypto.createHash("md5").update(email).digest("hex").slice(0, 20)}`;
+        }
       } else {
         return NextResponse.json(
           { success: false, error: signUpData.error?.message || "Failed to provision Firebase Authentication user." },

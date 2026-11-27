@@ -29,20 +29,86 @@ export default function PortalDocumentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if (user?.uid) {
+    if (user?.uid || user?.email) {
       loadDocuments();
     }
-  }, [user?.uid]);
+  }, [user?.uid, user?.email]);
 
   const loadDocuments = async () => {
     setLoading(true);
     try {
-      const q = query(
-        collection(db, "documents"),
-        where("relatedUserId", "==", user?.uid)
-      );
-      const snap = await getDocs(q);
-      setDocuments(snap.docs.map(d => ({ id: d.id, ...d.data() } as DocumentRecord)));
+      const docsList: DocumentRecord[] = [];
+
+      // Query by user UID
+      if (user?.uid) {
+        const q = query(
+          collection(db, "documents"),
+          where("relatedUserId", "==", user.uid)
+        );
+        const snap = await getDocs(q);
+        snap.forEach(d => docsList.push({ id: d.id, ...d.data() } as DocumentRecord));
+      }
+
+      // Query by user email
+      if (user?.email) {
+        const emailQ = query(
+          collection(db, "documents"),
+          where("relatedEmail", "==", user.email)
+        );
+        const emailSnap = await getDocs(emailQ);
+        emailSnap.forEach(d => {
+          if (!docsList.some(item => item.id === d.id)) {
+            docsList.push({ id: d.id, ...d.data() } as DocumentRecord);
+          }
+        });
+      }
+
+      // If user is an intern, also ensure their Offer Letter and NOC are available dynamically
+      const isIntern = profile?.employmentType === "intern" || profile?.role === "intern";
+      if (isIntern && user?.email) {
+        const internQ = query(
+          collection(db, "interns"),
+          where("email", "==", user.email)
+        );
+        const internSnap = await getDocs(internQ);
+        if (!internSnap.empty) {
+          const internData = internSnap.docs[0].data();
+          
+          if (!docsList.some(d => d.documentType === "intern_offer")) {
+            docsList.unshift({
+              id: `dyn-offer-${internData.internId}`,
+              documentType: "intern_offer",
+              title: "Formal Internship Appointment Offer",
+              documentNumber: internData.offerNumber || `DD-OFF-${internData.internId}`,
+              relatedUserId: user?.uid,
+              status: "final",
+              versionNumber: 1,
+              createdBy: "DD-SYSTEM",
+              createdAt: internData.createdAt || new Date().toISOString(),
+              updatedAt: internData.updatedAt || new Date().toISOString(),
+              data: internData,
+            });
+          }
+
+          if (!docsList.some(d => d.documentType === "intern_noc")) {
+            docsList.unshift({
+              id: `dyn-noc-${internData.internId}`,
+              documentType: "intern_noc",
+              title: "Institutional No Objection Certificate (NOC)",
+              documentNumber: internData.nocNumber || `DD-NOC-${internData.internId}`,
+              relatedUserId: user?.uid,
+              status: "final",
+              versionNumber: 1,
+              createdBy: "DD-SYSTEM",
+              createdAt: internData.createdAt || new Date().toISOString(),
+              updatedAt: internData.updatedAt || new Date().toISOString(),
+              data: internData,
+            });
+          }
+        }
+      }
+
+      setDocuments(docsList);
     } catch (err) {
       console.error("Error loading user documents:", err);
     } finally {

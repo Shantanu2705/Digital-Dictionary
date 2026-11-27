@@ -8,7 +8,7 @@ import {
   signOut,
   updatePassword
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/config";
 import { UserProfile, UserRole } from "@/types/portal";
 import { logActivity } from "@/lib/utils/audit";
@@ -54,28 +54,100 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const data = userDocSnap.data() as UserProfile;
             setProfile(data);
           } else {
-            // Check if this is the Initial Super Admin
-            const isInitialAdmin = currentUser.email?.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
-            const fallbackProfile: UserProfile = {
-              uid: currentUser.uid,
-              email: currentUser.email || "",
-              fullName: isInitialAdmin ? "Chief Operating Officer" : (currentUser.displayName || "Staff Member"),
-              designation: isInitialAdmin ? "Company Administrator / COO" : "Team Member",
-              department: isInitialAdmin ? "Executive Leadership" : "Engineering",
-              employmentType: "permanent",
-              role: isInitialAdmin ? "super_admin" : "employee",
-              employeeId: isInitialAdmin ? "DD-ADM-001" : "DD-EMP-001",
-              accountStatus: "active",
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            };
+            const userEmail = currentUser.email?.toLowerCase().trim() || "";
+            const isInitialAdmin = userEmail === SUPER_ADMIN_EMAIL.toLowerCase();
+
+            let resolvedProfile: UserProfile | null = null;
+
+            // 1. Check if user document exists under another key with matching email
+            try {
+              const usersQ = query(collection(db, "users"), where("email", "==", currentUser.email));
+              const usersSnap = await getDocs(usersQ);
+              if (!usersSnap.empty) {
+                const uDoc = usersSnap.docs[0].data() as UserProfile;
+                resolvedProfile = { ...uDoc, uid: currentUser.uid };
+              }
+            } catch (e) {
+              console.warn("Could not query users collection by email:", e);
+            }
+
+            // 2. If not found, check interns collection by email
+            if (!resolvedProfile) {
+              try {
+                const internsQ = query(collection(db, "interns"), where("email", "==", currentUser.email));
+                const internsSnap = await getDocs(internsQ);
+                if (!internsSnap.empty) {
+                  const intData = internsSnap.docs[0].data();
+                  resolvedProfile = {
+                    uid: currentUser.uid,
+                    email: currentUser.email || "",
+                    fullName: intData.fullName || "Intern",
+                    designation: intData.internshipRole || "Intern",
+                    department: intData.department || "Engineering",
+                    employmentType: "intern",
+                    role: "intern",
+                    employeeId: intData.internId || "DD-INT",
+                    accountStatus: intData.accountStatus || "active",
+                    tempPassword: intData.tempPassword || "",
+                    createdAt: intData.createdAt || new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                  };
+                }
+              } catch (e) {
+                console.warn("Could not query interns collection by email:", e);
+              }
+            }
+
+            // 3. If not found, check employees collection by official email
+            if (!resolvedProfile) {
+              try {
+                const empQ = query(collection(db, "employees"), where("officialEmail", "==", currentUser.email));
+                const empSnap = await getDocs(empQ);
+                if (!empSnap.empty) {
+                  const empData = empSnap.docs[0].data();
+                  resolvedProfile = {
+                    uid: currentUser.uid,
+                    email: currentUser.email || "",
+                    fullName: empData.fullName || "Employee",
+                    designation: empData.designation || "Staff Member",
+                    department: empData.department || "Engineering",
+                    employmentType: "permanent",
+                    role: (empData.role as UserRole) || "employee",
+                    employeeId: empData.employeeId || "DD-EMP",
+                    accountStatus: empData.accountStatus || "active",
+                    tempPassword: empData.tempPassword || "",
+                    createdAt: empData.createdAt || new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                  };
+                }
+              } catch (e) {
+                console.warn("Could not query employees collection by email:", e);
+              }
+            }
+
+            // 4. Fallback profile
+            if (!resolvedProfile) {
+              resolvedProfile = {
+                uid: currentUser.uid,
+                email: currentUser.email || "",
+                fullName: isInitialAdmin ? "Chief Operating Officer" : (currentUser.displayName || "Staff Member"),
+                designation: isInitialAdmin ? "Company Administrator / COO" : "Team Member",
+                department: isInitialAdmin ? "Executive Leadership" : "Engineering",
+                employmentType: isInitialAdmin ? "permanent" : "employee" as any,
+                role: isInitialAdmin ? "super_admin" : "employee",
+                employeeId: isInitialAdmin ? "DD-ADM-001" : "DD-EMP-001",
+                accountStatus: "active",
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              };
+            }
 
             try {
-              await setDoc(userDocRef, fallbackProfile, { merge: true });
+              await setDoc(userDocRef, resolvedProfile, { merge: true });
             } catch (err) {
               console.warn("Could not save initial profile in Firestore (check rules):", err);
             }
-            setProfile(fallbackProfile);
+            setProfile(resolvedProfile);
           }
         } catch (error) {
           console.error("Error fetching user profile:", error);
@@ -165,7 +237,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isSalesManager = isSuperAdmin || role === "sales_manager";
   const isProjectManager = isSuperAdmin || role === "project_manager";
   const isEmployee = role === "employee" || isSuperAdmin;
-  const isIntern = role === "intern";
+  const isIntern = role === "intern" || profile?.employmentType === "intern";
 
   const canAccessClient = (clientId: string) => {
     if (isSuperAdmin || isFinanceManager) return true;

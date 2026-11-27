@@ -20,7 +20,11 @@ import {
   Lock,
   Copy,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  KeyRound,
+  RefreshCw,
+  Eye,
+  EyeOff
 } from "lucide-react";
 
 export default function NewEmployeePage() {
@@ -35,11 +39,13 @@ export default function NewEmployeePage() {
     employeeId: string;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
+    customPassword: "",
     designation: "Full Stack Engineer",
     department: "Engineering",
     role: "employee",
@@ -66,6 +72,15 @@ export default function NewEmployeePage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const generateRandomPassword = () => {
+    const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%&*";
+    let pwd = "DD@";
+    for (let i = 0; i < 8; i++) {
+      pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setFormData(prev => ({ ...prev, customPassword: pwd + "!" }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -83,6 +98,7 @@ export default function NewEmployeePage() {
           email: formData.email,
           fullName: formData.fullName,
           phone: formData.phone,
+          customPassword: formData.customPassword || undefined,
           designation: formData.designation,
           department: formData.department,
           role: formData.role,
@@ -95,7 +111,7 @@ export default function NewEmployeePage() {
           deductions: Number(formData.deductions),
           probationPeriodMonths: Number(formData.probationPeriodMonths),
           reportingManager: formData.reportingManager,
-          autoGeneratePassword: true,
+          autoGeneratePassword: !formData.customPassword,
         }),
       });
 
@@ -118,6 +134,7 @@ export default function NewEmployeePage() {
       const assignedId = data.employeeId || data.internId || `DD-EMP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
       const assignedUid = data.uid || `emp-${Date.now()}`;
       const now = new Date().toISOString();
+      const finalPassword = data.tempPassword || formData.customPassword || "";
 
       // Write directly to Firestore using client SDK to guarantee real-time synchronization
       const employeeDoc = {
@@ -138,6 +155,7 @@ export default function NewEmployeePage() {
         deductions: Number(formData.deductions) || 0,
         probationPeriodMonths: Number(formData.probationPeriodMonths) || 3,
         employmentStatus: "active",
+        tempPassword: finalPassword,
         createdAt: now,
         updatedAt: now,
       };
@@ -155,14 +173,15 @@ export default function NewEmployeePage() {
         reportingManager: formData.reportingManager,
         accountStatus: "active",
         mustChangePassword: true,
+        tempPassword: finalPassword,
         createdAt: now,
         updatedAt: now,
       };
 
       try {
         await Promise.all([
-          setDoc(doc(db, "users", assignedUid), data.userProfile || userProfile, { merge: true }),
-          setDoc(doc(db, "employees", assignedUid), data.record || employeeDoc, { merge: true }),
+          setDoc(doc(db, "users", assignedUid), { ...data.userProfile, ...userProfile }, { merge: true }),
+          setDoc(doc(db, "employees", assignedUid), { ...data.record, ...employeeDoc }, { merge: true }),
         ]);
       } catch (clientFsErr) {
         console.warn("Client Firestore sync notice:", clientFsErr);
@@ -171,7 +190,7 @@ export default function NewEmployeePage() {
       setCreatedResult({
         success: true,
         email: data.email,
-        tempPassword: data.tempPassword,
+        tempPassword: finalPassword,
         employeeId: assignedId,
       });
     } catch (err: any) {
@@ -183,10 +202,18 @@ export default function NewEmployeePage() {
 
   const copyCredentials = () => {
     if (!createdResult?.tempPassword) return;
-    const text = `Digital Dictionary Employee Portal Access:\nPortal: https://www.digitaldictionary.in/portal/login\nEmail: ${createdResult.email}\nTemp Password: ${createdResult.tempPassword}\nEmployee ID: ${createdResult.employeeId}`;
+    const text = [
+      `DIGITAL DICTIONARY — EMPLOYEE ENTERPRISE PORTAL ACCESS`,
+      `Portal Login URL: https://digitaldictionary.in/portal/login`,
+      `Authorized Email: ${createdResult.email}`,
+      `Temporary Password: ${createdResult.tempPassword}`,
+      `Employee ID: ${createdResult.employeeId}`,
+      `Please log in, review assigned projects, and download your payslips.`,
+    ].join("\n");
+
     navigator.clipboard.writeText(text);
     setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    setTimeout(() => setCopied(false), 2500);
   };
 
   return (
@@ -198,48 +225,49 @@ export default function NewEmployeePage() {
           className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back to Employees Directory
+          Back to Employees
         </Link>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Users className="w-6 h-6 text-[#D4AF37]" />
-            Register Permanent Employee
-          </h1>
-          <p className="text-sm text-neutral-400 mt-1">
-            Provisions corporate access, creates personnel database records, and generates temporary credentials.
-          </p>
-        </div>
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
+          <Users className="w-6 h-6 text-[#D4AF37]" />
+          Add Permanent Employee
+        </h1>
+        <p className="text-sm text-neutral-400 mt-1">
+          Registers personnel, sets salary and role tiers, and provisions employee workspace login credentials.
+        </p>
       </div>
 
-      {/* Success Modal / Banner */}
+      {/* Credentials Banner on Success */}
       {createdResult && (
-        <div className="p-6 rounded-xl border border-emerald-500/30 bg-emerald-950/30 backdrop-blur-md space-y-4">
-          <div className="flex items-start gap-3">
-            <CheckCircle className="w-6 h-6 text-emerald-400 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <h3 className="text-base font-semibold text-emerald-300">
-                Employee Registered & Account Provisioned Successfully!
-              </h3>
-              <p className="text-xs text-neutral-300">
-                A Firebase Auth account has been established with role <code className="text-[#D4AF37] font-semibold">{formData.role}</code>. The employee can sign in at <Link href="/portal/login" target="_blank" className="underline text-emerald-400">/portal/login</Link> and will be prompted to set a permanent password.
+        <div className="p-6 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 backdrop-blur-md space-y-4 shadow-xl">
+          <div className="flex items-center gap-3 text-emerald-400">
+            <CheckCircle className="w-6 h-6 shrink-0" />
+            <div>
+              <h3 className="font-bold text-sm text-white">Employee Account Successfully Created &amp; Provisioned!</h3>
+              <p className="text-xs text-emerald-300/80">
+                Official employee portal account created. Copy credentials below to share with the staff member.
               </p>
             </div>
           </div>
 
-          <div className="p-4 rounded-lg bg-black/60 border border-white/10 space-y-2 font-mono text-xs">
+          <div className="p-4 rounded-xl bg-neutral-950/80 border border-white/10 font-mono text-xs space-y-2">
             <div className="flex justify-between items-center py-1 border-b border-white/5">
-              <span className="text-neutral-400">Official ID:</span>
+              <span className="text-neutral-400">Employee ID:</span>
               <span className="text-white font-bold">{createdResult.employeeId}</span>
             </div>
             <div className="flex justify-between items-center py-1 border-b border-white/5">
+              <span className="text-neutral-400">Portal Login URL:</span>
+              <span className="text-[#D4AF37]">https://digitaldictionary.in/portal/login</span>
+            </div>
+            <div className="flex justify-between items-center py-1 border-b border-white/5">
               <span className="text-neutral-400">Login Email:</span>
-              <span className="text-white">{createdResult.email}</span>
+              <span className="text-white font-bold">{createdResult.email}</span>
             </div>
             <div className="flex justify-between items-center py-1">
-              <span className="text-neutral-400">Temporary Password:</span>
+              <span className="text-neutral-400">Assigned Password:</span>
               <span className="text-[#E8D18A] font-bold text-sm tracking-wider">{createdResult.tempPassword}</span>
             </div>
           </div>
@@ -247,16 +275,16 @@ export default function NewEmployeePage() {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={copyCredentials}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 text-black font-semibold text-xs hover:bg-emerald-400 transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-emerald-500 text-black font-semibold text-xs hover:bg-emerald-400 transition-all cursor-pointer shadow-md"
             >
               <Copy className="w-3.5 h-3.5" />
-              {copied ? "Copied Credentials!" : "Copy Welcome Packet"}
+              {copied ? "Copied Credentials Packet!" : "Copy Employee Welcome Packet"}
             </button>
             <Link
               href="/admin/employees"
-              className="px-4 py-2 rounded-lg bg-neutral-800 text-neutral-300 font-medium text-xs hover:bg-neutral-700 transition-colors"
+              className="px-4 py-2.5 rounded-lg bg-neutral-800 text-neutral-300 font-medium text-xs hover:bg-neutral-700 transition-colors"
             >
-              Return to Directory
+              Back to Employee Directory
             </Link>
           </div>
         </div>
@@ -273,10 +301,10 @@ export default function NewEmployeePage() {
       {/* Main Registration Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Section 1: Personal & Account Identity */}
-        <div className="p-6 rounded-xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4">
+        <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4 shadow-lg">
           <h2 className="text-base font-semibold text-white flex items-center gap-2 border-b border-white/5 pb-3">
             <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-            Personal & Corporate Identity
+            Personal &amp; Corporate Identity
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -321,7 +349,7 @@ export default function NewEmployeePage() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+91 98765 43210"
-                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono"
               />
             </div>
 
@@ -338,18 +366,67 @@ export default function NewEmployeePage() {
                 <option value="employee">Standard Employee (Portal)</option>
                 <option value="project_manager">Project Manager (Portal + Client Ops)</option>
                 <option value="sales_manager">Sales Manager</option>
-                <option value="hr_manager">HR & Talent Manager</option>
-                <option value="finance_manager">Finance & Payroll Manager</option>
+                <option value="hr_manager">HR &amp; Talent Manager</option>
+                <option value="finance_manager">Finance &amp; Payroll Manager</option>
               </select>
             </div>
           </div>
         </div>
 
+        {/* Section: Password Configuration */}
+        <div className="p-6 rounded-2xl border border-[#D4AF37]/20 bg-neutral-900/40 backdrop-blur-sm space-y-4 shadow-lg">
+          <div className="flex items-center justify-between border-b border-white/5 pb-3">
+            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+              <KeyRound className="w-4 h-4 text-[#D4AF37]" />
+              Portal Access &amp; Password Configuration
+            </h2>
+            <button
+              type="button"
+              onClick={generateRandomPassword}
+              className="text-xs text-[#D4AF37] hover:underline flex items-center gap-1.5 cursor-pointer font-medium"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Auto-Generate Secure Password
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-neutral-300 mb-1">
+                Assigned Password (Optional - auto-generated if left blank)
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="customPassword"
+                  value={formData.customPassword}
+                  onChange={handleChange}
+                  placeholder="Leave empty to auto-generate or enter custom"
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center text-xs text-neutral-400 p-3 rounded-xl bg-neutral-950/60 border border-white/5">
+              <span>
+                The password configured here will be assigned to the staff portal account and saved in your Super Admin personnel desk for viewing, copying, or resetting at any time.
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Section 2: Department & Employment Details */}
-        <div className="p-6 rounded-xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4">
+        <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4 shadow-lg">
           <h2 className="text-base font-semibold text-white flex items-center gap-2 border-b border-white/5 pb-3">
             <Briefcase className="w-4 h-4 text-[#D4AF37]" />
-            Department & Position Details
+            Department &amp; Position Details
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -361,11 +438,11 @@ export default function NewEmployeePage() {
                 onChange={handleChange}
                 className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
               >
-                <option value="Engineering">Engineering & Web Tech</option>
+                <option value="Engineering">Engineering &amp; Web Tech</option>
                 <option value="UI/UX Design">UI/UX Design Studio</option>
-                <option value="Growth & Marketing">Growth & Performance Marketing</option>
-                <option value="Client Success">Client Success & Operations</option>
-                <option value="Finance & Admin">Finance & Administration</option>
+                <option value="Growth & Marketing">Growth &amp; Performance Marketing</option>
+                <option value="Client Success">Client Success &amp; Operations</option>
+                <option value="Finance & Admin">Finance &amp; Administration</option>
               </select>
             </div>
 
@@ -435,10 +512,10 @@ export default function NewEmployeePage() {
         </div>
 
         {/* Section 3: Compensation & Payroll Configuration */}
-        <div className="p-6 rounded-xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4">
+        <div className="p-6 rounded-2xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4 shadow-lg">
           <h2 className="text-base font-semibold text-white flex items-center gap-2 border-b border-white/5 pb-3">
             <DollarSign className="w-4 h-4 text-[#D4AF37]" />
-            Compensation & Monthly Payroll Settings
+            Compensation &amp; Monthly Payroll Settings
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -449,49 +526,42 @@ export default function NewEmployeePage() {
                 name="ctc"
                 value={formData.ctc}
                 onChange={handleChange}
-                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-neutral-300 mb-1">Basic Salary / Month (₹)</label>
+              <label className="block text-xs font-medium text-neutral-300 mb-1">Basic Salary (Monthly ₹)</label>
               <input
                 type="number"
                 name="basicSalary"
                 value={formData.basicSalary}
                 onChange={handleChange}
-                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-neutral-300 mb-1">Allowances / Month (₹)</label>
+              <label className="block text-xs font-medium text-neutral-300 mb-1">Allowances (Monthly ₹)</label>
               <input
                 type="number"
                 name="allowances"
                 value={formData.allowances}
                 onChange={handleChange}
-                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-neutral-300 mb-1">Standard Deductions (₹)</label>
+              <label className="block text-xs font-medium text-neutral-300 mb-1">Deductions (TDS/PF ₹)</label>
               <input
                 type="number"
                 name="deductions"
                 value={formData.deductions}
                 onChange={handleChange}
-                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50 font-mono"
               />
             </div>
-          </div>
-
-          <div className="p-3 rounded-lg bg-black/40 border border-white/5 flex items-center justify-between text-xs">
-            <span className="text-neutral-400">Estimated Net Monthly Payout:</span>
-            <span className="text-[#E8D18A] font-bold text-sm">
-              ₹{(Number(formData.basicSalary) + Number(formData.allowances) - Number(formData.deductions)).toLocaleString("en-IN")}
-            </span>
           </div>
         </div>
 
@@ -506,10 +576,10 @@ export default function NewEmployeePage() {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#A67C22] text-black font-semibold text-sm shadow-lg hover:brightness-110 disabled:opacity-50 transition-all"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#A67C22] text-black font-semibold text-sm shadow-lg hover:brightness-110 disabled:opacity-50 transition-all cursor-pointer"
           >
             <Save className="w-4 h-4" />
-            {loading ? "Provisioning Access..." : "Register & Issue Credentials"}
+            {loading ? "Registering..." : "Register Employee & Issue Account"}
           </button>
         </div>
       </form>
