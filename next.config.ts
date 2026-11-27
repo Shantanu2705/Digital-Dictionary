@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // External server packages that should not be bundled by Turbopack
+  serverExternalPackages: ["firebase-admin"],
+
   // Speed & Core Web Vitals Optimizations
   compress: true,
   poweredByHeader: false,

@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { adminDb } from "@/lib/firebase/admin";
 import crypto from "crypto";
 
 const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyD_cfB-UNl1KUvWiFKIZ6saQE-8Q12unuM";
@@ -10,21 +9,13 @@ function sanitizeInput(val: any): string {
   return val.trim().replace(/[<>]/g, "");
 }
 
-// Timeout helper to avoid any serverless execution hangs
-function withTimeout<T>(promise: Promise<T>, ms: number = 1500): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms)),
-  ]);
-}
-
 export async function POST(request: Request) {
   try {
     // 1. Authenticate Caller using Bearer ID Token
     const authHeader = request.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return NextResponse.json(
-        { error: "Unauthorized: Missing authentication token." },
+        { success: false, error: "Unauthorized: Missing authentication token." },
         { status: 401 }
       );
     }
@@ -32,7 +23,7 @@ export async function POST(request: Request) {
     const token = authHeader.split("Bearer ")[1]?.trim();
     if (!token) {
       return NextResponse.json(
-        { error: "Unauthorized: Invalid token format." },
+        { success: false, error: "Unauthorized: Invalid token format." },
         { status: 401 }
       );
     }
@@ -41,7 +32,7 @@ export async function POST(request: Request) {
     let callerUid: string = "super-admin";
     let isAuthorized = false;
 
-    // A. Parse JWT client claims directly for instantaneous validation
+    // A. Parse JWT payload directly for instantaneous validation
     try {
       const parts = token.split(".");
       if (parts.length === 3) {
@@ -86,7 +77,7 @@ export async function POST(request: Request) {
     // Authorize caller (Executive Super Admin or HR)
     if (!isAuthorized && callerEmail !== "coo@digitaldictionary.in") {
       return NextResponse.json(
-        { error: "Forbidden: Only Executive Super Admins or authorized HR can provision team accounts." },
+        { success: false, error: "Forbidden: Only Executive Super Admins or authorized HR can provision team accounts." },
         { status: 403 }
       );
     }
@@ -102,13 +93,13 @@ export async function POST(request: Request) {
     const reportingManager = sanitizeInput(body.reportingManager) || sanitizeInput(body.assignedSupervisor) || "Executive Leadership";
 
     if (!email || !fullName) {
-      return NextResponse.json({ error: "Email and Full Name are required." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Email and Full Name are required." }, { status: 400 });
     }
 
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return NextResponse.json({ error: "Invalid email address format." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Invalid email address format." }, { status: 400 });
     }
 
     // Generate secure temporary password
@@ -151,11 +142,11 @@ export async function POST(request: Request) {
           ).catch(() => {});
         }
       } else if (signUpData.error?.message === "EMAIL_EXISTS") {
-        // If the account already exists in Auth, generate a stable UID for Firestore record
+        // If the account already exists in Auth, generate a stable deterministic UID for Firestore
         userRecordUid = `auth-${crypto.createHash("md5").update(email).digest("hex").slice(0, 20)}`;
       } else {
         return NextResponse.json(
-          { error: signUpData.error?.message || "Failed to provision Firebase Authentication user." },
+          { success: false, error: signUpData.error?.message || "Failed to provision Firebase Authentication user." },
           { status: 400 }
         );
       }
@@ -240,25 +231,6 @@ export async function POST(request: Request) {
         createdAt: now,
         updatedAt: now,
       };
-    }
-
-    // Optional: write to server Firestore with strict 1s timeout to guarantee instant response
-    try {
-      if (adminDb && process.env.FIREBASE_ADMIN_PRIVATE_KEY && process.env.FIREBASE_ADMIN_CLIENT_EMAIL) {
-        await withTimeout(
-          Promise.all([
-            adminDb.collection("users").doc(userRecordUid).set(userProfile, { merge: true }),
-            employmentType === "intern" && internDoc
-              ? adminDb.collection("interns").doc(userRecordUid).set(internDoc, { merge: true })
-              : employeeDoc
-              ? adminDb.collection("employees").doc(userRecordUid).set(employeeDoc, { merge: true })
-              : Promise.resolve(),
-          ]),
-          1200
-        );
-      }
-    } catch (fsErr) {
-      // Client SDK writes immediately from browser session as authoritative fallback
     }
 
     return NextResponse.json({
