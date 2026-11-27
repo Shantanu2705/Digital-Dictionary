@@ -8,16 +8,20 @@ service cloud.firestore {
       return request.auth != null;
     }
     
+    function hasUserData() {
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
     function getUserData() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
     
-    // Role Resolution (Direct Claim or Database Role)
+    // Role Resolution with safe short-circuit evaluation
     function isSuperAdmin() {
       return isAuthenticated() && (
-        request.auth.token.role == 'super_admin' ||
-        getUserData().role == 'super_admin' || 
-        request.auth.token.email == 'coo@digitaldictionary.in'
+        request.auth.token.email == 'coo@digitaldictionary.in' ||
+        request.auth.token.role == 'super_admin' || 
+        (hasUserData() && getUserData().role == 'super_admin')
       );
     }
     
@@ -25,7 +29,7 @@ service cloud.firestore {
       return isAuthenticated() && (
         isSuperAdmin() || 
         request.auth.token.role == 'hr_manager' ||
-        getUserData().role == 'hr_manager'
+        (hasUserData() && getUserData().role == 'hr_manager')
       );
     }
     
@@ -33,7 +37,7 @@ service cloud.firestore {
       return isAuthenticated() && (
         isSuperAdmin() || 
         request.auth.token.role == 'finance_manager' ||
-        getUserData().role == 'finance_manager'
+        (hasUserData() && getUserData().role == 'finance_manager')
       );
     }
 
@@ -42,21 +46,21 @@ service cloud.firestore {
       allow read, write: if false; // Zero client access
     }
 
-    // Users Collection (Zero Privilege Escalation)
+    // Users Collection
     match /users/{userId} {
       allow read: if isAuthenticated() && (
         request.auth.uid == userId || 
         isSuperAdmin() || 
         isHRManager()
       );
-      // Users can update their own profile details, but CANNOT elevate their role or alter account status
       allow update: if isAuthenticated() && (
         isSuperAdmin() || (
           request.auth.uid == userId && 
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'accountStatus', 'employeeId', 'employmentType'])
         )
       );
-      allow create, delete: if isSuperAdmin();
+      allow create: if isSuperAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow delete: if isSuperAdmin();
     }
 
     // Clients Collection
@@ -69,7 +73,7 @@ service cloud.firestore {
       allow create, update, delete: if isSuperAdmin();
     }
 
-    // Team Project Assignments (both collection aliases)
+    // Team Project Assignments
     match /assignments/{assignmentId} {
       allow read: if isAuthenticated();
       allow write: if isSuperAdmin();
@@ -98,75 +102,46 @@ service cloud.firestore {
         isFinanceManager() ||
         isHRManager()
       ));
-      allow create, update: if isSuperAdmin() || isHRManager() || isFinanceManager();
-      allow delete: if isSuperAdmin();
+      allow create, update, delete: if isSuperAdmin();
     }
 
-    // Document Templates
-    match /documentTemplates/{templateId} {
-      allow read: if isAuthenticated();
-      allow write: if isSuperAdmin();
-    }
-
-    // Service Packages Catalogue (Public Read, Admin Write)
-    match /packages/{packageId} {
-      allow read: if true;
-      allow write: if isSuperAdmin();
-    }
-
-    // Custom Tailored Packages
-    match /custom_packages/{id} {
-      allow read: if isAuthenticated();
-      allow write: if isSuperAdmin();
-    }
-    match /customPackages/{id} {
-      allow read: if isAuthenticated();
-      allow write: if isSuperAdmin();
-    }
-
-    // Monthly Remuneration & Payslips
-    match /payslips/{payslipId} {
-      allow read: if isSuperAdmin() || isFinanceManager() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow write: if isSuperAdmin() || isFinanceManager();
-    }
-
-    // Onboarding SLA Desk
-    match /onboardingTasks/{taskId} {
-      allow read: if isAuthenticated();
-      allow write: if isSuperAdmin();
-    }
-
-    // Audit Logs (Immutable append-only, zero tampering)
+    // Audit Logs
     match /audit_logs/{logId} {
       allow read: if isSuperAdmin();
       allow create: if isAuthenticated();
-      allow update, delete: if false; // Immutable
-    }
-    match /activityLogs/{logId} {
-      allow read: if isSuperAdmin();
-      allow create: if isAuthenticated();
-      allow update, delete: if false; // Immutable
+      allow update, delete: if false;
     }
 
-    // Company Governance Settings
+    // Document Sequences
+    match /sequences/{sequenceName} {
+      allow read, write: if isSuperAdmin();
+    }
+
+    // Service Packages & Catalogue
+    match /packages/{pkgId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Company Settings
     match /settings/{settingId} {
-      allow read: if true;
-      allow write: if isSuperAdmin();
-    }
-    match /companySettings/{settingId} {
-      allow read: if true;
+      allow read: if isAuthenticated();
       allow write: if isSuperAdmin();
     }
 
-    // Atomic Document Numbering Counters
-    match /documentCounters/{counterId} {
-      allow read, write: if isAuthenticated();
+    // Payroll Records
+    match /payroll/{recordId} {
+      allow read: if isSuperAdmin() || isFinanceManager() || (isAuthenticated() && resource.data.employeeId == request.auth.uid);
+      allow write: if isSuperAdmin() || isFinanceManager();
     }
 
-    // Internal Notifications
-    match /notifications/{notificationId} {
-      allow read: if isAuthenticated() && (resource.data.recipientId == request.auth.uid || isSuperAdmin());
-      allow write: if isAuthenticated();
+    // Invoices & Billing
+    match /invoices/{invoiceId} {
+      allow read: if isSuperAdmin() || isFinanceManager() || (isAuthenticated() && (
+        resource.data.clientId == request.auth.uid || 
+        resource.data.assignedEmployeeId == request.auth.uid
+      ));
+      allow write: if isSuperAdmin() || isFinanceManager();
     }
   }
 }
