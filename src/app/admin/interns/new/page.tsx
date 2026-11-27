@@ -102,7 +102,11 @@ export default function NewInternPage() {
       }
 
       if (!res.ok || !data?.success) {
-        throw new Error(data?.error || `Failed to enrol intern (Status ${res.status}).`);
+        const message = 
+          data?.error || 
+          (responseText && responseText.length < 250 ? responseText : null) || 
+          `Failed to enrol intern (Status ${res.status}).`;
+        throw new Error(message);
       }
 
       const assignedId = data.internId || data.employeeId || `DD-INT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
