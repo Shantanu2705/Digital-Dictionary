@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb } from "@/lib/firebase/admin";
+import { adminAuth, adminFirestoreGet, adminFirestoreSet, hasAdminCredentials } from "@/lib/firebase/admin";
 import { INITIAL_PACKAGES, DEFAULT_COMPANY_SETTINGS } from "@/lib/data/initialCatalogue";
 
 const SUPER_ADMIN_EMAIL = process.env.SUPER_ADMIN_EMAIL || "coo@digitaldictionary.in";
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { password, secretKey } = body;
 
-    // 1. Strict Secret Key Validation (Cannot be bypassed by omitting secretKey)
+    // 1. Strict Secret Key Validation
     if (!secretKey || secretKey.trim() !== EXPECTED_SECRET) {
       return NextResponse.json(
         { error: "Forbidden: Invalid or missing bootstrap authorization key." },
@@ -19,9 +19,16 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!hasAdminCredentials()) {
+      return NextResponse.json(
+        { error: "Server configuration missing Firebase Admin credentials." },
+        { status: 500 }
+      );
+    }
+
     // 2. Check if bootstrap is already permanently locked in system metadata
     try {
-      const lockDoc = await adminDb.collection("system").doc("bootstrapState").get();
+      const lockDoc = await adminFirestoreGet("system/bootstrapState");
       if (lockDoc.exists && lockDoc.data()?.isLocked === true) {
         return NextResponse.json(
           { error: "Access Denied: Initial system bootstrap has already been executed and permanently locked." },
@@ -43,16 +50,13 @@ export async function POST(request: Request) {
     let userRecord;
     try {
       userRecord = await adminAuth.getUserByEmail(SUPER_ADMIN_EMAIL);
-      // User exists, update password and ensure super_admin claim
-      await adminAuth.updateUser(userRecord.uid, {
-        password: password,
-      });
+      await adminAuth.updateUser(userRecord.uid, { password });
       await adminAuth.setCustomUserClaims(userRecord.uid, { role: "super_admin" });
     } catch (err: any) {
       if (err.code === "auth/user-not-found") {
         userRecord = await adminAuth.createUser({
           email: SUPER_ADMIN_EMAIL,
-          password: password,
+          password,
           displayName: "Chief Operating Officer",
           emailVerified: true,
         });
@@ -78,36 +82,31 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    await adminDb.collection("users").doc(userRecord.uid).set(userProfile, { merge: true });
+    await adminFirestoreSet(`users/${userRecord.uid}`, userProfile);
 
-    // 5. Seed initial packages if empty
-    const packagesSnap = await adminDb.collection("packages").limit(1).get();
-    if (packagesSnap.empty) {
-      const batch = adminDb.batch();
-      for (const pkg of INITIAL_PACKAGES) {
-        const pkgRef = adminDb.collection("packages").doc(pkg.id);
-        batch.set(pkgRef, pkg);
+    // 5. Seed initial packages & company settings if absent
+    for (const pkg of INITIAL_PACKAGES) {
+      const existingPkg = await adminFirestoreGet(`packages/${pkg.id}`);
+      if (!existingPkg.exists) {
+        await adminFirestoreSet(`packages/${pkg.id}`, pkg);
       }
-      await batch.commit();
     }
 
-    // 6. Seed initial company settings if empty
-    const settingsRef = adminDb.collection("settings").doc("company");
-    const settingsSnap = await settingsRef.get();
-    if (!settingsSnap.exists) {
-      await settingsRef.set(DEFAULT_COMPANY_SETTINGS);
+    const existingSettings = await adminFirestoreGet("settings/company");
+    if (!existingSettings.exists) {
+      await adminFirestoreSet("settings/company", DEFAULT_COMPANY_SETTINGS);
     }
 
-    // 7. Permanently lock bootstrap to prevent replay / hijacking attacks
-    await adminDb.collection("system").doc("bootstrapState").set({
+    // 6. Permanently lock bootstrap
+    await adminFirestoreSet("system/bootstrapState", {
       isLocked: true,
       bootstrappedAt: new Date().toISOString(),
       bootstrappedByUid: userRecord.uid,
       bootstrappedIp: ip,
     });
 
-    // 8. Log security event
-    await adminDb.collection("audit_logs").add({
+    // 7. Log security event
+    await adminFirestoreSet(`audit_logs/boot_${Date.now()}`, {
       userId: userRecord.uid,
       userEmail: SUPER_ADMIN_EMAIL,
       action: "MASTER_SYSTEM_BOOTSTRAP_LOCKED",

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb } from "@/lib/firebase/admin";
+import { adminAuth, hasAdminCredentials } from "@/lib/firebase/admin";
 
 const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyD_cfB-UNl1KUvWiFKIZ6saQE-8Q12unuM";
 
@@ -98,23 +98,23 @@ export async function POST(request: Request) {
       let authUpdated = false;
       let authMessage = "";
 
-      // Attempt A: Firebase Admin SDK (if configured)
-      if (adminAuth) {
+      // Attempt A: Firebase Admin REST API (if Service Account configured)
+      if (hasAdminCredentials()) {
         try {
           if (userId && !userId.startsWith("auth-")) {
             await adminAuth.updateUser(userId, { password: newPassword });
             authUpdated = true;
-            authMessage = "Updated via Admin SDK.";
+            authMessage = "Updated via Admin Service Account.";
           } else {
             const userRecord = await adminAuth.getUserByEmail(email);
             if (userRecord?.uid) {
               await adminAuth.updateUser(userRecord.uid, { password: newPassword });
               authUpdated = true;
-              authMessage = "Updated via Admin SDK lookup.";
+              authMessage = "Updated via Admin Service Account lookup.";
             }
           }
         } catch (adminAuthErr: any) {
-          console.warn("Admin SDK update attempt notice:", adminAuthErr.message);
+          console.warn("Admin REST update attempt notice:", adminAuthErr.message);
         }
       }
 
@@ -204,8 +204,8 @@ export async function POST(request: Request) {
 
       let authDeleted = false;
 
-      // Attempt to delete from Firebase Authentication via Admin SDK
-      if (adminAuth) {
+      // Attempt to delete from Firebase Authentication via Admin REST API
+      if (hasAdminCredentials()) {
         try {
           if (userId && !userId.startsWith("auth-")) {
             await adminAuth.deleteUser(userId);
@@ -218,7 +218,7 @@ export async function POST(request: Request) {
             }
           }
         } catch (delErr: any) {
-          console.warn("Admin SDK user deletion notice:", delErr.message);
+          console.warn("Admin REST user deletion notice:", delErr.message);
         }
       }
 

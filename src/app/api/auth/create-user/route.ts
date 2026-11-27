@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { adminAuth } from "@/lib/firebase/admin";
+import { adminAuth, hasAdminCredentials } from "@/lib/firebase/admin";
 
 const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyD_cfB-UNl1KUvWiFKIZ6saQE-8Q12unuM";
 
@@ -129,31 +129,57 @@ export async function POST(request: Request) {
 
         // Set displayName in Firebase Auth
         if (signUpData.idToken) {
-          fetch(
-            `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                idToken: signUpData.idToken,
-                displayName: fullName,
-                returnSecureToken: false,
-              }),
-            }
-          ).catch(() => {});
+          try {
+            await fetch(
+              `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  idToken: signUpData.idToken,
+                  displayName: fullName,
+                  returnSecureToken: false,
+                }),
+              }
+            );
+          } catch {
+            // Non-blocking profile displayName update
+          }
         }
       } else if (signUpData.error?.message === "EMAIL_EXISTS") {
-        if (adminAuth) {
+        let updatedExisting = false;
+        if (hasAdminCredentials()) {
           try {
             const userRecord = await adminAuth.getUserByEmail(email);
             if (userRecord?.uid) {
               userRecordUid = userRecord.uid;
               await adminAuth.updateUser(userRecord.uid, { password: tempPassword, displayName: fullName });
+              updatedExisting = true;
             }
           } catch (e) {
-            console.warn("Could not lookup/update existing user via Admin SDK:", e);
+            console.warn("Could not lookup/update existing user via Admin REST:", e);
           }
         }
+
+        // Also check if the user already has this exact password
+        if (!updatedExisting) {
+          try {
+            const checkRes = await fetch(
+              `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password: tempPassword, returnSecureToken: true }),
+              }
+            );
+            const checkData = await checkRes.json();
+            if (checkRes.ok && checkData.localId) {
+              userRecordUid = checkData.localId;
+              updatedExisting = true;
+            }
+          } catch {}
+        }
+
         if (!userRecordUid) {
           userRecordUid = `auth-${crypto.createHash("md5").update(email).digest("hex").slice(0, 20)}`;
         }
