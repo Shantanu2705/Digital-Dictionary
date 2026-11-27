@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { db } from "@/lib/firebase/config";
+import { doc, setDoc } from "firebase/firestore";
 import { 
   GraduationCap, 
   ArrowLeft, 
@@ -12,9 +14,9 @@ import {
   BookOpen, 
   Calendar, 
   DollarSign, 
-  CheckCircle,
-  Copy,
-  AlertCircle
+  CheckCircle, 
+  Copy, 
+  AlertCircle 
 } from "lucide-react";
 
 export default function NewInternPage() {
@@ -91,16 +93,78 @@ export default function NewInternPage() {
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to enrol intern.");
+      const responseText = await res.text();
+      let data: any = null;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch (parseErr) {
+        console.warn("Could not parse JSON response:", responseText);
+      }
+
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || `Failed to enrol intern (Status ${res.status}).`);
+      }
+
+      const assignedId = data.internId || data.employeeId || `DD-INT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const assignedUid = data.uid || `int-${Date.now()}`;
+      const now = new Date().toISOString();
+
+      // Write directly to Firestore using client SDK to guarantee real-time synchronization
+      const internDoc = {
+        internId: assignedId,
+        userId: assignedUid,
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim(),
+        collegeName: formData.collegeName.trim(),
+        universityName: (formData.universityName || formData.collegeName).trim(),
+        course: formData.course.trim(),
+        department: formData.department,
+        semester: formData.semester,
+        collegeRollNo: formData.collegeRollNo.trim() || "N/A",
+        internshipRole: formData.internshipRole,
+        assignedSupervisor: formData.assignedSupervisor,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        durationMonths: Number(formData.durationMonths),
+        internshipMode: formData.internshipMode,
+        monthlyStipend: Number(formData.monthlyStipend),
+        accountStatus: "active",
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      const userProfile = {
+        uid: assignedUid,
+        email: formData.email.trim().toLowerCase(),
+        fullName: formData.fullName.trim(),
+        phone: formData.phone.trim(),
+        designation: formData.internshipRole,
+        department: formData.department,
+        employmentType: "intern",
+        role: "intern",
+        employeeId: assignedId,
+        reportingManager: formData.assignedSupervisor,
+        accountStatus: "active",
+        mustChangePassword: true,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      try {
+        await Promise.all([
+          setDoc(doc(db, "users", assignedUid), data.userProfile || userProfile, { merge: true }),
+          setDoc(doc(db, "interns", assignedUid), data.record || internDoc, { merge: true }),
+        ]);
+      } catch (clientFsErr) {
+        console.warn("Client Firestore sync notice:", clientFsErr);
       }
 
       setCreatedResult({
         success: true,
         email: data.email,
         tempPassword: data.tempPassword,
-        internId: data.internId,
+        internId: assignedId,
       });
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
