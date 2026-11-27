@@ -99,82 +99,78 @@ export default function NewEmployeePage() {
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to create employee.");
-        const responseText = await res.text();
-        let data: any = null;
-        try {
-          data = responseText ? JSON.parse(responseText) : null;
-        } catch (parseErr) {
-          console.warn("Could not parse JSON response:", responseText);
-        }
+      const responseText = await res.text();
+      let data: any = null;
+      try {
+        data = responseText ? JSON.parse(responseText) : null;
+      } catch (parseErr) {
+        console.warn("Could not parse JSON response:", responseText);
+      }
 
-        if (!res.ok || !data?.success) {
-          throw new Error(data?.error || `Failed to create employee (Status ${res.status}).`);
-        }
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.error || `Failed to create employee (Status ${res.status}).`);
+      }
 
-        const assignedId = data.employeeId || data.internId || `DD-EMP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-        const assignedUid = data.uid || `emp-${Date.now()}`;
-        const now = new Date().toISOString();
+      const assignedId = data.employeeId || data.internId || `DD-EMP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const assignedUid = data.uid || `emp-${Date.now()}`;
+      const now = new Date().toISOString();
 
-        // Write directly to Firestore using client SDK to guarantee real-time synchronization
-        const employeeDoc = {
-          employeeId: assignedId,
-          userId: assignedUid,
-          fullName: formData.fullName.trim(),
-          email: formData.email.trim().toLowerCase(),
-          phone: formData.phone.trim(),
-          designation: formData.designation.trim(),
-          department: formData.department,
-          reportingManager: formData.reportingManager,
-          dateOfJoining: formData.dateOfJoining,
-          employmentType: formData.employmentType || "full-time",
-          workMode: formData.workMode || "hybrid",
-          ctc: Number(formData.ctc) || 0,
-          basicSalary: Number(formData.basicSalary) || 0,
-          allowances: Number(formData.allowances) || 0,
-          deductions: Number(formData.deductions) || 0,
-          probationPeriodMonths: Number(formData.probationPeriodMonths) || 3,
-          employmentStatus: "active",
-          createdAt: now,
-          updatedAt: now,
-        };
+      // Write directly to Firestore using client SDK to guarantee real-time synchronization
+      const employeeDoc = {
+        employeeId: assignedId,
+        userId: assignedUid,
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.trim(),
+        designation: formData.designation.trim(),
+        department: formData.department,
+        reportingManager: formData.reportingManager,
+        dateOfJoining: formData.dateOfJoining,
+        employmentType: formData.employmentType || "full-time",
+        workMode: formData.workMode || "hybrid",
+        ctc: Number(formData.ctc) || 0,
+        basicSalary: Number(formData.basicSalary) || 0,
+        allowances: Number(formData.allowances) || 0,
+        deductions: Number(formData.deductions) || 0,
+        probationPeriodMonths: Number(formData.probationPeriodMonths) || 3,
+        employmentStatus: "active",
+        createdAt: now,
+        updatedAt: now,
+      };
 
-        const userProfile = {
-          uid: assignedUid,
-          email: formData.email.trim().toLowerCase(),
-          fullName: formData.fullName.trim(),
-          phone: formData.phone.trim(),
-          designation: formData.designation.trim(),
-          department: formData.department,
-          employmentType: "permanent",
-          role: formData.role,
-          employeeId: assignedId,
-          reportingManager: formData.reportingManager,
-          accountStatus: "active",
-          mustChangePassword: true,
-          createdAt: now,
-          updatedAt: now,
-        };
+      const userProfile = {
+        uid: assignedUid,
+        email: formData.email.trim().toLowerCase(),
+        fullName: formData.fullName.trim(),
+        phone: formData.phone.trim(),
+        designation: formData.designation.trim(),
+        department: formData.department,
+        employmentType: "permanent",
+        role: formData.role,
+        employeeId: assignedId,
+        reportingManager: formData.reportingManager,
+        accountStatus: "active",
+        mustChangePassword: true,
+        createdAt: now,
+        updatedAt: now,
+      };
 
-        try {
-          await Promise.all([
-            setDoc(doc(db, "users", assignedUid), data.userProfile || userProfile, { merge: true }),
-            setDoc(doc(db, "employees", assignedUid), data.record || employeeDoc, { merge: true }),
-          ]);
-        } catch (clientFsErr) {
-          console.warn("Client Firestore sync notice:", clientFsErr);
-        }
+      try {
+        await Promise.all([
+          setDoc(doc(db, "users", assignedUid), data.userProfile || userProfile, { merge: true }),
+          setDoc(doc(db, "employees", assignedUid), data.record || employeeDoc, { merge: true }),
+        ]);
+      } catch (clientFsErr) {
+        console.warn("Client Firestore sync notice:", clientFsErr);
+      }
 
-        setCreatedResult({
-          success: true,
-          email: data.email,
-          tempPassword: data.tempPassword,
-          employeeId: data.employeeId,
-          employeeId: assignedId,
-        });
-      } catch (err: any) {
+      setCreatedResult({
+        success: true,
+        email: data.email,
+        tempPassword: data.tempPassword,
+        employeeId: assignedId,
+      });
+    } catch (err: any) {
         setError(err.message || "An unexpected error occurred.");
       } finally {
         setLoading(false);
