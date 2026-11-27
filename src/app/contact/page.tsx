@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { SmartContactLink } from "@/components/SmartContactLink";
@@ -12,11 +12,21 @@ export default function ContactPage() {
     email: "",
     phone: "",
     company: "",
-    service: "Single-Page Express Landing Page",
+    service: "Express Landing Page",
     message: "",
     honeypot: "",
   });
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const svc = params.get("service");
+      if (svc) {
+        setFormData((prev) => ({ ...prev, service: svc }));
+      }
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -215,18 +225,38 @@ export default function ContactPage() {
                       onChange={handleChange}
                       className="w-full bg-[#F2F2F0] border border-[#E5E5E2] rounded-xl px-4 py-3 text-[#101010] outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] focus:bg-white transition-all text-sm font-medium"
                     >
-                      <option value="Single-Page Express Landing Page">Single-Page Express Landing Page</option>
-                      <option value="Starter Business Website - 5 Pages">Starter Business Website - 5 Pages</option>
-                      <option value="Growth Corporate Website - 10 Pages">Growth Corporate Website - 10 Pages</option>
-                      <option value="Enterprise B2B Authority Portal">Enterprise B2B Authority Portal</option>
-                      <option value="D2C E-Commerce Store">D2C E-Commerce Store</option>
-                      <option value="Native Mobile App MVP">Native Mobile App MVP</option>
-                      <option value="Omnichannel Combo: Web + Native App">Omnichannel Combo: Web + Native App</option>
-                      <option value="Service / Booking Fleet App">Service / Booking Fleet App</option>
-                      <option value="Digital Marketing & Performance Ads">Digital Marketing &amp; Performance Ads</option>
-                      <option value="SEO Service & Local Google Maps">SEO Service &amp; Local Google Maps</option>
-                      <option value="Brand Identity & Graphic Designing">Brand Identity &amp; Graphic Designing</option>
-                      <option value="Custom Software Development">Custom Software Development</option>
+                      <optgroup label="Website Architecture">
+                        <option value="Express Landing Page">Express Landing Page (1 page)</option>
+                        <option value="Starter Website">Starter Website (Up to 5 pages)</option>
+                        <option value="Business Website">Business Website (Up to 10 pages)</option>
+                        <option value="Professional Website">Professional Website (Up to 15 pages)</option>
+                        <option value="Enterprise Website">Enterprise Website (Up to 20 pages)</option>
+                        <option value="Custom Website">Custom Website (20+ pages)</option>
+                      </optgroup>
+                      <optgroup label="Mobile Application Systems">
+                        <option value="Mobile App MVP">Mobile App MVP (Up to 10 screens)</option>
+                        <option value="Professional App">Professional App (Up to 15 screens)</option>
+                        <option value="Advanced App">Advanced App (Up to 20 screens)</option>
+                        <option value="Enterprise App">Enterprise App (20+ screens)</option>
+                      </optgroup>
+                      <optgroup label="Connected Web + App Packages">
+                        <option value="Launch Combo">Launch Combo (5 Web Pages + 10 App Screens)</option>
+                        <option value="Business Combo">Business Combo (10 Web Pages + 10 App Screens)</option>
+                        <option value="Professional Combo">Professional Combo (15 Web Pages + 15 App Screens)</option>
+                        <option value="Enterprise Combo">Enterprise Combo (20 Web Pages + 20 App Screens)</option>
+                      </optgroup>
+                      <optgroup label="Commerce & Business Workflows">
+                        <option value="D2C E-commerce Website">D2C E-commerce Website</option>
+                        <option value="Service / Booking App Suite">Service / Booking App Suite</option>
+                        <option value="CRM / ERP / Business Portal">CRM / ERP / Business Portal</option>
+                        <option value="Custom API / Integration">Custom API / Integration</option>
+                      </optgroup>
+                      <optgroup label="Ongoing Care & Growth">
+                        <option value="Ecosystem Care">Ecosystem Care (Web + App Maintenance)</option>
+                        <option value="Local SEO & Maps">Local SEO &amp; Maps</option>
+                        <option value="Dual-Channel Ads (Meta + Google)">Dual-Channel Ads (Meta + Google)</option>
+                        <option value="360° Growth Engine">360° Growth Engine</option>
+                      </optgroup>
                     </select>
                   </div>
 

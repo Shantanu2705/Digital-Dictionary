@@ -237,13 +237,25 @@ export interface DocumentRecord {
   updatedAt: string;
 }
 
+export type CatalogueCategory =
+  | 'Website Architecture'
+  | 'Mobile Application Systems'
+  | 'Connected Web + App'
+  | 'Commerce & Business Workflows'
+  | 'Ongoing Care & Growth'
+  | 'Web Architecture'
+  | 'Mobile App Ecosystems'
+  | 'Custom';
+
 export interface ServicePackage {
   id: string;
-  code: string; // e.g. OPT-01
+  code: string; // e.g. WEB-01
   name: string;
-  category: 'Web Architecture' | 'Mobile App Ecosystems' | 'Ongoing Care & Growth' | 'Custom';
+  category: CatalogueCategory;
   shortDescription: string;
   fullDescription: string;
+  pageLimit?: string;
+  screenLimit?: string;
   price: number;
   currency: string;
   billingType: 'one-time' | 'monthly' | 'quarterly' | 'yearly' | 'custom';
@@ -260,6 +272,7 @@ export interface ServicePackage {
   designedFor?: string;
   active: boolean;
   displayOrder: number;
+  updatedAt?: string;
 }
 
 export interface CustomPackage {
@@ -268,8 +281,14 @@ export interface CustomPackage {
   clientName: string;
   packageName: string;
   basePackageCodes: string[];
+  packagePriceOverrides?: Record<string, number>;
   customServices: string[];
   lineItems: { description: string; quantity: number; unitPrice: number; total: number }[];
+  extraPages?: number;
+  extraPageRate?: number;
+  extraScreens?: number;
+  extraScreenRate?: number;
+  gstEnabled?: boolean;
   totalPrice: number;
   discount: number;
   finalPrice: number;

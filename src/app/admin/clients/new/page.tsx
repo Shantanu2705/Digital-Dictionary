@@ -18,6 +18,7 @@ import {
 import { collection, addDoc, getDocs, doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { INITIAL_PACKAGES } from "@/lib/data/initialCatalogue";
+import { fetchLiveCatalogue } from "@/lib/data/catalogueStore";
 import { generateDocumentNumber } from "@/lib/utils/numbering";
 import { logActivity } from "@/lib/utils/audit";
 import { ClientStatus, PaymentStatus, ServicePackage, UserProfile } from "@/types/portal";
@@ -44,7 +45,7 @@ export default function NewClientPage() {
   // Project Info
   const [projectName, setProjectName] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
-  const [selectedPackageId, setSelectedPackageId] = useState("pkg-opt-02");
+  const [selectedPackageId, setSelectedPackageId] = useState("pkg-web-02");
   const [projectStatus, setProjectStatus] = useState<ClientStatus>("closed_won");
   const [projectStartDate, setProjectStartDate] = useState(new Date().toISOString().split("T")[0]);
   const [expectedDeliveryDate, setExpectedDeliveryDate] = useState("");
@@ -61,17 +62,53 @@ export default function NewClientPage() {
   const [primaryEmployeeId, setPrimaryEmployeeId] = useState("");
 
   useEffect(() => {
-    async function loadTeam() {
+    async function loadTeamAndCatalogue() {
       try {
-        const snap = await getDocs(collection(db, "users"));
+        const [usersSnap, catRes] = await Promise.all([
+          getDocs(collection(db, "users")),
+          fetchLiveCatalogue(),
+        ]);
         const list: UserProfile[] = [];
-        snap.forEach((d) => list.push(d.data() as UserProfile));
+        usersSnap.forEach((d) => list.push(d.data() as UserProfile));
         setEmployees(list);
+
+        const activePackages = catRes.packages.filter((p) => p.active !== false);
+        setPackages(activePackages);
+
+        // Apply URL pre-selection (?package=CODE&customPrice=AMOUNT&clientName=...&projectName=...)
+        if (typeof window !== "undefined") {
+          const params = new URLSearchParams(window.location.search);
+          const pkgCode = params.get("package");
+          const customPriceParam = params.get("customPrice");
+          const clientNameParam = params.get("clientName");
+          const projNameParam = params.get("projectName");
+
+          if (clientNameParam) setCompanyName(clientNameParam);
+          if (projNameParam) setProjectName(projNameParam);
+
+          if (pkgCode) {
+            const matched = activePackages.find(
+              (p) => p.code.toLowerCase() === pkgCode.toLowerCase() || p.id === pkgCode
+            );
+            if (matched) {
+              setSelectedPackageId(matched.id);
+              const priceToUse = customPriceParam ? Number(customPriceParam) : matched.price;
+              setQuotedAmount(priceToUse);
+              setAgreedAmount(priceToUse);
+              setAdvancePayment(Math.round(priceToUse * 0.5));
+            }
+          } else if (customPriceParam) {
+            const priceToUse = Number(customPriceParam);
+            setQuotedAmount(priceToUse);
+            setAgreedAmount(priceToUse);
+            setAdvancePayment(Math.round(priceToUse * 0.5));
+          }
+        }
       } catch (err) {
-        console.warn("Could not load employees:", err);
+        console.warn("Could not load employees or live catalogue:", err);
       }
     }
-    loadTeam();
+    loadTeamAndCatalogue();
   }, []);
 
   const handlePackageChange = (pkgId: string) => {
@@ -332,7 +369,7 @@ export default function NewClientPage() {
               >
                 {packages.map((pkg) => (
                   <option key={pkg.id} value={pkg.id} className="bg-[#181818] text-white">
-                    {pkg.code} &mdash; {pkg.name} (₹{pkg.price.toLocaleString("en-IN")}{pkg.billingType === "monthly" ? "/mo" : ""})
+                    {pkg.code} &mdash; {pkg.name} ({pkg.priceType === "custom_quote" ? "Custom Quote" : `₹${pkg.price.toLocaleString("en-IN")}${pkg.priceType === "starting_from" ? "+" : ""}${pkg.billingType === "monthly" ? "/mo" : ""}`})
                   </option>
                 ))}
               </select>

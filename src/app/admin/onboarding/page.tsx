@@ -29,6 +29,7 @@ import {
   generatePackageMenuPDF
 } from "@/lib/pdf/pdfEngine";
 import { INITIAL_PACKAGES } from "@/lib/data/initialCatalogue";
+import { fetchLiveCatalogue } from "@/lib/data/catalogueStore";
 import { generateDocumentNumber } from "@/lib/utils/numbering";
 import JSZip from "jszip";
 import { cn } from "@/lib/utils";
@@ -172,7 +173,8 @@ export default function OnboardingPage() {
       folder?.file(`05_Delivery_Guide_${delNum}.pdf`, delPdf.doc.output("blob"));
 
       // 6. Package Menu
-      const menuPdf = generatePackageMenuPDF(INITIAL_PACKAGES);
+      const { packages: livePackages } = await fetchLiveCatalogue();
+      const menuPdf = generatePackageMenuPDF(livePackages);
       folder?.file(`06_Solutions_Catalogue_Menu.pdf`, menuPdf.doc.output("blob"));
 
       // Generate ZIP and trigger browser download

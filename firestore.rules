@@ -117,10 +117,15 @@ service cloud.firestore {
       allow read, write: if isSuperAdmin();
     }
 
-    // Service Packages & Catalogue
+    // Service Packages & Catalogue (Authenticated internal reads only; Admin writes)
     match /packages/{pkgId} {
-      allow read: if true;
+      allow read: if isAuthenticated();
       allow write: if isSuperAdmin();
+    }
+
+    // Client-Specific Custom Pricing Proposals (Strictly Super Admin)
+    match /custom_packages/{customId} {
+      allow read, write: if isSuperAdmin();
     }
 
     // Company Settings

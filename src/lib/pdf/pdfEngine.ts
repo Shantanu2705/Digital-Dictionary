@@ -1027,37 +1027,104 @@ export function generateDeliveryGuidePDF(data: any, settings?: CompanySettings):
 }
 
 // ==========================================
-// 9. PACKAGE MENU PDF GENERATOR
+// 9. PACKAGE MENU PDF GENERATOR (2026 CATALOGUE & CUSTOM PRICING)
 // ==========================================
-export function generatePackageMenuPDF(packages: any[], settings?: CompanySettings): DigitalDictionaryPDF {
+export function generatePackageMenuPDF(
+  packages: any[],
+  settings?: CompanySettings,
+  customSubtitle?: string
+): DigitalDictionaryPDF {
   const pdf = new DigitalDictionaryPDF(settings);
   const doc = pdf.doc;
+  const pageWidth = doc.internal.pageSize.getWidth();
 
-  let y = pdf.renderHeader("OFFICIAL DIGITAL SOLUTIONS CATALOGUE", "Enterprise Packages & Pricing Menu");
+  let y = pdf.renderHeader(
+    "THE PREMIUM SERVICE COLLECTION (2026)",
+    customSubtitle || "Engineering Digital Ecosystems That Drive Revenue"
+  );
+
+  const formatPackageLimits = (pkg: any) => {
+    const parts: string[] = [];
+    if (pkg.pageLimit) parts.push(`Web: ${pkg.pageLimit}`);
+    if (pkg.screenLimit) parts.push(`App: ${pkg.screenLimit}`);
+    return parts.join(" | ");
+  };
+
+  const formatPackagePrice = (pkg: any) => {
+    if (pkg.priceType === "custom_quote" || (Number(pkg.price) <= 0 && pkg.priceType !== "fixed")) {
+      return "Custom quote";
+    }
+    const base = `INR ${Number(pkg.price || 0).toLocaleString("en-IN")}`;
+    if (pkg.billingType === "monthly") return `${base} / mo`;
+    if (pkg.priceType === "starting_from") return `${base}+`;
+    return base;
+  };
 
   autoTable(doc, {
     startY: y,
     theme: "grid",
-    headStyles: { fillColor: [24, 24, 24], textColor: [255, 255, 255], fontSize: 8 },
-    styles: { fontSize: 7.5, cellPadding: 2 },
+    headStyles: { fillColor: [24, 24, 24], textColor: [255, 255, 255], fontSize: 7.5 },
+    styles: { fontSize: 7, cellPadding: 1.8 },
     columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 20 },
-      1: { fontStyle: "bold", cellWidth: 50 },
-      2: { cellWidth: 70 },
-      3: { cellWidth: 20, halign: "center" },
-      4: { fontStyle: "bold", cellWidth: 20, halign: "right" },
+      0: { fontStyle: "bold", cellWidth: 18 },
+      1: { cellWidth: 32, textColor: [90, 90, 90] },
+      2: { fontStyle: "bold", cellWidth: 38 },
+      3: { cellWidth: 66 },
+      4: { fontStyle: "bold", cellWidth: 28, halign: "right" },
     },
-    head: [["Code", "Package Name", "Scope Summary", "Billing", "Price (INR)"]],
-    body: packages.map((pkg) => [
-      pkg.code,
-      pkg.name,
-      pkg.shortDescription || pkg.fullDescription?.substring(0, 70) + "...",
-      pkg.billingType === "monthly" ? "Monthly" : "One-Time",
-      `INR ${Number(pkg.price).toLocaleString("en-IN")}${pkg.priceType === "starting_from" ? "+" : ""}`,
-    ]),
+    head: [["Code", "Category", "Package / Solution", "Limits & Scope Summary", "Price (INR)"]],
+    body: packages.map((pkg) => {
+      const limits = formatPackageLimits(pkg);
+      const summary = limits ? `[${limits}] ${pkg.shortDescription || ""}` : pkg.shortDescription || "";
+      return [
+        pkg.code,
+        pkg.category,
+        pkg.name,
+        summary.substring(0, 125),
+        formatPackagePrice(pkg),
+      ];
+    }),
+    didDrawPage: () => {
+      pdf.drawPageBorders();
+    },
   });
 
-  y = (doc as any).lastAutoTable.finalY + 8;
+  y = (doc as any).lastAutoTable.finalY + 5;
+
+  if (y > 245) {
+    doc.addPage();
+    pdf.drawPageBorders();
+    y = 18;
+  }
+
+  // Catalogue Add-ons & Notes Box
+  doc.setFillColor(248, 246, 240);
+  doc.setDrawColor(GOLD_CHAMPAGNE[0], GOLD_CHAMPAGNE[1], GOLD_CHAMPAGNE[2]);
+  doc.roundedRect(14, y, pageWidth - 28, 16, 1.5, 1.5, "FD");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.5);
+  doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
+  doc.text("CATALOGUE ADD-ON RATES & COMMERCIAL TERMS", 18, y + 5);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(60, 60, 60);
+  doc.text(
+    "• Additional Website Pages: INR 2,500 per extra standard page   |   Additional App Screens: INR 4,000 per extra standard screen",
+    18,
+    y + 9.5
+  );
+  doc.text(
+    "• All prices are in Indian Rupees (INR). Applicable GST, third-party APIs, domain/hosting, and ad spend are billed separately unless agreed.",
+    18,
+    y + 13.5
+  );
+
+  y += 22;
+  if (y > 250) {
+    doc.addPage();
+    pdf.drawPageBorders();
+    y = 22;
+  }
   pdf.renderSignatureBlock(y, "Commercial Solutions Director");
 
   return pdf;

@@ -400,7 +400,7 @@ export default function AdminDashboardPage() {
             Service Catalogue
           </h4>
           <p className="text-xs text-neutral-400 mt-1">
-            11 official packages &amp; Custom Package Builder.
+            22 official packages &amp; Smart Custom Pricing Engine.
           </p>
         </Link>
 
