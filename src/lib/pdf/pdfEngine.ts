@@ -2,6 +2,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { CompanySettings } from "@/types/portal";
 import { DEFAULT_COMPANY_SETTINGS } from "@/lib/data/initialCatalogue";
+import { OFFICIAL_LOGO_BASE64, OFFICIAL_STAMP_BASE64 } from "@/lib/pdf/assets";
 
 // Brand Colors for PDF
 const GOLD_METALLIC = [212, 175, 55]; // #D4AF37
@@ -51,61 +52,69 @@ export class DigitalDictionaryPDF {
     doc.circle(pageWidth - 7, pageHeight - 7, 0.6, "F");
   }
 
-  // Render official company letterhead with typography and contact strip
+  // Render official company letterhead with typography, metallic logo emblem and contact strip
   renderHeader(title: string, subtitle?: string, documentNumber?: string) {
     const doc = this.doc;
     const pageWidth = doc.internal.pageSize.getWidth();
 
     this.drawPageBorders();
 
-    // Top Brand Name & Emblem
+    // Embed Official Metallic Logo Image (750x560 -> 16mm x 12mm)
+    try {
+      doc.addImage(OFFICIAL_LOGO_BASE64, "PNG", 15, 12, 16, 12);
+    } catch (e) {
+      console.warn("Logo rendering notice:", e);
+    }
+
+    // Top Brand Name & Sub-tagline aligned nicely next to the logo emblem
+    const brandX = 33.5;
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
+    doc.setFontSize(14.5);
     doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
-    doc.text(this.settings.companyName.toUpperCase(), 15, 20);
+    doc.text(this.settings.companyName.toUpperCase(), brandX, 18);
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
+    doc.setFontSize(7.2);
     doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
-    doc.text(this.settings.tagline.toUpperCase(), 15, 24.5);
+    doc.text(this.settings.tagline.toUpperCase(), brandX, 22.5);
 
     // Right-aligned contact info in header
     doc.setFontSize(7.5);
-    doc.text(`${this.settings.website}  |  ${this.settings.phone}`, pageWidth - 15, 20, { align: "right" });
-    doc.text(`${this.settings.email}  |  Govt. MSME Reg: ${this.settings.msmeRegistration}`, pageWidth - 15, 24.5, { align: "right" });
+    doc.text(`${this.settings.website}  |  ${this.settings.phone}`, pageWidth - 15, 18, { align: "right" });
+    doc.text(`${this.settings.email}  |  Govt. MSME Reg: ${this.settings.msmeRegistration}`, pageWidth - 15, 22.5, { align: "right" });
 
     // Hairline separator in metallic gold
     doc.setDrawColor(GOLD_CHAMPAGNE[0], GOLD_CHAMPAGNE[1], GOLD_CHAMPAGNE[2]);
     doc.setLineWidth(0.4);
-    doc.line(15, 27.5, pageWidth - 15, 27.5);
+    doc.line(15, 27, pageWidth - 15, 27);
 
     // Document Banner Bar
     doc.setFillColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
-    doc.rect(15, 31, pageWidth - 30, 11, "F");
+    doc.rect(15, 30.5, pageWidth - 30, 11, "F");
 
     // Title inside banner
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10.5);
     doc.setTextColor(255, 255, 255);
-    doc.text(title.toUpperCase(), 19, 38);
+    doc.text(title.toUpperCase(), 19, 37.5);
 
     // Document Number on Right of banner
     if (documentNumber) {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
       doc.setTextColor(GOLD_CHAMPAGNE[0], GOLD_CHAMPAGNE[1], GOLD_CHAMPAGNE[2]);
-      doc.text(`REF: ${documentNumber}`, pageWidth - 19, 38, { align: "right" });
+      doc.text(`REF: ${documentNumber}`, pageWidth - 19, 37.5, { align: "right" });
     }
 
     if (subtitle) {
       doc.setFont("helvetica", "italic");
       doc.setFontSize(8);
       doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
-      doc.text(subtitle, 15, 47);
-      return 52; // Return next Y position
+      doc.text(subtitle, 15, 46.5);
+      return 51.5; // Return next Y position
     }
 
-    return 48; // Return next Y position
+    return 47.5; // Return next Y position
   }
 
   // Render bottom footer with pagination and confidentiality notice
@@ -133,7 +142,7 @@ export class DigitalDictionaryPDF {
     doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth - 15, pageHeight - 11.5, { align: "right" });
   }
 
-  // Render Authorised Signature & Stamp Area
+  // Render Authorised Signature & Stamp Area with official stamp image
   renderSignatureBlock(startY: number, signatoryTitle?: string, signatoryName?: string) {
     const doc = this.doc;
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -155,29 +164,38 @@ export class DigitalDictionaryPDF {
     doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
     doc.text(`For ${this.settings.companyName.toUpperCase()}`, blockX, currentY);
 
-    // Draw Stamp Frame / Signature Placeholder
+    // Draw Stamp Frame / Signature Box in delicate champagne gold
     doc.setDrawColor(GOLD_CHAMPAGNE[0], GOLD_CHAMPAGNE[1], GOLD_CHAMPAGNE[2]);
-    doc.setLineWidth(0.2);
-    doc.rect(blockX, currentY + 3, blockWidth, 24);
+    doc.setLineWidth(0.25);
+    doc.rect(blockX, currentY + 3, blockWidth, 25);
 
-    // Signature text line
-    doc.setFont("helvetica", "italic");
-    doc.setFontSize(7.5);
-    doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
-    doc.text("[ Official Seal & Proprietor Signature Attached ]", blockX + blockWidth / 2, currentY + 16, { align: "center" });
+    // Embed Official Stamp & Signature (1024x529 -> 44mm x 22.7mm)
+    try {
+      const stampW = 44;
+      const stampH = 22.7;
+      const stampX = blockX + (blockWidth - stampW) / 2;
+      const stampY = currentY + 4.15;
+      doc.addImage(OFFICIAL_STAMP_BASE64, "JPEG", stampX, stampY, stampW, stampH);
+    } catch (e) {
+      console.warn("Could not embed official stamp in signature block:", e);
+      doc.setFont("helvetica", "italic");
+      doc.setFontSize(7.5);
+      doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
+      doc.text("[ Official Seal & Proprietor Signature Attached ]", blockX + blockWidth / 2, currentY + 16, { align: "center" });
+    }
 
     // Signatory details
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
-    doc.text(signatoryName || this.settings.authorizedSignatoryName, blockX, currentY + 32);
+    doc.text(signatoryName || this.settings.authorizedSignatoryName, blockX, currentY + 33);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
     doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
-    doc.text(signatoryTitle || this.settings.authorizedSignatoryDesignation, blockX, currentY + 36);
+    doc.text(signatoryTitle || this.settings.authorizedSignatoryDesignation, blockX, currentY + 37);
 
-    return currentY + 42;
+    return currentY + 43;
   }
 
   // Finalize all pages with page numbers and borders

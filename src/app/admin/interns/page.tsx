@@ -47,7 +47,9 @@ export default function InternsListPage() {
   const handleDownloadNOC = (intern: InternRecord) => {
     const data = {
       nocNumber: `DD-NOC-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
+      documentNumber: `DD-NOC-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
       internName: intern.fullName,
+      fullName: intern.fullName,
       collegeName: intern.collegeName,
       universityName: intern.universityName || intern.collegeName,
       course: intern.course,
@@ -55,6 +57,7 @@ export default function InternsListPage() {
       rollNumber: intern.collegeRollNo || "N/A",
       department: intern.department,
       supervisorName: intern.assignedSupervisor || "Engineering Lead",
+      assignedSupervisor: intern.assignedSupervisor || "Engineering Lead",
       startDate: intern.startDate,
       endDate: intern.endDate,
       durationMonths: intern.durationMonths || 3,
@@ -64,6 +67,31 @@ export default function InternsListPage() {
     };
     const pdf = generateInternNocPDF(data);
     pdf.doc.save(`College_NOC_${intern.fullName.replace(/\s+/g, "_")}.pdf`);
+  };
+
+  const handleDownloadOffer = (intern: InternRecord) => {
+    const data = {
+      offerNumber: `DD-OFF-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
+      documentNumber: `DD-OFF-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
+      internName: intern.fullName,
+      fullName: intern.fullName,
+      email: intern.email,
+      phone: intern.phone,
+      collegeName: intern.collegeName,
+      course: intern.course,
+      internshipRole: intern.internshipRole,
+      department: intern.department,
+      assignedSupervisor: intern.assignedSupervisor,
+      startDate: intern.startDate,
+      endDate: intern.endDate,
+      durationMonths: intern.durationMonths || 3,
+      monthlyStipend: intern.monthlyStipend || 0,
+      stipendAmount: intern.monthlyStipend || 0,
+      internshipMode: intern.internshipMode || "Remote",
+      workMode: intern.internshipMode || "Remote",
+    };
+    const pdf = generateInternOfferPDF(data);
+    pdf.doc.save(`Intern_Offer_Letter_${intern.fullName.replace(/\s+/g, "_")}.pdf`);
   };
 
   const filteredInterns = interns.filter((i) => {
@@ -257,6 +285,13 @@ export default function InternsListPage() {
                           className="px-2.5 py-1.5 rounded-lg bg-[#D4AF37]/10 hover:bg-[#D4AF37]/20 text-[#D4AF37] border border-[#D4AF37]/30 text-xs font-medium transition-colors"
                         >
                           NOC
+                        </button>
+                        <button
+                          onClick={() => handleDownloadOffer(intern)}
+                          title="Generate Official Internship Offer Letter PDF"
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-medium transition-colors"
+                        >
+                          Offer Letter
                         </button>
                         <Link
                           href={`/admin/interns/${intern.id}`}
