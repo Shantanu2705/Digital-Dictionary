@@ -59,62 +59,63 @@ export class DigitalDictionaryPDF {
 
     this.drawPageBorders();
 
-    // Embed Official Metallic Logo Image (750x560 -> 16mm x 12mm)
+    // Embed Official Metallic Logo Image (16mm x 12mm)
     try {
-      doc.addImage(OFFICIAL_LOGO_BASE64, "PNG", 15, 12, 16, 12);
+      doc.addImage(OFFICIAL_LOGO_BASE64, "PNG", 14, 11, 16, 12);
     } catch (e) {
       console.warn("Logo rendering notice:", e);
     }
 
-    // Top Brand Name & Sub-tagline aligned nicely next to the logo emblem
-    const brandX = 33.5;
+    // Top Brand Name
+    const brandX = 33;
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(14.5);
+    doc.setFontSize(13.5);
     doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
-    doc.text(this.settings.companyName.toUpperCase(), brandX, 18);
+    doc.text(this.settings.companyName.toUpperCase(), brandX, 17);
 
     doc.setFont("helvetica", "normal");
+    doc.setFontSize(6.5);
+    doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
+    doc.text("ENGINEERING DIGITAL ECOSYSTEMS THAT DRIVE REVENUE", brandX, 21.5);
+
+    // Right-aligned contact info in header (Carefully separated to avoid any collision)
     doc.setFontSize(7.2);
     doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
-    doc.text(this.settings.tagline.toUpperCase(), brandX, 22.5);
-
-    // Right-aligned contact info in header
-    doc.setFontSize(7.5);
-    doc.text(`${this.settings.website}  |  ${this.settings.phone}`, pageWidth - 15, 18, { align: "right" });
-    doc.text(`${this.settings.email}  |  Govt. MSME Reg: ${this.settings.msmeRegistration}`, pageWidth - 15, 22.5, { align: "right" });
+    doc.text(`${this.settings.website}  |  ${this.settings.phone}`, pageWidth - 14, 17, { align: "right" });
+    doc.text(`Govt. MSME: ${this.settings.msmeRegistration}`, pageWidth - 14, 21.5, { align: "right" });
 
     // Hairline separator in metallic gold
     doc.setDrawColor(GOLD_CHAMPAGNE[0], GOLD_CHAMPAGNE[1], GOLD_CHAMPAGNE[2]);
-    doc.setLineWidth(0.4);
-    doc.line(15, 27, pageWidth - 15, 27);
+    doc.setLineWidth(0.35);
+    doc.line(14, 25.5, pageWidth - 14, 25.5);
 
     // Document Banner Bar
     doc.setFillColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
-    doc.rect(15, 30.5, pageWidth - 30, 11, "F");
+    doc.rect(14, 28.5, pageWidth - 28, 9, "F");
 
     // Title inside banner
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(10.5);
+    doc.setFontSize(9.5);
     doc.setTextColor(255, 255, 255);
-    doc.text(title.toUpperCase(), 19, 37.5);
+    doc.text(title.toUpperCase(), 18, 34.5);
 
     // Document Number on Right of banner
     if (documentNumber) {
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
+      doc.setFontSize(7.5);
       doc.setTextColor(GOLD_CHAMPAGNE[0], GOLD_CHAMPAGNE[1], GOLD_CHAMPAGNE[2]);
-      doc.text(`REF: ${documentNumber}`, pageWidth - 19, 37.5, { align: "right" });
+      doc.text(`REF: ${documentNumber}`, pageWidth - 18, 34.5, { align: "right" });
     }
 
     if (subtitle) {
       doc.setFont("helvetica", "italic");
-      doc.setFontSize(8);
+      doc.setFontSize(7.5);
       doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
-      doc.text(subtitle, 15, 46.5);
-      return 51.5; // Return next Y position
+      doc.text(subtitle, 14, 42);
+      return 46; // Return next Y position
     }
 
-    return 47.5; // Return next Y position
+    return 42; // Return next Y position
   }
 
   // Render bottom footer with pagination and confidentiality notice
@@ -606,58 +607,99 @@ export function generateInternNocPDF(data: any, settings?: CompanySettings): Dig
   const pdf = new DigitalDictionaryPDF(settings);
   const doc = pdf.doc;
 
-  let y = pdf.renderHeader("NO OBJECTION CERTIFICATE (NOC)", "Institutional Internship Endorsement", data.documentNumber);
+  const candidateName = data.fullName || data.internName || "Student Candidate";
+  const internId = data.internId || data.employeeId || "DD-INT-2026-0001";
+  const role = data.internshipRole || data.role || data.designation || "Business Development Intern";
+  const department = data.department || "Business Development & Operations";
+  const collegeName = data.collegeName || "Institution / College";
+  const universityName = data.universityName || data.collegeName || "Partner University";
+  const course = data.course || "Degree Program";
+  const semester = data.semester || "Final Year";
+  const rollNumber = data.collegeRollNo || data.rollNumber || data.rollNo || "N/A";
+  const supervisor = data.assignedSupervisor || data.supervisor || data.supervisorName || "Operations & Strategy Lead";
+  const startDate = data.startDate || "2026-12-01";
+  const endDate = data.endDate || "2027-05-30";
+  const durationMonths = data.durationMonths || 6;
+  const rawStipend = data.monthlyStipend !== undefined ? data.monthlyStipend : (data.stipendAmount !== undefined ? data.stipendAmount : 0);
+  const stipendAmount = Number(rawStipend) || 0;
+  const workMode = (data.internshipMode || data.workMode || "Remote").toUpperCase();
+  const nocNumber = data.nocNumber || data.documentNumber || `DD-NOC-${new Date().getFullYear()}-${internId.replace(/[^0-9]/g, "") || "001"}`;
+
+  let y = pdf.renderHeader("NO OBJECTION CERTIFICATE (NOC)", "Institutional Internship Endorsement & Clearance", nocNumber);
+
+  // Addressee Header
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
+  doc.text(`DATE OF ISSUE: ${new Date().toLocaleDateString("en-GB")}`, 14, y);
+  y += 4.5;
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
-  doc.text("TO WHOMSOEVER IT MAY CONCERN", 15, y);
-  y += 8;
+  doc.text("TO WHOMSOEVER IT MAY CONCERN  /  INSTITUTIONAL HEAD OF DEPARTMENT", 14, y);
+  y += 4.5;
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(8.5);
-  doc.setTextColor(30, 30, 30);
+  doc.setFontSize(7.6);
+  doc.setTextColor(40, 40, 40);
+  const p1 = `This is to formally certify that Digital Dictionary has accepted and confirmed the internship engagement of the student outlined below for an academic-industrial curriculum engagement. We have verified their enrollment credentials and confirm their participation under direct senior mentorship:`;
+  const splitP1 = doc.splitTextToSize(p1, 182);
+  doc.text(splitP1, 14, y);
+  y += splitP1.length * 3.7 + 3;
 
-  const textParagraphs = [
-    `This is to certify that Digital Dictionary has accepted and confirmed the internship engagement of the student outlined below:`,
-  ];
-
-  textParagraphs.forEach((p) => {
-    const split = doc.splitTextToSize(p, 180);
-    doc.text(split, 15, y);
-    y += split.length * 4 + 2;
-  });
-
-  // Student & Academic Particulars Table
+  // Student Particulars Table
   autoTable(doc, {
     startY: y,
     theme: "grid",
-    headStyles: { fillColor: [166, 124, 34], textColor: [255, 255, 255], fontSize: 8.5 },
-    styles: { fontSize: 8, cellPadding: 2 },
+    headStyles: { fillColor: [166, 124, 34], textColor: [255, 255, 255], fontSize: 8, fontStyle: "bold" },
+    styles: { fontSize: 7.5, cellPadding: 2 },
     columnStyles: {
-      0: { fontStyle: "bold", cellWidth: 50, textColor: [80, 80, 80] },
-      1: { cellWidth: 130 },
+      0: { fontStyle: "bold", cellWidth: 48, textColor: [80, 80, 80] },
+      1: { cellWidth: 134, textColor: [20, 20, 20] },
     },
+    head: [["Student & Institutional Particulars", "Official Clearance & Engagement Record"]],
     body: [
-      ["STUDENT NAME:", data.fullName || data.internName || "—"],
-      ["COLLEGE / INSTITUTION:", data.collegeName || "—"],
-      ["UNIVERSITY:", data.universityName || "—"],
-      ["DEGREE / COURSE & BRANCH:", `${data.course || "—"} (${data.department || "Engineering"})`],
-      ["SEMESTER / YEAR:", `${data.semester || "—"}  |  Roll No: ${data.collegeRollNo || "—"}`],
-      ["INTERNSHIP DESIGNATION:", data.internshipRole || "Full Stack Web Developer Intern"],
-      ["ENGAGEMENT DURATION:", `${data.startDate || "—"} to ${data.endDate || "—"} (${data.durationMonths || 3} Months)`],
-      ["WORKING MODE:", (data.internshipMode || "Hybrid / Studio").toUpperCase()],
+      ["Student Full Name", candidateName],
+      ["Official Intern ID", internId],
+      ["College / Institute Name", collegeName],
+      ["Affiliated University", universityName],
+      ["Course & Degree Program", course],
+      ["Academic Semester & Roll No", `${semester}  |  Roll No: ${rollNumber}`],
+      ["Internship Role / Designation", role],
+      ["Functional Department", department],
+      ["Industry Mentor / Supervisor", supervisor],
+      ["Approved Training Period", `${startDate} to ${endDate} (${durationMonths} Months Duration)`],
+      ["Approved Working Arrangement", workMode],
+      ["Sanctioned Monthly Stipend", stipendAmount > 0 ? `INR ${stipendAmount.toLocaleString("en-IN")}/- per month` : "Academic Training / Merited"],
     ],
   });
 
-  y = (doc as any).lastAutoTable.finalY + 6;
+  y = (doc as any).lastAutoTable.finalY + 4.5;
 
-  const endorse = `Digital Dictionary confirms that the student will work on live enterprise platforms, technical codebases, and digital engineering workflows under direct senior mentorship. We have no objection to the student completing this program as part of their academic curriculum.`;
-  const splitEndorse = doc.splitTextToSize(endorse, 180);
-  doc.text(splitEndorse, 15, y);
-  y += splitEndorse.length * 4 + 8;
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.8);
+  doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
+  doc.text("INSTITUTIONAL UNDERTAKING & ACADEMIC CLEARANCE:", 14, y);
+  y += 4;
 
-  pdf.renderSignatureBlock(y, "HR & University Relations Desk");
+  const clauses = [
+    "1. Curriculum Alignment: Digital Dictionary confirms that the student's training curriculum involves live enterprise assignments, industry tools, project reviews, and direct mentorship.",
+    "2. Attendance & Verification: Digital Dictionary maintains verifiable digital logs of hours, deliverables, and milestone submissions to satisfy university attendance criteria.",
+    "3. Final Evaluation & NOC Clearance: We have no objection to the student undertaking this engagement as part of their degree requirements. Upon successful completion, a formal Industrial Certificate and Project Report Sign-off will be provided.",
+  ];
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(50, 50, 50);
+  clauses.forEach((c) => {
+    const split = doc.splitTextToSize(c, 182);
+    doc.text(split, 14, y);
+    y += split.length * 3.4 + 1.2;
+  });
+
+  y += 3;
+  pdf.renderSignatureBlock(y, "Executive Leadership & University Relations", "Authorized Signatory");
 
   return pdf;
 }
@@ -755,61 +797,195 @@ export function generatePayslipPDF(data: any, settings?: CompanySettings): Digit
 export function generateInternOfferPDF(data: any, settings?: CompanySettings): DigitalDictionaryPDF {
   const pdf = new DigitalDictionaryPDF(settings);
   const doc = pdf.doc;
+  const pageWidth = doc.internal.pageSize.getWidth();
 
-  let y = pdf.renderHeader("FORMAL INTERNSHIP APPOINTMENT OFFER", "Academic & Industrial Training Cohort", data.documentNumber);
+  const candidateName = data.fullName || data.internName || "Alvira Mallick";
+  const internId = data.internId || data.employeeId || "DD-INT-2026-9358";
+  const role = data.internshipRole || data.role || data.designation || "Business Development Intern";
+  const department = data.department || "Business Development & Strategy";
+  const collegeName = data.collegeName || "Institution / College";
+  const universityName = data.universityName || data.collegeName || "Partner University";
+  const course = data.course || "Degree Program";
+  const supervisor = data.assignedSupervisor || data.supervisor || data.supervisorName || "Operations & Strategy Lead";
+  const startDate = data.startDate || "2026-12-01";
+  const endDate = data.endDate || "2027-05-30";
+  const durationMonths = data.durationMonths || 6;
+  const rawStipend = data.monthlyStipend !== undefined ? data.monthlyStipend : (data.stipendAmount !== undefined ? data.stipendAmount : 15000);
+  const stipendAmount = Number(rawStipend) || 0;
+  const workMode = (data.internshipMode || data.workMode || "Remote").toUpperCase();
+  const email = data.email || "alvira@digitaldictionary.in";
+  const phone = data.phone || "+91 6398360422";
+  const offerNumber = data.offerNumber || data.documentNumber || `DD-OFF-${new Date().getFullYear()}-${internId.replace(/[^0-9]/g, "") || "001"}`;
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9);
-  doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
-  doc.text(`Date: ${data.offerDate || new Date().toLocaleDateString("en-GB")}`, 15, y);
-  y += 5;
-  doc.text(`To: ${data.fullName || data.internName}`, 15, y);
-  y += 4;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.text(`${data.collegeName || "Institution"}, ${data.course || "Degree"}`, 15, y);
-  y += 7;
+  let y = pdf.renderHeader("FORMAL INTERNSHIP APPOINTMENT OFFER", "Academic & Industrial Training Cohort", offerNumber);
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(9.5);
-  doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
-  doc.text(`Subject: Offer of Internship — ${data.internshipRole || "Full Stack Web Developer Intern"}`, 15, y);
-  y += 6;
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  doc.setTextColor(30, 30, 30);
-
-  const paragraphs = [
-    `Dear ${data.fullName || data.internName},`,
-    `Following your interview and technical evaluation, we are pleased to offer you an internship position at Digital Dictionary.`,
-    `Your role will involve collaborating with our senior engineering team to architect live web platforms, client portals, and cloud backends.`,
-  ];
-
-  paragraphs.forEach((p) => {
-    const split = doc.splitTextToSize(p, 180);
-    doc.text(split, 15, y);
-    y += split.length * 4 + 2;
-  });
-
+  // Metadata Table (Candidate & Institutional Context)
   autoTable(doc, {
     startY: y,
-    theme: "grid",
-    headStyles: { fillColor: [24, 24, 24], textColor: [255, 255, 255], fontSize: 8 },
-    styles: { fontSize: 8, cellPadding: 2 },
-    columnStyles: { 0: { fontStyle: "bold", cellWidth: 50 }, 1: { cellWidth: 130 } },
+    theme: "plain",
+    styles: { fontSize: 7.5, cellPadding: 1.2 },
+    columnStyles: {
+      0: { fontStyle: "bold", cellWidth: 32, textColor: [100, 100, 100] },
+      1: { cellWidth: 63, fontStyle: "bold", textColor: [20, 20, 20] },
+      2: { fontStyle: "bold", cellWidth: 30, textColor: [100, 100, 100] },
+      3: { cellWidth: 55, textColor: [30, 30, 30] },
+    },
     body: [
-      ["Position Title", data.internshipRole || "Web Engineering Intern"],
-      ["Department", data.department || "Engineering & Technology"],
-      ["Reporting Supervisor", data.assignedSupervisor || "Lead Architect"],
-      ["Start & End Date", `${data.startDate || "Kickoff Date"} to ${data.endDate || "Completion Date"}`],
-      ["Monthly Stipend", `INR ${Number(data.monthlyStipend || 0).toLocaleString("en-IN")}/- (Performance-linked bonus)`],
-      ["Working Arrangement", (data.internshipMode || "Hybrid").toUpperCase()],
+      ["OFFER DATE:", data.offerDate || new Date().toLocaleDateString("en-GB"), "OFFICIAL ID:", internId],
+      ["CANDIDATE NAME:", candidateName, "DEPARTMENT:", department],
+      ["COLLEGE / UNIV:", collegeName, "OFFICIAL EMAIL:", email],
+      ["DEGREE & COURSE:", course, "CONTACT / TEL:", phone],
     ],
   });
 
-  y = (doc as any).lastAutoTable.finalY + 8;
-  pdf.renderSignatureBlock(y, "Talent & University Recruitment Lead");
+  y = (doc as any).lastAutoTable.finalY + 3;
+
+  // Formal Subject Accent Box
+  doc.setFillColor(250, 246, 235);
+  doc.roundedRect(14, y, pageWidth - 28, 7.5, 1, 1, "F");
+  doc.setDrawColor(GOLD_CHAMPAGNE[0], GOLD_CHAMPAGNE[1], GOLD_CHAMPAGNE[2]);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(14, y, pageWidth - 28, 7.5, 1, 1, "D");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.2);
+  doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
+  doc.text(`SUBJECT: APPOINTMENT OFFER FOR THE POSITION OF ${role.toUpperCase()}`, 18, y + 5);
+
+  y += 11;
+
+  // Formal Opening
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8.5);
+  doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
+  doc.text(`Dear ${candidateName},`, 14, y);
+  y += 4.5;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.6);
+  doc.setTextColor(40, 40, 40);
+  const introText = `On behalf of Digital Dictionary, we are pleased to extend this formal offer of appointment for the position of ${role}. Following our evaluation of your credentials and interview assessment, we believe your skills, enthusiasm, and academic foundation align with our strategic mission. During this tenure, you will work on live corporate workflows, gain direct executive mentorship, and collaborate with our cross-functional teams.`;
+  const splitIntro = doc.splitTextToSize(introText, 182);
+  doc.text(splitIntro, 14, y);
+  y += splitIntro.length * 3.8 + 3.5;
+
+  // Core Engagement Terms Table
+  autoTable(doc, {
+    startY: y,
+    theme: "grid",
+    headStyles: { fillColor: [24, 24, 24], textColor: [255, 255, 255], fontSize: 8, fontStyle: "bold" },
+    styles: { fontSize: 7.5, cellPadding: 2 },
+    columnStyles: {
+      0: { fontStyle: "bold", cellWidth: 48, textColor: [80, 80, 80] },
+      1: { cellWidth: 134, textColor: [20, 20, 20] },
+    },
+    head: [["Core Engagement Terms", "Official Specification & Agreed Parameters"]],
+    body: [
+      ["Designation / Role", role],
+      ["Functional Department", department],
+      ["Reporting Supervisor / Mentor", supervisor],
+      ["Tenure & Engagement Dates", `${startDate} to ${endDate} (${durationMonths} Months Duration)`],
+      ["Working Arrangement", workMode],
+      ["Monthly Fixed Stipend", `INR ${stipendAmount.toLocaleString("en-IN")}/- per month (Disbursed monthly on 5th)`],
+      ["Weekly Commitment", "Monday to Friday (Flexible hours aligned with academic schedule)"],
+      ["Assigned Workstation", "Digital Dictionary Cloud Portal & Corporate Suite"],
+    ],
+  });
+
+  y = (doc as any).lastAutoTable.finalY + 4.5;
+
+  // Obligations & Standards
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.8);
+  doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
+  doc.text("CORE TERMS & PROFESSIONAL OBLIGATIONS:", 14, y);
+  y += 4;
+
+  const terms = [
+    "1. Practical Training & Deliverables: You agree to execute assigned strategic tasks, maintain scheduled communication with your supervisor, and submit milestone project reports.",
+    "2. Confidentiality & Non-Disclosure: All proprietary intelligence, internal codebases, strategic methodologies, and client records accessed during this engagement remain strictly confidential.",
+    "3. Intellectual Property (IP): All work products, assets, software, and creative materials developed during your tenure shall remain the sole intellectual property of Digital Dictionary.",
+    "4. Completion Credentials: Upon satisfactory completion of your tenure, you will receive an official Industrial Experience Certificate, Letter of Recommendation (LOR), and College Clearance NOC.",
+  ];
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.8);
+  doc.setTextColor(60, 60, 60);
+  terms.forEach((t) => {
+    const split = doc.splitTextToSize(t, 182);
+    doc.text(split, 14, y);
+    y += split.length * 3.3 + 1;
+  });
+
+  y += 2.5;
+
+  // Two-column signature block (Left: Candidate Acceptance; Right: Company Seal & Signature)
+  const colW = 85;
+  const leftX = 14;
+  const rightX = pageWidth - 14 - colW;
+
+  // Left column: Candidate acceptance
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
+  doc.text("CANDIDATE ACCEPTANCE:", leftX, y);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.8);
+  doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
+  doc.text("I acknowledge and accept the terms of this appointment.", leftX, y + 3.8);
+
+  doc.setDrawColor(215, 215, 215);
+  doc.setLineWidth(0.25);
+  doc.rect(leftX, y + 5.5, colW, 25);
+
+  doc.setFont("helvetica", "italic");
+  doc.setFontSize(7);
+  doc.setTextColor(150, 150, 150);
+  doc.text("Candidate Signature & Date", leftX + colW / 2, y + 27, { align: "center" });
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.8);
+  doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
+  doc.text(candidateName, leftX, y + 35);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.8);
+  doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
+  doc.text(`Student ID: ${internId}  •  ${collegeName}`, leftX, y + 38.5);
+
+  // Right column: For Digital Dictionary
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
+  doc.text(`FOR ${settings?.companyName?.toUpperCase() || "DIGITAL DICTIONARY"}`, rightX, y);
+
+  doc.setDrawColor(GOLD_CHAMPAGNE[0], GOLD_CHAMPAGNE[1], GOLD_CHAMPAGNE[2]);
+  doc.setLineWidth(0.25);
+  doc.rect(rightX, y + 5.5, colW, 25);
+
+  try {
+    const stampW = 44;
+    const stampH = 22.7;
+    const stampX = rightX + (colW - stampW) / 2;
+    const stampY = y + 6.65;
+    doc.addImage(OFFICIAL_STAMP_BASE64, "JPEG", stampX, stampY, stampW, stampH);
+  } catch (e) {
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(7.5);
+    doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
+    doc.text("[ Official Seal & Proprietor Signature Attached ]", rightX + colW / 2, y + 18, { align: "center" });
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7.8);
+  doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
+  doc.text(settings?.authorizedSignatoryName || "Authorized Signatory", rightX, y + 35);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(6.8);
+  doc.setTextColor(MUTED_GREY[0], MUTED_GREY[1], MUTED_GREY[2]);
+  doc.text(settings?.authorizedSignatoryDesignation || "Executive Leadership & University Relations", rightX, y + 38.5);
 
   return pdf;
 }

@@ -82,6 +82,13 @@ export default function InternDetailsPage() {
         monthlyStipend: Number(monthlyStipend),
         updatedAt: new Date().toISOString(),
       });
+      setIntern(prev => prev ? ({
+        ...prev,
+        accountStatus,
+        internshipRole,
+        assignedSupervisor,
+        monthlyStipend: Number(monthlyStipend),
+      }) : null);
       setStatusMessage("Intern cohort record updated successfully.");
       setTimeout(() => setStatusMessage(null), 3500);
     } catch (err: any) {
@@ -93,22 +100,37 @@ export default function InternDetailsPage() {
 
   const handleDownloadNOC = () => {
     if (!intern) return;
+    const currentRole = internshipRole || intern.internshipRole || "Business Development Intern";
+    const currentSupervisor = assignedSupervisor || intern.assignedSupervisor || "Operations & Strategy Lead";
+    const currentStipend = Number(monthlyStipend) || intern.monthlyStipend || 0;
+
     const data = {
       nocNumber: `DD-NOC-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
+      documentNumber: `DD-NOC-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
+      internId: intern.internId,
       internName: intern.fullName,
+      fullName: intern.fullName,
+      email: intern.email,
+      phone: intern.phone,
       collegeName: intern.collegeName,
       universityName: intern.universityName || intern.collegeName,
       course: intern.course,
       semester: intern.semester || "Final Year",
       rollNumber: intern.collegeRollNo || "N/A",
-      department: intern.department,
-      supervisorName: intern.assignedSupervisor || "Engineering Lead",
-      startDate: intern.startDate,
-      endDate: intern.endDate,
-      durationMonths: intern.durationMonths || 3,
+      collegeRollNo: intern.collegeRollNo || "N/A",
+      department: intern.department || "Business Development",
+      role: currentRole,
+      internshipRole: currentRole,
+      supervisorName: currentSupervisor,
+      assignedSupervisor: currentSupervisor,
+      startDate: intern.startDate || "2026-12-01",
+      endDate: intern.endDate || "2027-05-30",
+      durationMonths: intern.durationMonths || 6,
       internshipMode: intern.internshipMode || "Remote",
-      monthlyStipend: intern.monthlyStipend || 0,
-      reportingDate: intern.startDate,
+      workMode: intern.internshipMode || "Remote",
+      monthlyStipend: currentStipend,
+      stipendAmount: currentStipend,
+      reportingDate: intern.startDate || "2026-12-01",
     };
     const pdf = generateInternNocPDF(data);
     pdf.doc.save(`College_NOC_${intern.fullName.replace(/\s+/g, "_")}.pdf`);
@@ -116,21 +138,35 @@ export default function InternDetailsPage() {
 
   const handleDownloadOffer = () => {
     if (!intern) return;
+    const currentRole = internshipRole || intern.internshipRole || "Business Development Intern";
+    const currentSupervisor = assignedSupervisor || intern.assignedSupervisor || "Operations & Strategy Lead";
+    const currentStipend = Number(monthlyStipend) || intern.monthlyStipend || 0;
+
     const data = {
       offerNumber: `DD-OFF-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
+      documentNumber: `DD-OFF-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
+      internId: intern.internId,
       internName: intern.fullName,
+      fullName: intern.fullName,
       email: intern.email,
       phone: intern.phone,
       collegeName: intern.collegeName,
+      universityName: intern.universityName || intern.collegeName,
       course: intern.course,
-      role: intern.internshipRole,
-      department: intern.department,
-      supervisor: intern.assignedSupervisor,
-      startDate: intern.startDate,
-      endDate: intern.endDate,
-      durationMonths: intern.durationMonths || 3,
-      stipendAmount: intern.monthlyStipend || 0,
+      semester: intern.semester || "Final Year",
+      collegeRollNo: intern.collegeRollNo || "N/A",
+      role: currentRole,
+      internshipRole: currentRole,
+      department: intern.department || "Business Development",
+      supervisor: currentSupervisor,
+      assignedSupervisor: currentSupervisor,
+      startDate: intern.startDate || "2026-12-01",
+      endDate: intern.endDate || "2027-05-30",
+      durationMonths: intern.durationMonths || 6,
+      stipendAmount: currentStipend,
+      monthlyStipend: currentStipend,
       workMode: intern.internshipMode || "Remote",
+      internshipMode: intern.internshipMode || "Remote",
       stipendCycle: "Monthly on 5th",
     };
     const pdf = generateInternOfferPDF(data);
