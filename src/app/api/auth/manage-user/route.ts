@@ -170,12 +170,22 @@ export async function POST(request: Request) {
         }
       }
 
+      if (!authUpdated) {
+        return NextResponse.json(
+          {
+            success: false,
+            authUpdated: false,
+            error:
+              "This account already exists in Firebase Authentication with a different password, and server Firebase Admin credentials (FIREBASE_ADMIN_CLIENT_EMAIL / FIREBASE_ADMIN_PRIVATE_KEY) are not configured to force-override it. Use 'Send Reset Link' or add your Firebase Service Account key to .env.local / Vercel.",
+          },
+          { status: 422 }
+        );
+      }
+
       return NextResponse.json({
         success: true,
-        message: authUpdated 
-          ? `Password successfully updated in Authentication and saved to personnel records.`
-          : `Password stored in personnel records. Use 'Send Reset Link' if user account requires immediate email link.`,
-        authUpdated,
+        message: "Password successfully updated in Authentication and saved to personnel records.",
+        authUpdated: true,
         authMessage,
         newPassword,
       });

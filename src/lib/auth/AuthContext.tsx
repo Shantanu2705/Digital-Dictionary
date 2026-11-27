@@ -98,10 +98,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               }
             }
 
-            // 3. If not found, check employees collection by official email
+            // 3. If not found, check employees collection by email
             if (!resolvedProfile) {
               try {
-                const empQ = query(collection(db, "employees"), where("officialEmail", "==", currentUser.email));
+                const empQ = query(collection(db, "employees"), where("email", "==", currentUser.email));
                 const empSnap = await getDocs(empQ);
                 if (!empSnap.empty) {
                   const empData = empSnap.docs[0].data();
