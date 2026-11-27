@@ -39,16 +39,16 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const { user, profile, loading, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (pathname !== "/portal/login" && !loading && !user) {
+      router.push("/portal/login");
+    }
+  }, [pathname, user, loading, router]);
+
   // If on login page, render children directly without sidebar
   if (pathname === "/portal/login") {
     return <>{children}</>;
   }
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/portal/login");
-    }
-  }, [user, loading, router]);
 
   if (loading) {
     return (

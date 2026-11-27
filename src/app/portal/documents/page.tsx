@@ -32,7 +32,7 @@ export default function PortalDocumentsPage() {
     if (user?.uid || user?.email) {
       loadDocuments();
     }
-  }, [user?.uid, user?.email]);
+  }, [user?.uid, user?.email, profile?.role, profile?.employmentType]);
 
   const loadDocuments = async () => {
     setLoading(true);
@@ -41,38 +41,68 @@ export default function PortalDocumentsPage() {
 
       // Query by user UID
       if (user?.uid) {
-        const q = query(
-          collection(db, "documents"),
-          where("relatedUserId", "==", user.uid)
-        );
-        const snap = await getDocs(q);
-        snap.forEach(d => docsList.push({ id: d.id, ...d.data() } as DocumentRecord));
+        try {
+          const q = query(
+            collection(db, "documents"),
+            where("relatedUserId", "==", user.uid)
+          );
+          const snap = await getDocs(q);
+          snap.forEach(d => docsList.push({ id: d.id, ...d.data() } as DocumentRecord));
+        } catch (docUidErr) {
+          console.warn("Documents UID query skipped:", docUidErr);
+        }
       }
 
       // Query by user email
       if (user?.email) {
-        const emailQ = query(
-          collection(db, "documents"),
-          where("relatedEmail", "==", user.email)
-        );
-        const emailSnap = await getDocs(emailQ);
-        emailSnap.forEach(d => {
-          if (!docsList.some(item => item.id === d.id)) {
-            docsList.push({ id: d.id, ...d.data() } as DocumentRecord);
-          }
-        });
+        try {
+          const emailQ = query(
+            collection(db, "documents"),
+            where("relatedEmail", "==", user.email)
+          );
+          const emailSnap = await getDocs(emailQ);
+          emailSnap.forEach(d => {
+            if (!docsList.some(item => item.id === d.id)) {
+              docsList.push({ id: d.id, ...d.data() } as DocumentRecord);
+            }
+          });
+        } catch (docEmailErr) {
+          // Safe ignore if strict UID rule applies
+        }
       }
 
       // If user is an intern, also ensure their Offer Letter and NOC are available dynamically
       const isIntern = profile?.employmentType === "intern" || profile?.role === "intern";
-      if (isIntern && user?.email) {
-        const internQ = query(
-          collection(db, "interns"),
-          where("email", "==", user.email)
-        );
-        const internSnap = await getDocs(internQ);
-        if (!internSnap.empty) {
-          const internData = internSnap.docs[0].data();
+      if (isIntern && (user?.uid || user?.email)) {
+        let internData: any = null;
+
+        if (user?.uid) {
+          try {
+            const internUidQ = query(
+              collection(db, "interns"),
+              where("userId", "==", user.uid)
+            );
+            const internUidSnap = await getDocs(internUidQ);
+            if (!internUidSnap.empty) {
+              internData = internUidSnap.docs[0].data();
+            }
+          } catch (e) {}
+        }
+
+        if (!internData && user?.email) {
+          try {
+            const internQ = query(
+              collection(db, "interns"),
+              where("email", "==", user.email)
+            );
+            const internSnap = await getDocs(internQ);
+            if (!internSnap.empty) {
+              internData = internSnap.docs[0].data();
+            }
+          } catch (e) {}
+        }
+
+        if (internData) {
           
           if (!docsList.some(d => d.documentType === "intern_offer")) {
             docsList.unshift({

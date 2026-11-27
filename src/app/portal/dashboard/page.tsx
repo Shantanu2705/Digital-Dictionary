@@ -37,72 +37,108 @@ export default function PortalDashboardPage() {
     if (user?.uid || user?.email) {
       loadPortalData();
     }
-  }, [user?.uid, user?.email]);
+  }, [user?.uid, user?.email, profile?.role, profile?.employmentType]);
 
   const loadPortalData = async () => {
     setLoading(true);
     try {
       // 1. Fetch assigned clients
       if (user?.uid) {
-        const clientsQ = query(
-          collection(db, "clients"),
-          where("primaryEmployeeId", "==", user.uid)
-        );
-        const clientsSnap = await getDocs(clientsQ);
-        let list = clientsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client));
+        try {
+          const clientsQ = query(
+            collection(db, "clients"),
+            where("primaryEmployeeId", "==", user.uid)
+          );
+          const clientsSnap = await getDocs(clientsQ);
+          const list = clientsSnap.docs.map(d => ({ id: d.id, ...d.data() } as Client));
 
-        const assignQ = query(
-          collection(db, "assignments"),
-          where("primaryEmployeeId", "==", user.uid)
-        );
-        const assignSnap = await getDocs(assignQ);
-        const clientIdsFromAssign = assignSnap.docs.map(d => d.data().clientId);
+          const assignQ = query(
+            collection(db, "assignments"),
+            where("primaryEmployeeId", "==", user.uid)
+          );
+          const assignSnap = await getDocs(assignQ);
+          const clientIdsFromAssign = assignSnap.docs.map(d => d.data().clientId);
 
-        for (const cId of clientIdsFromAssign) {
-          if (!list.some(c => c.id === cId)) {
-            const cliQ = query(collection(db, "clients"), where("id", "==", cId));
-            const cliSnap = await getDocs(cliQ);
-            cliSnap.forEach(d => list.push({ id: d.id, ...d.data() } as Client));
+          for (const cId of clientIdsFromAssign) {
+            if (!list.some(c => c.id === cId)) {
+              const cliQ = query(collection(db, "clients"), where("id", "==", cId));
+              const cliSnap = await getDocs(cliQ);
+              cliSnap.forEach(d => list.push({ id: d.id, ...d.data() } as Client));
+            }
           }
+          setAssignedClients(list);
+        } catch (clientErr) {
+          console.warn("Clients query skipped or empty:", clientErr);
         }
-        setAssignedClients(list);
       }
 
       // 2. Fetch documents relating to this user by UID or Email
       const docsList: DocumentRecord[] = [];
       if (user?.uid) {
-        const docsQ = query(
-          collection(db, "documents"),
-          where("relatedUserId", "==", user.uid)
-        );
-        const docsSnap = await getDocs(docsQ);
-        docsSnap.forEach(d => docsList.push({ id: d.id, ...d.data() } as DocumentRecord));
+        try {
+          const docsQ = query(
+            collection(db, "documents"),
+            where("relatedUserId", "==", user.uid)
+          );
+          const docsSnap = await getDocs(docsQ);
+          docsSnap.forEach(d => docsList.push({ id: d.id, ...d.data() } as DocumentRecord));
+        } catch (docUidErr) {
+          console.warn("Documents UID query skipped:", docUidErr);
+        }
       }
 
       if (user?.email) {
-        const docsEmailQ = query(
-          collection(db, "documents"),
-          where("relatedEmail", "==", user.email)
-        );
-        const docsEmailSnap = await getDocs(docsEmailQ);
-        docsEmailSnap.forEach(d => {
-          if (!docsList.some(item => item.id === d.id)) {
-            docsList.push({ id: d.id, ...d.data() } as DocumentRecord);
-          }
-        });
+        try {
+          const docsEmailQ = query(
+            collection(db, "documents"),
+            where("relatedEmail", "==", user.email)
+          );
+          const docsEmailSnap = await getDocs(docsEmailQ);
+          docsEmailSnap.forEach(d => {
+            if (!docsList.some(item => item.id === d.id)) {
+              docsList.push({ id: d.id, ...d.data() } as DocumentRecord);
+            }
+          });
+        } catch (docEmailErr) {
+          // Email-based query may not match strict UID rules; safe to ignore
+        }
       }
       setDocuments(docsList);
 
-      // 3. If intern, fetch intern profile record
-      if (user?.email) {
-        const internQ = query(
-          collection(db, "interns"),
-          where("email", "==", user.email)
-        );
-        const internSnap = await getDocs(internQ);
-        if (!internSnap.empty) {
-          setInternRecord({ id: internSnap.docs[0].id, ...internSnap.docs[0].data() } as InternRecord);
+      // 3. If intern, fetch intern profile record (query by userId first for security rule compliance)
+      let foundIntern: InternRecord | null = null;
+      if (user?.uid) {
+        try {
+          const internUidQ = query(
+            collection(db, "interns"),
+            where("userId", "==", user.uid)
+          );
+          const internUidSnap = await getDocs(internUidQ);
+          if (!internUidSnap.empty) {
+            foundIntern = { id: internUidSnap.docs[0].id, ...internUidSnap.docs[0].data() } as InternRecord;
+          }
+        } catch (intUidErr) {
+          console.warn("Intern UID query warning:", intUidErr);
         }
+      }
+
+      if (!foundIntern && user?.email) {
+        try {
+          const internQ = query(
+            collection(db, "interns"),
+            where("email", "==", user.email)
+          );
+          const internSnap = await getDocs(internQ);
+          if (!internSnap.empty) {
+            foundIntern = { id: internSnap.docs[0].id, ...internSnap.docs[0].data() } as InternRecord;
+          }
+        } catch (intEmailErr) {
+          // Safe fallback if email query is restricted by rules
+        }
+      }
+
+      if (foundIntern) {
+        setInternRecord(foundIntern);
       }
     } catch (err) {
       console.error("Portal dashboard load error:", err);
