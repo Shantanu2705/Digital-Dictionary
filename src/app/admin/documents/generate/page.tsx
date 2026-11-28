@@ -57,12 +57,26 @@ function DocumentGeneratorContent() {
   const [projectTimeline, setProjectTimeline] = useState("4 to 6 Weeks");
   const [scopeDetails, setScopeDetails] = useState("Full stack Next.js engineering, custom CMS architecture, sub-second Core Web Vitals optimization, and 90-day post-launch warranty.");
   
-  // Intern / Academic Specific
+  // Intern / Academic / Payslip Specific
   const [collegeName, setCollegeName] = useState("");
   const [universityName, setUniversityName] = useState("");
   const [course, setCourse] = useState("B.Tech Computer Science");
+  const [semester, setSemester] = useState("Final Year");
+  const [department, setDepartment] = useState("Business Development");
+  const [internshipRole, setInternshipRole] = useState("Intern");
+  const [internshipMode, setInternshipMode] = useState("Remote");
+  const [startDate, setStartDate] = useState(new Date().toISOString().split("T")[0]);
+  const [endDate, setEndDate] = useState(new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]);
+  const [durationMonths, setDurationMonths] = useState(3);
   const [rollNumber, setRollNumber] = useState("");
   const [supervisorName, setSupervisorName] = useState("Technical Director");
+  const [salaryMonth, setSalaryMonth] = useState(new Date().toLocaleString("default", { month: "long", year: "numeric" }));
+  const [allowances, setAllowances] = useState(0);
+  const [bonus, setBonus] = useState(0);
+  const [incentives, setIncentives] = useState(0);
+  const [overtime, setOvertime] = useState(0);
+  const [deductions, setDeductions] = useState(0);
+  const [slipEmployeeId, setSlipEmployeeId] = useState("DD-STAFF");
 
   const [saving, setSaving] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
@@ -148,7 +162,12 @@ function DocumentGeneratorContent() {
     setCompanyName("Digital Dictionary");
     setEmail(emp.email);
     setPhone(emp.phone);
-    setAmount(emp.basicSalary + emp.allowances);
+    setDepartment(emp.department || "Engineering");
+    setInternshipRole(emp.designation || "Software Engineer");
+    setSlipEmployeeId(emp.employeeId || "DD-EMP");
+    setAmount(emp.basicSalary || 0);
+    setAllowances(emp.allowances || 0);
+    setDeductions(emp.deductions || 0);
   };
 
   const populateFromIntern = (int: InternRecord) => {
@@ -156,8 +175,16 @@ function DocumentGeneratorContent() {
     setCollegeName(int.collegeName);
     setUniversityName(int.universityName || int.collegeName);
     setCourse(int.course);
+    setSemester(int.semester || "Final Year");
+    setDepartment(int.department || "Business Development");
+    setInternshipRole(int.internshipRole || "Intern");
+    setInternshipMode(int.internshipMode || "Remote");
+    setStartDate(int.startDate || new Date().toISOString().split("T")[0]);
+    setEndDate(int.endDate || new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]);
+    setDurationMonths(int.durationMonths || 3);
     setRollNumber(int.collegeRollNo || "");
     setSupervisorName(int.assignedSupervisor || "Technical Lead");
+    setSlipEmployeeId(int.internId || "DD-INT");
     setEmail(int.email);
     setPhone(int.phone);
     setAmount(int.monthlyStipend);
@@ -196,34 +223,46 @@ function DocumentGeneratorContent() {
       subTotal: Number(amount),
       tax: Math.round(Number(amount) * 0.18),
       grandTotal: Math.round(Number(amount) * 1.18),
-      // For Intern NOC
+      // For Intern NOC & Offer Letter
       nocNumber: documentNumber,
+      offerNumber: documentNumber,
       internName: clientName,
+      fullName: clientName,
       collegeName,
       universityName: universityName || collegeName,
       course,
-      semester: "Final Year",
+      semester: semester.trim() || "Final Year",
       rollNumber,
-      department: "Engineering",
+      collegeRollNo: rollNumber,
+      department: department.trim() || "Business Development",
+      internshipRole: internshipRole.trim() || "Intern",
+      role: internshipRole.trim() || "Intern",
       supervisorName,
-      startDate: new Date().toISOString().split("T")[0],
-      endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-      durationMonths: 3,
-      internshipMode: "Remote",
+      assignedSupervisor: supervisorName,
+      startDate,
+      endDate,
+      durationMonths: Number(durationMonths) || 3,
+      internshipMode,
+      workMode: internshipMode,
       monthlyStipend: Number(amount),
-      reportingDate: new Date().toISOString().split("T")[0],
-      // For Payslip
+      stipendAmount: Number(amount),
+      reportingDate: startDate,
+      // For Payslip / Stipend Slip
       payslipNumber: documentNumber,
+      type: documentType === "intern_stipend" ? "intern" : "employee",
       employeeName: clientName,
-      employeeId: "DD-STAFF",
-      designation: "Software Engineer",
-      salaryMonth: new Date().toLocaleString("default", { month: "long", year: "numeric" }),
+      employeeId: slipEmployeeId,
+      designation: internshipRole.trim() || "Software Engineer",
+      salaryMonth,
       payPeriod: "Full Month",
-      basicSalary: Number(amount) * 0.7,
-      allowances: Number(amount) * 0.3,
-      deductions: 0,
-      totalEarnings: Number(amount),
-      netPay: Number(amount),
+      basicSalary: Number(amount) || 0,
+      allowances: Number(allowances) || 0,
+      bonus: Number(bonus) || 0,
+      incentives: Number(incentives) || 0,
+      overtime: Number(overtime) || 0,
+      deductions: Number(deductions) || 0,
+      totalEarnings: (Number(amount) || 0) + (Number(allowances) || 0) + (Number(bonus) || 0) + (Number(incentives) || 0) + (Number(overtime) || 0),
+      netPay: Math.max(0, (Number(amount) || 0) + (Number(allowances) || 0) + (Number(bonus) || 0) + (Number(incentives) || 0) + (Number(overtime) || 0) - (Number(deductions) || 0)),
     };
   };
 
@@ -491,12 +530,147 @@ function DocumentGeneratorContent() {
               </div>
 
               <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Semester / Year (NOC)</label>
+                <input
+                  type="text"
+                  value={semester}
+                  onChange={(e) => setSemester(e.target.value)}
+                  placeholder="e.g. 6th Semester"
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-[#D4AF37]/30 text-white text-sm focus:outline-none focus:border-[#D4AF37]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Department (Offer Letter &amp; NOC)</label>
+                <input
+                  type="text"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  placeholder="e.g. Business Development"
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-[#D4AF37]/30 text-white text-sm focus:outline-none focus:border-[#D4AF37]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Internship Role / Designation</label>
+                <input
+                  type="text"
+                  value={internshipRole}
+                  onChange={(e) => setInternshipRole(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+
+              <div>
                 <label className="block text-xs font-medium text-neutral-300 mb-1">Roll / Registration Number</label>
                 <input
                   type="text"
                   value={rollNumber}
                   onChange={(e) => setRollNumber(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Monthly Stipend (₹)</label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+            </div>
+          </div>
+        ) : documentType === "employee_payslip" || documentType === "intern_stipend" ? (
+          <div className="p-6 rounded-xl border border-white/5 bg-neutral-900/40 backdrop-blur-sm space-y-4">
+            <h2 className="text-base font-semibold text-white flex items-center gap-2 border-b border-white/5 pb-3">
+              <DollarSign className="w-4 h-4 text-[#D4AF37]" />
+              Payroll / Stipend Slip Breakdown (With Bonus &amp; Incentives)
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Month / Period</label>
+                <input
+                  type="text"
+                  value={salaryMonth}
+                  onChange={(e) => setSalaryMonth(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Department</label>
+                <input
+                  type="text"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Designation</label>
+                <input
+                  type="text"
+                  value={internshipRole}
+                  onChange={(e) => setInternshipRole(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">
+                  {documentType === "intern_stipend" ? "Base Stipend (₹)" : "Basic Salary (₹)"}
+                </label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Performance Bonus (₹)</label>
+                <input
+                  type="number"
+                  value={bonus}
+                  onChange={(e) => setBonus(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-[#D4AF37]/30 text-emerald-300 font-mono text-sm focus:outline-none focus:border-[#D4AF37]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Incentives / Comm. (₹)</label>
+                <input
+                  type="number"
+                  value={incentives}
+                  onChange={(e) => setIncentives(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-[#D4AF37]/30 text-emerald-300 font-mono text-sm focus:outline-none focus:border-[#D4AF37]"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Allowances (₹)</label>
+                <input
+                  type="number"
+                  value={allowances}
+                  onChange={(e) => setAllowances(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-neutral-300 mb-1">Overtime / Reward (₹)</label>
+                <input
+                  type="number"
+                  value={overtime}
+                  onChange={(e) => setOvertime(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white font-mono text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-rose-400 mb-1">Deductions (₹)</label>
+                <input
+                  type="number"
+                  value={deductions}
+                  onChange={(e) => setDeductions(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-rose-500/30 text-rose-300 font-mono text-sm focus:outline-none focus:border-rose-400"
                 />
               </div>
             </div>

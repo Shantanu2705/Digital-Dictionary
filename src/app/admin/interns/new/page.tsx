@@ -492,6 +492,28 @@ export default function NewInternPage() {
             </div>
 
             <div>
+              <label className="block text-xs font-medium text-neutral-300 mb-1">Department</label>
+              <input
+                type="text"
+                name="department"
+                list="dd-intern-departments"
+                value={formData.department}
+                onChange={handleChange}
+                placeholder="e.g. Business Development"
+                className="w-full px-3.5 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-sm focus:outline-none focus:border-[#D4AF37]/50"
+              />
+              <datalist id="dd-intern-departments">
+                <option value="Engineering" />
+                <option value="Business Development" />
+                <option value="Digital Marketing & Growth" />
+                <option value="UI/UX & Brand Design" />
+                <option value="Operations & Strategy" />
+                <option value="Human Resources" />
+                <option value="Finance & Accounts" />
+              </datalist>
+            </div>
+
+            <div>
               <label className="block text-xs font-medium text-neutral-300 mb-1">Assigned Supervisor</label>
               <input
                 type="text"

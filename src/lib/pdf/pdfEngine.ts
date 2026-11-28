@@ -714,8 +714,9 @@ export function generatePayslipPDF(data: any, settings?: CompanySettings): Digit
 
   const isIntern = data.type === "intern";
   const docTitle = isIntern ? "MONTHLY STIPEND STATEMENT" : "CONFIDENTIAL SALARY PAYSLIP";
+  const refNo = data.documentNumber || data.payslipNumber;
 
-  let y = pdf.renderHeader(docTitle, `Pay Period: ${data.salaryMonth || "Current Month"}`, data.documentNumber);
+  let y = pdf.renderHeader(docTitle, `Pay Period: ${data.salaryMonth || "Current Month"}`, refNo);
 
   autoTable(doc, {
     startY: y,
@@ -728,29 +729,71 @@ export function generatePayslipPDF(data: any, settings?: CompanySettings): Digit
       3: { cellWidth: 55 },
     },
     body: [
-      ["EMPLOYEE NAME:", data.employeeName || data.fullName, "EMPLOYEE ID:", data.employeeId || "—"],
-      ["DESIGNATION:", data.designation || "—", "DEPARTMENT:", data.department || "Engineering"],
+      [isIntern ? "INTERN NAME:" : "EMPLOYEE NAME:", data.employeeName || data.fullName || "—", isIntern ? "INTERN ID:" : "EMPLOYEE ID:", data.employeeId || "—"],
+      ["DESIGNATION:", data.designation || "—", "DEPARTMENT:", data.department || "General"],
       ["PAY PERIOD:", data.payPeriod || data.salaryMonth || "—", "PAYMENT STATUS:", (data.paymentStatus || "PAID").toUpperCase()],
     ],
   });
 
   y = (doc as any).lastAutoTable.finalY + 6;
 
-  const earnings = isIntern 
-    ? [["Monthly Base Stipend", Number(data.basicSalary || data.monthlyStipend || 0)]]
-    : [
-        ["Basic Salary", Number(data.basicSalary || 0)],
-        ["HRA & Allowances", Number(data.allowances || 0)],
-        ["Performance Incentives", Number(data.incentives || 0)],
-      ];
+  const baseAmt = Number(data.basicSalary ?? data.monthlyStipend ?? 0) || 0;
+  const allowancesAmt = Number(data.allowances || 0) || 0;
+  const bonusAmt = Number(data.bonus || 0) || 0;
+  const incentivesAmt = Number(data.incentives || 0) || 0;
+  const overtimeAmt = Number(data.overtime || 0) || 0;
+  const customAdditions: { label: string; amount: number }[] = Array.isArray(data.customAdditions)
+    ? data.customAdditions.filter((c: any) => c && (c.label || Number(c.amount) > 0))
+    : [];
 
-  const deductions = [
-    ["Statutory / Advance Deductions", Number(data.deductions || 0)],
+  const earnings: [string, number][] = [
+    [isIntern ? "Monthly Base Stipend" : "Basic Salary", baseAmt],
+  ];
+
+  if (!isIntern || allowancesAmt > 0) {
+    earnings.push([isIntern ? "Allowances & Reimbursements" : "HRA & Allowances", allowancesAmt]);
+  }
+  if (bonusAmt > 0) {
+    earnings.push(["Performance Bonus", bonusAmt]);
+  }
+  if (!isIntern || incentivesAmt > 0) {
+    earnings.push(["Performance Incentives / Commission", incentivesAmt]);
+  }
+  if (overtimeAmt > 0) {
+    earnings.push(["Overtime / Milestone Reward", overtimeAmt]);
+  }
+  for (const item of customAdditions) {
+    if (Number(item.amount) > 0) {
+      earnings.push([item.label || "Additional Earnings", Number(item.amount)]);
+    }
+  }
+
+  const deductions: [string, number][] = [
+    [data.deductionReason ? `Deductions (${data.deductionReason})` : "Statutory / Advance Deductions", Number(data.deductions || 0) || 0],
   ];
 
   const totalEarnings = earnings.reduce((sum, item) => sum + Number(item[1]), 0);
   const totalDeductions = deductions.reduce((sum, item) => sum + Number(item[1]), 0);
-  const netPay = totalEarnings - totalDeductions;
+  const netPay = Math.max(0, totalEarnings - totalDeductions);
+
+  const rowCount = Math.max(earnings.length, deductions.length);
+  const tableBody: string[][] = [];
+  for (let i = 0; i < rowCount; i++) {
+    const eItem = earnings[i];
+    const dItem = deductions[i];
+    tableBody.push([
+      eItem ? eItem[0] : "—",
+      eItem ? `INR ${Number(eItem[1]).toLocaleString("en-IN")}/-` : "—",
+      dItem ? dItem[0] : "—",
+      dItem ? `INR ${Number(dItem[1]).toLocaleString("en-IN")}/-` : "—",
+    ]);
+  }
+  tableBody.push([
+    "TOTAL EARNINGS",
+    `INR ${totalEarnings.toLocaleString("en-IN")}/-`,
+    "TOTAL DEDUCTIONS",
+    `INR ${totalDeductions.toLocaleString("en-IN")}/-`,
+  ]);
 
   autoTable(doc, {
     startY: y,
@@ -758,14 +801,7 @@ export function generatePayslipPDF(data: any, settings?: CompanySettings): Digit
     headStyles: { fillColor: [24, 24, 24], textColor: [255, 255, 255], fontSize: 8 },
     styles: { fontSize: 8, cellPadding: 2 },
     head: [["Earnings Item", "Amount (INR)", "Deductions Item", "Amount (INR)"]],
-    body: [
-      [earnings[0][0], `INR ${earnings[0][1].toLocaleString("en-IN")}/-`, deductions[0][0], `INR ${deductions[0][1].toLocaleString("en-IN")}/-`],
-      ...(isIntern ? [] : [
-        [earnings[1][0], `INR ${earnings[1][1].toLocaleString("en-IN")}/-`, "—", "—"],
-        [earnings[2][0], `INR ${earnings[2][1].toLocaleString("en-IN")}/-`, "—", "—"],
-      ]),
-      ["TOTAL EARNINGS", `INR ${totalEarnings.toLocaleString("en-IN")}/-`, "TOTAL DEDUCTIONS", `INR ${totalDeductions.toLocaleString("en-IN")}/-`],
-    ],
+    body: tableBody,
   });
 
   y = (doc as any).lastAutoTable.finalY + 4;
@@ -780,12 +816,23 @@ export function generatePayslipPDF(data: any, settings?: CompanySettings): Digit
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.setTextColor(GOLD_DEEP[0], GOLD_DEEP[1], GOLD_DEEP[2]);
-  doc.text("NET SALARY TRANSFERRED:", 19, y + 6.5);
+  doc.text(isIntern ? "NET STIPEND TRANSFERRED:" : "NET SALARY TRANSFERRED:", 19, y + 6.5);
 
   doc.setTextColor(RICH_BLACK[0], RICH_BLACK[1], RICH_BLACK[2]);
   doc.text(`INR ${netPay.toLocaleString("en-IN")}/-`, pageWidth - 19, y + 6.5, { align: "right" });
 
-  y += 16;
+  y += 14;
+
+  if (data.remarks) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(90, 90, 90);
+    doc.text(`Remarks: ${String(data.remarks)}`, 15, y);
+    y += 6;
+  } else {
+    y += 2;
+  }
+
   pdf.renderSignatureBlock(y, "Finance & Payroll Department");
 
   return pdf;

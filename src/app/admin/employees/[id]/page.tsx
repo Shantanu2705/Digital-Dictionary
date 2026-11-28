@@ -32,7 +32,7 @@ import {
   Send,
   RefreshCw
 } from "lucide-react";
-import { generatePayslipPDF } from "@/lib/pdf/pdfEngine";
+import { SlipGeneratorModal, SlipRecipient } from "@/components/admin/SlipGeneratorModal";
 
 export default function EmployeeDetailsPage() {
   const { id } = useParams() as { id: string };
@@ -62,6 +62,7 @@ export default function EmployeeDetailsPage() {
   const [newPasswordInput, setNewPasswordInput] = useState("");
   const [passwordUpdating, setPasswordUpdating] = useState(false);
   const [resetEmailSending, setResetEmailSending] = useState(false);
+  const [slipRecipient, setSlipRecipient] = useState<SlipRecipient | null>(null);
 
   // Delete modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -301,29 +302,16 @@ export default function EmployeeDetailsPage() {
 
   const handleGeneratePayslip = () => {
     if (!employee) return;
-    const payslipData = {
-      payslipNumber: `DD-PAY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      employeeName: employee.fullName,
-      employeeId: employee.employeeId,
-      designation: employee.designation,
-      department: employee.department,
+    setSlipRecipient({
       type: "employee",
-      salaryMonth: new Date().toLocaleString("default", { month: "long", year: "numeric" }),
-      payPeriod: "Full Month",
-      basicSalary: employee.basicSalary || 0,
-      allowances: employee.allowances || 0,
-      incentives: 0,
-      overtime: 0,
-      deductions: employee.deductions || 0,
-      totalEarnings: (employee.basicSalary || 0) + (employee.allowances || 0),
-      netPay: (employee.basicSalary || 0) + (employee.allowances || 0) - (employee.deductions || 0),
-      paymentDate: new Date().toLocaleDateString("en-IN"),
-      paymentStatus: "paid",
-      remarks: "Monthly remuneration directly processed to registered bank account.",
-    };
-
-    const pdf = generatePayslipPDF(payslipData);
-    pdf.doc.save(`Digital_Dictionary_Payslip_${employee.fullName.replace(/\s+/g, "_")}.pdf`);
+      name: employee.fullName,
+      idCode: employee.employeeId,
+      designation: designation || employee.designation,
+      department: department || employee.department || "General",
+      baseAmount: Number(basicSalary ?? employee.basicSalary ?? 0),
+      allowances: Number(allowances ?? employee.allowances ?? 0),
+      deductions: Number(employee.deductions ?? 0),
+    });
   };
 
   if (loading) {
@@ -842,6 +830,11 @@ export default function EmployeeDetailsPage() {
           </div>
         </div>
       )}
+
+      <SlipGeneratorModal
+        recipient={slipRecipient}
+        onClose={() => setSlipRecipient(null)}
+      />
     </div>
   );
 }

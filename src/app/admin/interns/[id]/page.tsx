@@ -31,7 +31,8 @@ import {
   ShieldCheck,
   ExternalLink
 } from "lucide-react";
-import { generateInternNocPDF, generateInternOfferPDF, generatePayslipPDF } from "@/lib/pdf/pdfEngine";
+import { generateInternNocPDF, generateInternOfferPDF } from "@/lib/pdf/pdfEngine";
+import { SlipGeneratorModal, SlipRecipient } from "@/components/admin/SlipGeneratorModal";
 
 export default function InternDetailsPage() {
   const { id } = useParams() as { id: string };
@@ -45,11 +46,24 @@ export default function InternDetailsPage() {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Editable cohort fields
+  // Editable cohort & institutional fields
   const [accountStatus, setAccountStatus] = useState<any>("active");
   const [internshipRole, setInternshipRole] = useState("");
+  const [department, setDepartment] = useState("");
   const [assignedSupervisor, setAssignedSupervisor] = useState("");
   const [monthlyStipend, setMonthlyStipend] = useState(0);
+  const [collegeName, setCollegeName] = useState("");
+  const [universityName, setUniversityName] = useState("");
+  const [course, setCourse] = useState("");
+  const [semester, setSemester] = useState("");
+  const [collegeRollNo, setCollegeRollNo] = useState("");
+  const [internshipMode, setInternshipMode] = useState<"remote" | "hybrid" | "on-site">("remote");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [durationMonths, setDurationMonths] = useState(6);
+
+  // Slip Composer Modal state
+  const [slipRecipient, setSlipRecipient] = useState<SlipRecipient | null>(null);
 
   // Credential management state
   const [showPassword, setShowPassword] = useState(false);
@@ -80,8 +94,18 @@ export default function InternDetailsPage() {
         setIntern(data);
         setAccountStatus(data.accountStatus || "active");
         setInternshipRole(data.internshipRole || "");
+        setDepartment(data.department || "Engineering");
         setAssignedSupervisor(data.assignedSupervisor || "");
         setMonthlyStipend(data.monthlyStipend || 0);
+        setCollegeName(data.collegeName || "");
+        setUniversityName(data.universityName || data.collegeName || "");
+        setCourse(data.course || "");
+        setSemester(data.semester || "Final Year");
+        setCollegeRollNo(data.collegeRollNo || "N/A");
+        setInternshipMode(data.internshipMode || "remote");
+        setStartDate(data.startDate || "");
+        setEndDate(data.endDate || "");
+        setDurationMonths(data.durationMonths || 6);
 
         // Fetch documents
         const docQ = query(
@@ -103,21 +127,35 @@ export default function InternDetailsPage() {
     setStatusMessage(null);
     setErrorMessage(null);
     try {
-      await updateDoc(doc(db, "interns", id), {
+      const updates = {
         accountStatus,
         internshipRole,
+        department: department.trim() || "Engineering",
         assignedSupervisor,
         monthlyStipend: Number(monthlyStipend),
+        collegeName: collegeName.trim(),
+        universityName: universityName.trim() || collegeName.trim(),
+        course: course.trim(),
+        semester: semester.trim() || "Final Year",
+        collegeRollNo: collegeRollNo.trim() || "N/A",
+        internshipMode,
+        startDate,
+        endDate,
+        durationMonths: Number(durationMonths) || 6,
         updatedAt: new Date().toISOString(),
-      });
-      setIntern(prev => prev ? ({
-        ...prev,
-        accountStatus,
-        internshipRole,
-        assignedSupervisor,
-        monthlyStipend: Number(monthlyStipend),
-      }) : null);
-      setStatusMessage("Intern cohort record updated successfully.");
+      };
+      await updateDoc(doc(db, "interns", id), updates);
+      if (intern?.userId) {
+        try {
+          await updateDoc(doc(db, "users", intern.userId), {
+            designation: internshipRole,
+            department: updates.department,
+            updatedAt: updates.updatedAt,
+          });
+        } catch {}
+      }
+      setIntern(prev => prev ? ({ ...prev, ...updates }) : null);
+      setStatusMessage("Intern profile, department & semester details saved.");
       setTimeout(() => setStatusMessage(null), 3500);
     } catch (err: any) {
       setErrorMessage("Failed to update: " + err.message);
@@ -308,8 +346,10 @@ export default function InternDetailsPage() {
   const handleDownloadNOC = () => {
     if (!intern) return;
     const currentRole = internshipRole || intern.internshipRole || "Business Development Intern";
+    const currentDept = department.trim() || intern.department || "Business Development";
+    const currentSem = semester.trim() || intern.semester || "Final Year";
     const currentSupervisor = assignedSupervisor || intern.assignedSupervisor || "Operations & Strategy Lead";
-    const currentStipend = Number(monthlyStipend) || intern.monthlyStipend || 0;
+    const currentStipend = monthlyStipend !== undefined ? Number(monthlyStipend) : (intern.monthlyStipend || 0);
 
     const data = {
       nocNumber: `DD-NOC-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
@@ -319,25 +359,25 @@ export default function InternDetailsPage() {
       fullName: intern.fullName,
       email: intern.email,
       phone: intern.phone,
-      collegeName: intern.collegeName,
-      universityName: intern.universityName || intern.collegeName,
-      course: intern.course,
-      semester: intern.semester || "Final Year",
-      rollNumber: intern.collegeRollNo || "N/A",
-      collegeRollNo: intern.collegeRollNo || "N/A",
-      department: intern.department || "Business Development",
+      collegeName: collegeName.trim() || intern.collegeName,
+      universityName: universityName.trim() || collegeName.trim() || intern.universityName || intern.collegeName,
+      course: course.trim() || intern.course,
+      semester: currentSem,
+      rollNumber: collegeRollNo.trim() || intern.collegeRollNo || "N/A",
+      collegeRollNo: collegeRollNo.trim() || intern.collegeRollNo || "N/A",
+      department: currentDept,
       role: currentRole,
       internshipRole: currentRole,
       supervisorName: currentSupervisor,
       assignedSupervisor: currentSupervisor,
-      startDate: intern.startDate || "2026-12-01",
-      endDate: intern.endDate || "2027-05-30",
-      durationMonths: intern.durationMonths || 6,
-      internshipMode: intern.internshipMode || "Remote",
-      workMode: intern.internshipMode || "Remote",
+      startDate: startDate || intern.startDate || "2026-12-01",
+      endDate: endDate || intern.endDate || "2027-05-30",
+      durationMonths: durationMonths || intern.durationMonths || 6,
+      internshipMode: internshipMode || intern.internshipMode || "Remote",
+      workMode: internshipMode || intern.internshipMode || "Remote",
       monthlyStipend: currentStipend,
       stipendAmount: currentStipend,
-      reportingDate: intern.startDate || "2026-12-01",
+      reportingDate: startDate || intern.startDate || "2026-12-01",
     };
     const pdf = generateInternNocPDF(data);
     pdf.doc.save(`College_NOC_${intern.fullName.replace(/\s+/g, "_")}.pdf`);
@@ -346,8 +386,10 @@ export default function InternDetailsPage() {
   const handleDownloadOffer = () => {
     if (!intern) return;
     const currentRole = internshipRole || intern.internshipRole || "Business Development Intern";
+    const currentDept = department.trim() || intern.department || "Business Development";
+    const currentSem = semester.trim() || intern.semester || "Final Year";
     const currentSupervisor = assignedSupervisor || intern.assignedSupervisor || "Operations & Strategy Lead";
-    const currentStipend = Number(monthlyStipend) || intern.monthlyStipend || 0;
+    const currentStipend = monthlyStipend !== undefined ? Number(monthlyStipend) : (intern.monthlyStipend || 0);
 
     const data = {
       offerNumber: `DD-OFF-${new Date().getFullYear()}-${intern.internId.replace(/[^0-9]/g, "") || "001"}`,
@@ -357,23 +399,23 @@ export default function InternDetailsPage() {
       fullName: intern.fullName,
       email: intern.email,
       phone: intern.phone,
-      collegeName: intern.collegeName,
-      universityName: intern.universityName || intern.collegeName,
-      course: intern.course,
-      semester: intern.semester || "Final Year",
-      collegeRollNo: intern.collegeRollNo || "N/A",
+      collegeName: collegeName.trim() || intern.collegeName,
+      universityName: universityName.trim() || collegeName.trim() || intern.universityName || intern.collegeName,
+      course: course.trim() || intern.course,
+      semester: currentSem,
+      collegeRollNo: collegeRollNo.trim() || intern.collegeRollNo || "N/A",
       role: currentRole,
       internshipRole: currentRole,
-      department: intern.department || "Business Development",
+      department: currentDept,
       supervisor: currentSupervisor,
       assignedSupervisor: currentSupervisor,
-      startDate: intern.startDate || "2026-12-01",
-      endDate: intern.endDate || "2027-05-30",
-      durationMonths: intern.durationMonths || 6,
+      startDate: startDate || intern.startDate || "2026-12-01",
+      endDate: endDate || intern.endDate || "2027-05-30",
+      durationMonths: durationMonths || intern.durationMonths || 6,
       stipendAmount: currentStipend,
       monthlyStipend: currentStipend,
-      workMode: intern.internshipMode || "Remote",
-      internshipMode: intern.internshipMode || "Remote",
+      workMode: internshipMode || intern.internshipMode || "Remote",
+      internshipMode: internshipMode || intern.internshipMode || "Remote",
       stipendCycle: "Monthly on 5th",
     };
     const pdf = generateInternOfferPDF(data);
@@ -382,29 +424,14 @@ export default function InternDetailsPage() {
 
   const handleGenerateStipendSlip = () => {
     if (!intern) return;
-    const payslipData = {
-      payslipNumber: `DD-STP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      employeeName: intern.fullName,
-      employeeId: intern.internId,
-      designation: intern.internshipRole,
-      department: intern.department,
+    setSlipRecipient({
       type: "intern",
-      salaryMonth: new Date().toLocaleString("default", { month: "long", year: "numeric" }),
-      payPeriod: "Full Month",
-      basicSalary: intern.monthlyStipend || 0,
-      allowances: 0,
-      incentives: 0,
-      overtime: 0,
-      deductions: 0,
-      totalEarnings: intern.monthlyStipend || 0,
-      netPay: intern.monthlyStipend || 0,
-      paymentDate: new Date().toLocaleDateString("en-IN"),
-      paymentStatus: "paid",
-      remarks: "Monthly academic internship stipend disbursement.",
-    };
-
-    const pdf = generatePayslipPDF(payslipData);
-    pdf.doc.save(`Digital_Dictionary_Stipend_${intern.fullName.replace(/\s+/g, "_")}.pdf`);
+      name: intern.fullName,
+      idCode: intern.internId,
+      designation: internshipRole || intern.internshipRole || "Intern",
+      department: department.trim() || intern.department || "General",
+      baseAmount: Number(monthlyStipend ?? intern.monthlyStipend ?? 0),
+    });
   };
 
   if (loading) {
@@ -563,6 +590,27 @@ export default function InternDetailsPage() {
               </div>
 
               <div>
+                <label className="block text-xs text-neutral-400 mb-1">Department (Used on Offer Letter &amp; NOC)</label>
+                <input
+                  type="text"
+                  list="dd-intern-departments-edit"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  placeholder="e.g. Business Development"
+                  className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-xs focus:outline-none focus:border-[#D4AF37]/50"
+                />
+                <datalist id="dd-intern-departments-edit">
+                  <option value="Engineering" />
+                  <option value="Business Development" />
+                  <option value="Digital Marketing & Growth" />
+                  <option value="UI/UX & Brand Design" />
+                  <option value="Operations & Strategy" />
+                  <option value="Human Resources" />
+                  <option value="Finance & Accounts" />
+                </datalist>
+              </div>
+
+              <div>
                 <label className="block text-xs text-neutral-400 mb-1">Assigned Supervisor</label>
                 <input
                   type="text"
@@ -570,6 +618,19 @@ export default function InternDetailsPage() {
                   onChange={(e) => setAssignedSupervisor(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-xs focus:outline-none focus:border-[#D4AF37]/50"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs text-neutral-400 mb-1">Work Mode</label>
+                <select
+                  value={internshipMode}
+                  onChange={(e) => setInternshipMode(e.target.value as any)}
+                  className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white text-xs focus:outline-none focus:border-[#D4AF37]/50"
+                >
+                  <option value="remote">Remote</option>
+                  <option value="hybrid">Hybrid</option>
+                  <option value="on-site">On-Site</option>
+                </select>
               </div>
             </div>
 
@@ -585,42 +646,103 @@ export default function InternDetailsPage() {
             </div>
           </div>
 
-          {/* Academic Information Box */}
-          <div className="p-5 rounded-2xl border border-white/10 bg-neutral-900/40 space-y-3">
+          {/* Academic Information Box (Editable for NOC & Offer Letter) */}
+          <div className="p-5 rounded-2xl border border-white/10 bg-neutral-900/40 space-y-4">
             <h2 className="text-sm font-semibold text-white flex items-center gap-2 border-b border-white/5 pb-2.5">
               <Building2 className="w-4 h-4 text-[#D4AF37]" />
-              Institutional Affiliation Details
+              Institutional Affiliation Details (Used on NOC PDF)
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               <div>
-                <span className="text-neutral-500 block">College / Institute</span>
-                <span className="text-neutral-200 font-medium">{intern.collegeName}</span>
+                <label className="block text-neutral-400 mb-1">College / Institute</label>
+                <input
+                  type="text"
+                  value={collegeName}
+                  onChange={(e) => setCollegeName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white focus:outline-none focus:border-[#D4AF37]/50"
+                />
               </div>
               <div>
-                <span className="text-neutral-500 block">Affiliated University</span>
-                <span className="text-neutral-200 font-medium">{intern.universityName || intern.collegeName}</span>
+                <label className="block text-neutral-400 mb-1">Affiliated University</label>
+                <input
+                  type="text"
+                  value={universityName}
+                  onChange={(e) => setUniversityName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white focus:outline-none focus:border-[#D4AF37]/50"
+                />
               </div>
               <div>
-                <span className="text-neutral-500 block">Course & Degree</span>
-                <span className="text-neutral-200 font-medium">{intern.course}</span>
+                <label className="block text-neutral-400 mb-1">Course &amp; Degree</label>
+                <input
+                  type="text"
+                  value={course}
+                  onChange={(e) => setCourse(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-neutral-400 mb-1">Semester / Year (NOC)</label>
+                  <input
+                    type="text"
+                    value={semester}
+                    onChange={(e) => setSemester(e.target.value)}
+                    placeholder="e.g. 6th Semester"
+                    className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-[#D4AF37]/30 text-white focus:outline-none focus:border-[#D4AF37]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-neutral-400 mb-1">Roll / Reg. No.</label>
+                  <input
+                    type="text"
+                    value={collegeRollNo}
+                    onChange={(e) => setCollegeRollNo(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white font-mono focus:outline-none focus:border-[#D4AF37]/50"
+                  />
+                </div>
               </div>
               <div>
-                <span className="text-neutral-500 block">Semester & Roll Number</span>
-                <span className="text-neutral-200 font-medium">
-                  {intern.semester || "N/A"} · Roll: {intern.collegeRollNo || "N/A"}
-                </span>
+                <label className="block text-neutral-400 mb-1">Start Date</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white font-mono focus:outline-none focus:border-[#D4AF37]/50"
+                />
               </div>
-              <div>
-                <span className="text-neutral-500 block">Internship Period</span>
-                <span className="text-neutral-200 font-medium font-mono">
-                  {intern.startDate} to {intern.endDate} ({intern.durationMonths} Months)
-                </span>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-neutral-400 mb-1">End Date</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white font-mono focus:outline-none focus:border-[#D4AF37]/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-neutral-400 mb-1">Months</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={durationMonths}
+                    onChange={(e) => setDurationMonths(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-lg bg-neutral-950 border border-white/10 text-white font-mono focus:outline-none focus:border-[#D4AF37]/50"
+                  />
+                </div>
               </div>
-              <div>
-                <span className="text-neutral-500 block">Work Mode</span>
-                <span className="text-neutral-200 font-medium capitalize">{intern.internshipMode || "Remote"}</span>
-              </div>
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <button
+                onClick={handleUpdate}
+                disabled={updating}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-neutral-800 hover:bg-[#D4AF37]/20 hover:text-[#D4AF37] text-white text-xs font-semibold border border-white/10 transition-colors cursor-pointer"
+              >
+                <Save className="w-3.5 h-3.5" />
+                {updating ? "Saving..." : "Save Academic & Duration Details"}
+              </button>
             </div>
           </div>
         </div>
@@ -904,6 +1026,12 @@ export default function InternDetailsPage() {
           </div>
         </div>
       )}
+
+      {/* MODAL 3: STIPEND SLIP COMPOSER WITH BONUS / INCENTIVES */}
+      <SlipGeneratorModal
+        recipient={slipRecipient}
+        onClose={() => setSlipRecipient(null)}
+      />
     </div>
   );
 }

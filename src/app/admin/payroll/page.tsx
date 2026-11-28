@@ -18,6 +18,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { generatePayslipPDF } from "@/lib/pdf/pdfEngine";
+import { SlipGeneratorModal, SlipRecipient } from "@/components/admin/SlipGeneratorModal";
 
 export default function PayrollAdminPage() {
   const [employees, setEmployees] = useState<PermanentEmployee[]>([]);
@@ -28,6 +29,14 @@ export default function PayrollAdminPage() {
   const [selectedMonth, setSelectedMonth] = useState<string>(
     new Date().toLocaleString("default", { month: "long", year: "numeric" })
   );
+  const [slipRecipient, setSlipRecipient] = useState<SlipRecipient | null>(null);
+
+  const monthOptions = Array.from({ length: 12 }, (_, idx) => {
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() - 3 + idx);
+    return d.toLocaleString("default", { month: "long", year: "numeric" });
+  });
 
   useEffect(() => {
     fetchStaff();
@@ -50,53 +59,27 @@ export default function PayrollAdminPage() {
   };
 
   const handleIssuePayslip = (emp: PermanentEmployee) => {
-    const data = {
-      payslipNumber: `DD-PAY-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      employeeName: emp.fullName,
-      employeeId: emp.employeeId,
-      designation: emp.designation,
-      department: emp.department,
+    setSlipRecipient({
       type: "employee",
-      salaryMonth: selectedMonth,
-      payPeriod: "Full Month",
-      basicSalary: emp.basicSalary || 0,
-      allowances: emp.allowances || 0,
-      incentives: 0,
-      overtime: 0,
-      deductions: emp.deductions || 0,
-      totalEarnings: (emp.basicSalary || 0) + (emp.allowances || 0),
-      netPay: (emp.basicSalary || 0) + (emp.allowances || 0) - (emp.deductions || 0),
-      paymentDate: new Date().toLocaleDateString("en-IN"),
-      paymentStatus: "paid",
-      remarks: "Direct bank disbursement for services rendered.",
-    };
-    const pdf = generatePayslipPDF(data);
-    pdf.doc.save(`Payslip_${emp.fullName.replace(/\s+/g, "_")}_${selectedMonth.replace(/\s+/g, "_")}.pdf`);
+      name: emp.fullName,
+      idCode: emp.employeeId,
+      designation: emp.designation,
+      department: emp.department || "General",
+      baseAmount: Number(emp.basicSalary) || 0,
+      allowances: Number(emp.allowances) || 0,
+      deductions: Number(emp.deductions) || 0,
+    });
   };
 
   const handleIssueStipend = (intern: InternRecord) => {
-    const data = {
-      payslipNumber: `DD-STP-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
-      employeeName: intern.fullName,
-      employeeId: intern.internId,
-      designation: intern.internshipRole,
-      department: intern.department,
+    setSlipRecipient({
       type: "intern",
-      salaryMonth: selectedMonth,
-      payPeriod: "Full Month",
-      basicSalary: intern.monthlyStipend || 0,
-      allowances: 0,
-      incentives: 0,
-      overtime: 0,
-      deductions: 0,
-      totalEarnings: intern.monthlyStipend || 0,
-      netPay: intern.monthlyStipend || 0,
-      paymentDate: new Date().toLocaleDateString("en-IN"),
-      paymentStatus: "paid",
-      remarks: "Monthly academic mentorship stipend.",
-    };
-    const pdf = generatePayslipPDF(data);
-    pdf.doc.save(`Stipend_${intern.fullName.replace(/\s+/g, "_")}_${selectedMonth.replace(/\s+/g, "_")}.pdf`);
+      name: intern.fullName,
+      idCode: intern.internId,
+      designation: intern.internshipRole,
+      department: intern.department || "General",
+      baseAmount: Number(intern.monthlyStipend) || 0,
+    });
   };
 
   const totalEmployeePayroll = employees
@@ -129,7 +112,7 @@ export default function PayrollAdminPage() {
             onChange={(e) => setSelectedMonth(e.target.value)}
             className="px-3 py-1.5 rounded-lg bg-neutral-900 border border-white/10 text-white text-xs focus:outline-none focus:border-[#D4AF37]/50"
           >
-            {["January 2026", "February 2026", "March 2026", "April 2026"].map(m => (
+            {monthOptions.map(m => (
               <option key={m} value={m}>{m}</option>
             ))}
           </select>
@@ -313,6 +296,13 @@ export default function PayrollAdminPage() {
           </div>
         )}
       </div>
+
+      {/* Slip Composer Modal with Bonus & Incentives */}
+      <SlipGeneratorModal
+        recipient={slipRecipient}
+        defaultMonth={selectedMonth}
+        onClose={() => setSlipRecipient(null)}
+      />
     </div>
   );
 }
